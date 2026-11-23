@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apna Dangari - Gaon Ka Digital Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>tailwind.config = { darkMode: 'class' }</script>
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+    .wheel-svg { transition: transform 3.2s cubic-bezier(0.15, 0.75, 0.15, 1); }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900 dark:bg-slate-950 dark:text-slate-100 pb-24 transition-colors duration-200">
+
+  <!-- TOP HEADER WITH 3-DOTS MENU -->
+  <header class="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur border-b border-slate-200 dark:border-slate-800 px-4 py-3 flex items-center justify-between shadow-sm">
+    <div class="flex items-center gap-2.5">
+      <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-lg shadow">🌾</div>
+      <div>
+        <h1 class="text-base font-bold text-emerald-700 dark:text-emerald-400 leading-tight">Apna Dangari</h1>
+        <p class="text-[11px] text-slate-500 dark:text-slate-400">Gram Panchayat Dangari • Live</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <button onclick="switchTab('rank')" class="bg-amber-100 dark:bg-amber-500/20 border border-amber-300 dark:border-amber-500/40 px-2.5 py-1 rounded-full text-xs font-bold text-amber-800 dark:text-amber-300 flex items-center gap-1">
+        ⭐ <span id="user-points">0</span> Pts
+      </button>
+
+      <!-- 3-DOTS MENU -->
+      <div class="relative">
+        <button onclick="toggleMenu()" class="w-8 h-8 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 flex items-center justify-center text-lg font-bold">⋮</button>
+        <div id="dots-menu" class="hidden absolute right-0 mt-2 w-52 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-50 text-xs">
+          <button onclick="toggleDarkMode(); toggleMenu();" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between">
+            <span>🌓 Dark / Light Mode</span>
+            <span id="theme-label" class="text-[10px] font-bold text-emerald-600">Light</span>
+          </button>
+          <button onclick="openRulesModal(); toggleMenu();" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800">
+            📜 Points & Rules Guide
+          </button>
+          <div class="border-t border-slate-200 dark:border-slate-800 my-1"></div>
+          <button onclick="shareWhatsApp(); toggleMenu();" class="w-full text-left px-4 py-2.5 text-emerald-600 dark:text-emerald-400 font-semibold hover:bg-slate-100 dark:hover:bg-slate-800">
+            📲 WhatsApp par Share Karein
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- TOP BANNER AD SLOT (Yahan Adsterra / Monetag Banner Script Paste Karein) -->
+  <div id="ad-top-banner" class="mx-4 mt-3 p-2.5 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-center">
+    <span class="text-[9px] uppercase tracking-widest text-slate-400 block">Advertisement</span>
+    <span class="text-xs text-slate-500 dark:text-slate-400">[ Top Banner Ad Slot - 320x50 ]</span>
+  </div>
+
+  <!-- NAVIGATION TABS -->
+  <nav class="grid grid-cols-5 gap-1.5 px-4 mt-3">
+    <button onclick="switchTab('home')" id="tab-home" class="tab-btn bg-emerald-600 text-white font-semibold py-2 rounded-xl text-[11px] shadow-sm">🏠 Gaon</button>
+    <button onclick="switchTab('rank')" id="tab-rank" class="tab-btn bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-semibold py-2 rounded-xl text-[11px] border border-slate-200 dark:border-slate-800">🏆 Rank</button>
+    <button onclick="switchTab('quiz')" id="tab-quiz" class="tab-btn bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-semibold py-2 rounded-xl text-[11px] border border-slate-200 dark:border-slate-800">🧠 Quiz</button>
+    <button onclick="switchTab('spin')" id="tab-spin" class="tab-btn bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-semibold py-2 rounded-xl text-[11px] border border-slate-200 dark:border-slate-800">🎡 Spin</button>
+    <button onclick="switchTab('mandi')" id="tab-mandi" class="tab-btn bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-semibold py-2 rounded-xl text-[11px] border border-slate-200 dark:border-slate-800">🌾 Bhav</button>
+  </nav>
+
+  <!-- TAB 1: GAON HOME -->
+  <main id="view-home" class="px-4 mt-4 space-y-4">
+    <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+      <div>
+        <p class="text-[11px] text-slate-500">Ram-Ram Sa 🙏</p>
+        <h2 id="display-name" class="text-base font-bold">Loading...</h2>
+        <p class="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">
+          <span id="display-username">@user</span> • <span id="display-ward">Dangari</span>
+        </p>
+      </div>
+      <button id="checkin-btn" onclick="dailyCheckIn()" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-3.5 py-2 rounded-xl text-xs shadow">
+        📅 Check-in (+2)
+      </button>
+    </div>
+
+    <!-- MARWARI SUVICHAR -->
+    <div class="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-slate-900 dark:to-slate-800 p-4 rounded-2xl border border-amber-200 dark:border-amber-500/30">
+      <div class="flex justify-between items-center mb-1">
+        <span class="text-[11px] font-bold text-amber-700 dark:text-amber-400">✍️ Aaj Ri Marwari Baat</span>
+        <button onclick="copySuvichar()" class="text-[11px] bg-white dark:bg-slate-700 px-2 py-0.5 rounded-md border border-amber-200 dark:border-slate-600 font-medium">Copy</button>
+      </div>
+      <p id="suvichar-text" class="text-xs text-slate-700 dark:text-slate-200 italic leading-relaxed">
+        "जठे संतोष है वठे ही सुख है, अर जठे एकता है वठे ही गांव री तरक्की है।"
+      </p>
+    </div>
+
+    <!-- LIVE GAON POLL (FIREBASE SYNCED) -->
+    <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
+      <div class="flex justify-between items-center">
+        <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase">🗳️ Gaon Ki Awaaz (Live Poll)</span>
+        <span class="text-[11px] text-slate-400">+2 Pts</span>
+      </div>
+      <h3 class="text-sm font-bold mt-1.5">Dangari me sabse pehle kis kaam par dhyan dena chahiye?</h3>
+      <div id="poll-options" class="mt-3 space-y-2 text-xs"></div>
+      <p id="poll-status" class="text-[11px] text-slate-500 mt-2"></p>
+    </div>
+
+    <!-- SARPANCH DESK -->
+    <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border-l-4 border-emerald-600 border-y border-r border-slate-200 dark:border-slate-800">
+      <span class="text-[10px] bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded font-bold">Gram Panchayat Suchna</span>
+      <h3 class="text-sm font-bold mt-1.5">Sarpanch Desk: Shri Bherusingh Bhati</h3>
+      <p class="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
+        Dangari gram panchayat ke sabhi niwasiyon ke liye sarkari yojanaon aur gram sabha ki jankari yahan uplabdh rahegi.
+      </p>
+    </div>
+
+    <!-- EMERGENCY HELPLINE -->
+    <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
+      <h3 class="text-sm font-bold mb-2.5">🚨 Emergency Helpline</h3>
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <a href="tel:112" class="bg-slate-50 dark:bg-slate-800 p-2.5 rounded-xl flex justify-between border border-slate-200 dark:border-slate-700"><span>🚓 Police</span><span class="font-bold text-emerald-600">112</span></a>
+        <a href="tel:108" class="bg-slate-50 dark:bg-slate-800 p-2.5 rounded-xl flex justify-between border border-slate-200 dark:border-slate-700"><span>🚑 Ambulance</span><span class="font-bold text-rose-600">108</span></a>
+        <a href="tel:18001806507" class="bg-slate-50 dark:bg-slate-800 p-2.5 rounded-xl flex justify-between border border-slate-200 dark:border-slate-700"><span>⚡ Bijli</span><span class="font-bold text-sky-600">Call</span></a>
+        <a href="tel:181" class="bg-slate-50 dark:bg-slate-800 p-2.5 rounded-xl flex justify-between border border-slate-200 dark:border-slate-700"><span>📢 CM Helpline</span><span class="font-bold text-amber-600">181</span></a>
+      </div>
+    </div>
+  </main>
+
+  <!-- TAB 2: REAL LIVE LEADERBOARD & FOLLOW SYSTEM -->
+  <section id="view-rank" class="hidden px-4 mt-4 space-y-4">
+    <div class="bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-4 rounded-2xl shadow">
+      <div class="flex justify-between items-center">
+        <div>
+          <p class="text-xs text-emerald-100">Aapki Live Dangari Rank</p>
+          <h2 id="my-rank-badge" class="text-2xl font-bold mt-0.5">#--</h2>
+        </div>
+        <div class="text-right">
+          <p class="text-xs text-emerald-100">Followers: <span id="my-followers-count" class="font-bold">0</span></p>
+          <p class="text-xl font-bold"><span id="rank-tab-pts">0</span> Pts</p>
+        </div>
+      </div>
+      <button onclick="shareRankWhatsApp()" class="mt-3 w-full bg-white text-emerald-800 font-bold py-2 rounded-xl text-xs shadow">
+        🏆 Apni Live Rank WhatsApp par Share Karein
+      </button>
+    </div>
+
+    <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="text-sm font-bold">🔥 Dangari Live Leaderboard</h3>
+        <span class="text-[10px] text-emerald-600 font-semibold flex items-center gap-1">● Live Sync</span>
+      </div>
+      <div id="leaderboard-list" class="space-y-2.5 text-xs">
+        <p class="text-center text-slate-400 py-4">Live data load ho raha hai...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 3: DAILY LIMITED QUIZ (5 QUESTIONS / DAY) -->
+  <section id="view-quiz" class="hidden px-4 mt-4 space-y-4">
+    <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
+      <div class="flex justify-between items-center">
+        <span class="text-xs font-bold text-emerald-600">🧠 Daily Dangari & Rajasthan Quiz</span>
+        <span id="quiz-limit-badge" class="text-xs bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-full font-semibold">0/5 Aaj</span>
+      </div>
+      <div id="quiz-container" class="mt-3">
+        <h3 id="quiz-question" class="text-sm font-bold leading-snug">Loading...</h3>
+        <div id="quiz-options" class="mt-3 space-y-2"></div>
+        <p id="quiz-feedback" class="text-xs font-semibold mt-3"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 4: MARKED SPIN WHEEL (2 SPINS / DAY + 1 DAILY AD REWARD) -->
+  <section id="view-spin" class="hidden px-4 mt-4 text-center space-y-4">
+    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
+      <div class="flex justify-between items-center">
+        <h3 class="text-sm font-bold text-emerald-600">🎡 Dangari Lucky Spin</h3>
+        <span id="spin-limit-badge" class="text-xs bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 px-2.5 py-0.5 rounded-full font-bold">2 Bache Hain</span>
+      </div>
+      <p class="text-[11px] text-slate-500 mt-1">Teer (▼) jahan rukega wahi points milenge!</p>
+
+      <!-- MARKED SVG WHEEL WITH TOP POINTER -->
+      <div class="my-5 flex flex-col items-center relative">
+        <div class="text-rose-600 text-2xl font-bold -mb-2 z-10 drop-shadow">▼</div>
+        <div class="w-56 h-56 rounded-full border-4 border-slate-800 dark:border-amber-400 shadow-xl overflow-hidden relative">
+          <svg id="spin-wheel" class="wheel-svg w-full h-full" viewBox="0 0 200 200">
+            <!-- 6 Segments (60 deg each) -->
+            <g transform="translate(100,100)">
+              <path d="M0,0 L0,-100 A100,100 0 0,1 86.6,-50 Z" fill="#64748b"/>
+              <path d="M0,0 L86.6,-50 A100,100 0 0,1 86.6,50 Z" fill="#10b981"/>
+              <path d="M0,0 L86.6,50 A100,100 0 0,1 0,100 Z" fill="#f59e0b"/>
+              <path d="M0,0 L0,100 A100,100 0 0,1 -86.6,50 Z" fill="#475569"/>
+              <path d="M0,0 L-86.6,50 A100,100 0 0,1 -86.6,-50 Z" fill="#059669"/>
+              <path d="M0,0 L-86.6,-50 A100,100 0 0,1 0,-100 Z" fill="#e11d48"/>
+
+              <!-- Labels -->
+              <text x="32" y="-55" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(30 32,-55)">0 Pt</text>
+              <text x="64" y="0" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(90 64,0)">+1 Pt</text>
+              <text x="32" y="58" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(150 32,58)">+2 Pts</text>
+              <text x="-32" y="58" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(210 -32,58)">0 Pt</text>
+              <text x="-64" y="0" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(270 -64,0)">+1 Pt</text>
+              <text x="-32" y="-55" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(330 -32,-55)">+3 Pts</text>
+            </g>
+          </svg>
+          <div class="absolute inset-0 m-auto w-12 h-12 rounded-full bg-white dark:bg-slate-900 border-2 border-slate-300 flex items-center justify-center font-bold text-[10px] shadow">
+            DANGARI
+          </div>
+        </div>
+      </div>
+
+      <button onclick="spinWheel()" id="spin-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs shadow">
+        🎡 Wheel Ghumayein
+      </button>
+
+      <!-- ONE-TIME DAILY SPONSOR AD REWARD (ANTI-SPAM) -->
+      <button onclick="openAdModal()" id="daily-ad-btn" class="mt-2.5 w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 rounded-xl text-xs shadow">
+        🎬 Daily Sponsor Bonus (+3 Pts • 1/Day)
+      </button>
+
+      <p id="spin-result" class="text-xs font-bold mt-3 text-emerald-600"></p>
+    </div>
+  </section>
+
+  <!-- TAB 5: MANDI BHAV -->
+  <section id="view-mandi" class="hidden px-4 mt-4 space-y-3">
+    <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
+      <h3 class="text-sm font-bold text-emerald-600 mb-3">🌾 Jaisalmer / Barmer Mandi Bhav</h3>
+      <div class="divide-y divide-slate-200 dark:divide-slate-800 text-xs">
+        <div class="py-2.5 flex justify-between"><span>🌱 Jeera (जीरा)</span><span class="font-bold text-emerald-600">₹24,800 - ₹26,400</span></div>
+        <div class="py-2.5 flex justify-between"><span>🌿 Isabgol (ईसबगोल)</span><span class="font-bold text-emerald-600">₹13,400 - ₹14,600</span></div>
+        <div class="py-2.5 flex justify-between"><span>🌾 Guar (ग्वार)</span><span class="font-bold text-amber-600">₹5,180 - ₹5,450</span></div>
+        <div class="py-2.5 flex justify-between"><span>🌽 Bajra (बाजरा)</span><span class="font-bold text-amber-600">₹2,380 - ₹2,520</span></div>
+        <div class="py-2.5 flex justify-between"><span>🌼 Sarson (सरसों)</span><span class="font-bold text-emerald-600">₹5,650 - ₹5,980</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ONE-TIME REGISTRATION MODAL (UNIQUE @USERNAME + OPTIONAL MOBILE) -->
+  <div id="register-modal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 max-w-sm w-full p-5 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700">
+      <h3 class="text-base font-bold text-emerald-600">🌾 Apna Dangari Account Banayein</h3>
+      <p class="text-[11px] text-slate-500 mt-1">Ek baar account banne ke baad aapka naam aur rank poore gaon ko live dikhega.</p>
+      
+      <div class="mt-3 space-y-2.5 text-xs">
+        <div>
+          <label class="font-semibold block mb-1">Poora Naam *</label>
+          <input id="reg-name" type="text" placeholder="e.g. Ramesh Bhati" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+        </div>
+        <div>
+          <label class="font-semibold block mb-1">Unique Username * (Bina space ke)</label>
+          <input id="reg-username" type="text" placeholder="e.g. ramesh_dangari" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 lowercase" />
+        </div>
+        <div>
+          <label class="font-semibold block mb-1">Mohalla / Gaon *</label>
+          <select id="reg-ward" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+            <option value="Main Market, Dangari">Main Market, Dangari</option>
+            <option value="Bhati Mohalla, Dangari">Bhati Mohalla, Dangari</option>
+            <option value="Bus Stand, Dangari">Bus Stand, Dangari</option>
+            <option value="Meghwal Basti, Dangari">Meghwal Basti, Dangari</option>
+            <option value="Fatehgarh / Aas-paas">Fatehgarh / Aas-paas</option>
+          </select>
+        </div>
+        <div>
+          <label class="font-semibold block mb-1">Mobile Number (Optional - Private rahega)</label>
+          <input id="reg-phone" type="tel" maxlength="10" placeholder="10 digit mobile number (optional)" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
+        </div>
+      </div>
+
+      <p id="reg-error" class="text-[11px] text-rose-600 font-semibold mt-2"></p>
+      <button id="reg-submit-btn" onclick="registerUser()" class="mt-3 w-full bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-xs shadow">
+        Account Banayein & Shuru Karein
+      </button>
+    </div>
+  </div>
+
+  <!-- SPONSOR AD REWARD MODAL (STRICTLY 1 PER DAY) -->
+  <div id="ad-modal" class="hidden fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 max-w-sm w-full p-5 rounded-2xl text-center shadow-xl border border-amber-400">
+      <span class="text-[10px] uppercase tracking-widest text-amber-600 font-bold">Daily Sponsor Bonus</span>
+      <h4 class="text-base font-bold mt-1">+3 Bonus Points Paayein!</h4>
+      <p class="text-xs text-slate-500 mt-1.5">Yeh bonus din me sirf 1 baar milta hai. Sponsor link kholne par points turant jud jayenge.</p>
+      <!-- YAHAN APNA ADSTERRA / MONETAG DIRECT LINK DAALEIN -->
+      <a href="https://example.com" target="_blank" onclick="claimDailyAdReward()" class="block mt-4 w-full bg-amber-500 text-white font-bold py-2.5 rounded-xl text-xs shadow">
+        🔗 Sponsor Link Kholein (+3 Pts)
+      </a>
+      <button onclick="document.getElementById('ad-modal').classList.add('hidden')" class="mt-3 text-xs text-slate-400 underline">Band Karein</button>
+    </div>
+  </div>
+
+  <!-- RULES MODAL -->
+  <div id="rules-modal" class="hidden fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 max-w-sm w-full p-5 rounded-2xl shadow-xl text-xs space-y-2">
+      <h3 class="text-sm font-bold text-emerald-600">📜 Apna Dangari Security & Rules</h3>
+      <p>• <b>Unique Username:</b> Har user ka apna alag @username hota hai jise badla nahi ja sakta.</p>
+      <p>• <b>Anti-Spam Limit:</b> Roz 5 Quiz (+1 Pt), 2 Spins (0 se +3 Pts), 1 Check-in (+2 Pts), 1 Poll (+2 Pts), aur 1 Sponsor Bonus (+3 Pts).</p>
+      <button onclick="document.getElementById('rules-modal').classList.add('hidden')" class="mt-3 w-full bg-slate-800 text-white py-2 rounded-xl font-bold">Theek Hai</button>
+    </div>
+  </div>
+
+  <!-- BOTTOM FIXED AD SLOT -->
+  <div class="fixed bottom-0 inset-x-0 z-40 bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 py-2 px-4 text-center">
+    <p class="text-[10px] text-slate-400">[ Bottom Sticky Ad Slot - Yahan Ad Script Paste Karein ]</p>
+  </div>
+
+  <!-- FIREBASE SDK & APP LOGIC -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, get, set, update, onValue, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBnUXYPK0c1JQZ-Z1TVi40p0t5Xjctta7g",
+      authDomain: "apna-dangari.firebaseapp.com",
+      databaseURL: "https://apna-dangari-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "apna-dangari",
+      storageBucket: "apna-dangari.firebasestorage.app",
+      messagingSenderId: "755645879753",
+      appId: "1:755645879753:web:c3ec521bd6c3e9f932c418"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const today = new Date().toDateString();
+    let local = JSON.parse(localStorage.getItem('dangari_secure_user')) || {
+      username: '', name: '', ward: '', points: 0,
+      lastCheckIn: '', lastPollDate: '', pollChoice: -1,
+      quizDate: '', quizCount: 0,
+      spinDate: '', spinsUsed: 0,
+      adDate: '', adClaimed: false,
+      following: {}
+    };
+
+    if (local.quizDate !== today) { local.quizDate = today; local.quizCount = 0; }
+    if (local.spinDate !== today) { local.spinDate = today; local.spinsUsed = 0; }
+    if (local.adDate !== today) { local.adDate = today; local.adClaimed = false; }
+
+    let liveUsers = {};
+    let livePoll = { opt0: 0, opt1: 0, opt2: 0, opt3: 0 };
+
+    function saveLocal() {
+      localStorage.setItem('dangari_secure_user', JSON.stringify(local));
+      renderUI();
+    }
+
+    async function syncPointsToCloud(addedPts) {
+      if (!local.username || addedPts <= 0 || addedPts > 3) return;
+      local.points += addedPts;
+      saveLocal();
+      try {
+        await update(ref(db, `users/${local.username}`), {
+          points: increment(addedPts)
+        });
+      } catch (e) {
+        console.error("Sync error:", e);
+      }
+    }
+
+    // Listen to Real Live Leaderboard
+    onValue(ref(db, 'users'), (snap) => {
+      liveUsers = snap.val() || {};
+      if (local.username && liveUsers[local.username]) {
+        local.points = liveUsers[local.username].points || 0;
+        saveLocal();
+      }
+      renderLeaderboard();
+    });
+
+    // Listen to Real Live Poll
+    onValue(ref(db, 'poll'), (snap) => {
+      if (snap.exists()) livePoll = snap.val();
+      renderPoll();
+    });
+
+    // Registration with Unique @username Check
+    window.registerUser = async function() {
+      const name = document.getElementById('reg-name').value.trim();
+      const rawUser = document.getElementById('reg-username').value.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
+      const ward = document.getElementById('reg-ward').value;
+      const phone = document.getElementById('reg-phone').value.trim();
+      const err = document.getElementById('reg-error');
+      const btn = document.getElementById('reg-submit-btn');
+
+      if (name.length < 2) { err.innerText = "Kripya apna sahi naam likhein."; return; }
+      if (rawUser.length < 3) { err.innerText = "Username kam se kam 3 akshar ka hona chahiye (e.g. ramesh01)."; return; }
+
+      btn.disabled = true;
+      btn.innerText = "Check ho raha hai...";
+      err.innerText = "";
+
+      try {
+        const userRef = ref(db, `users/${rawUser}`);
+        const existing = await get(userRef);
+        if (existing.exists()) {
+          err.innerText = `@${rawUser} pehle se liya ja chuka hai! Koi aur username chunein.`;
+          btn.disabled = false;
+          btn.innerText = "Account Banayein & Shuru Karein";
+          return;
+        }
+
+        await set(userRef, {
+          name: name,
+          username: rawUser,
+          ward: ward,
+          phone: phone || "",
+          points: 0,
+          followersCount: 0,
+          createdAt: Date.now()
+        });
+
+        local.name = name;
+        local.username = rawUser;
+        local.ward = ward;
+        local.points = 0;
+        saveLocal();
+        document.getElementById('register-modal').classList.add('hidden');
+      } catch (e) {
+        err.innerText = "Network error! Firebase Rules check karein.";
+        btn.disabled = false;
+        btn.innerText = "Account Banayein & Shuru Karein";
+      }
+    };
+
+    // Follow / Unfollow Toggle
+    window.toggleFollow = async function(targetUser) {
+      if (!local.username || targetUser === local.username) return;
+      const isFollowing = !!local.following[targetUser];
+      if (isFollowing) {
+        delete local.following[targetUser];
+        saveLocal();
+        await update(ref(db, `users/${targetUser}`), { followersCount: increment(-1) });
+      } else {
+        local.following[targetUser] = true;
+        saveLocal();
+        await update(ref(db, `users/${targetUser}`), { followersCount: increment(1) });
+      }
+    };
+
+    function renderLeaderboard() {
+      const arr = Object.values(liveUsers);
+      arr.sort((a, b) => (b.points || 0) - (a.points || 0));
+
+      const myIdx = arr.findIndex(u => u.username === local.username);
+      document.getElementById('my-rank-badge').innerText = myIdx >= 0 ? `#${myIdx + 1}` : '#--';
+      if (local.username && liveUsers[local.username]) {
+        document.getElementById('my-followers-count').innerText = liveUsers[local.username].followersCount || 0;
+      }
+
+      const list = document.getElementById('leaderboard-list');
+      if (arr.length === 0) {
+        list.innerHTML = `<p class="text-center text-slate-400 py-4">Abhi koi player nahi hai. Pehle champion aap banein!</p>`;
+        return;
+      }
+
+      list.innerHTML = '';
+      arr.slice(0, 25).forEach((u, idx) => {
+        const isMe = u.username === local.username;
+        const isFollowing = !!local.following[u.username];
+        const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`;
+        const row = document.createElement('div');
+        row.className = `p-2.5 rounded-xl flex items-center justify-between ${isMe ? 'bg-emerald-50 dark:bg-emerald-500/20 border border-emerald-400' : 'bg-slate-50 dark:bg-slate-800'}`;
+        row.innerHTML = `
+          <div class="flex items-center gap-2.5">
+            <span class="w-6 text-center font-bold">${medal}</span>
+            <div>
+              <p class="font-bold">${u.name} ${isMe ? '(Aap)' : ''}</p>
+              <p class="text-[10px] text-slate-500">@${u.username} • ${u.ward} • ${u.followersCount || 0} Followers</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-amber-600 dark:text-amber-400">${u.points || 0} Pts</span>
+            ${!isMe ? `<button onclick="toggleFollow('${u.username}')" class="px-2.5 py-1 rounded-lg text-[10px] font-bold ${isFollowing ? 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200' : 'bg-emerald-600 text-white'}">${isFollowing ? 'Following' : '+ Follow'}</button>` : ''}
+          </div>
+        `;
+        list.appendChild(row);
+      });
+    }
+
+    // Poll Logic
+    const pollLabels = ["🛣️ Gaon ki Sadak aur Nali", "💧 Peene ke Paani ki Suvidha", "⚡ Bijli aur Street Lights", "🏏 Yuvaon ke liye Khel Maidan"];
+    function renderPoll() {
+      const container = document.getElementById('poll-options');
+      container.innerHTML = '';
+      const counts = [livePoll.opt0 || 0, livePoll.opt1 || 0, livePoll.opt2 || 0, livePoll.opt3 || 0];
+      const total = counts.reduce((a, b) => a + b, 0);
+      const voted = local.lastPollDate === today;
+
+      pollLabels.forEach((lbl, i) => {
+        const pct = total > 0 ? Math.round((counts[i] / total) * 100) : 0;
+        const btn = document.createElement('button');
+        btn.disabled = voted;
+        btn.onclick = () => votePoll(i);
+        btn.className = `w-full text-left p-2.5 rounded-xl border transition ${local.pollChoice === i && voted ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 font-bold' : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800'}`;
+        btn.innerHTML = `<div class="flex justify-between"><span>${lbl}</span><span>${voted ? pct + '%' : ''}</span></div>`;
+        container.appendChild(btn);
+      });
+      document.getElementById('poll-status').innerText = voted ? `✅ Vote darj ho gaya (Kul ${total} gaon ke votes)` : 'Vote dein aur +2 Points paayein';
+    }
+
+    window.votePoll = async function(idx) {
+      if (local.lastPollDate === today) return;
+      local.lastPollDate = today;
+      local.pollChoice = idx;
+      await syncPointsToCloud(2);
+      await update(ref(db, 'poll'), { [`opt${idx}`]: increment(1) });
+    };
+
+    window.dailyCheckIn = async function() {
+      if (local.lastCheckIn === today) return;
+      local.lastCheckIn = today;
+      await syncPointsToCloud(2);
+    };
+
+    // Quiz Logic (5/Day)
+    const quizBank = [
+      { q: "Dangari gaon kis tehsil ke antargat aata hai?", opts: ["Pokaran", "Fatehgarh", "Sam", "Bhaniyana"], ans: 1 },
+      { q: "Jaisalmer zile ki sthapna kisne ki thi?", opts: ["Rawal Jaisal", "Rao Jodha", "Rao Bika", "Maharana Pratap"], ans: 0 },
+      { q: "Rajasthan ka rajya vriksh (State Tree) kaunsa hai?", opts: ["Neem", "Peepal", "Khejri", "Rohida"], ans: 2 },
+      { q: "Thar registan me kharif ki mukhya fasal kaunsi hai?", opts: ["Bajra aur Guar", "Chawal", "Ganna", "Kapas"], ans: 0 },
+      { q: "Gram Panchayat ka mukhiya kaun hota hai?", opts: ["Patwari", "Sarpanch", "Tehsildar", "BDO"], ans: 1 }
+    ];
+
+    function renderQuiz() {
+      document.getElementById('quiz-limit-badge').innerText = `${local.quizCount}/5 Aaj`;
+      const container = document.getElementById('quiz-container');
+      if (local.quizCount >= 5) {
+        container.innerHTML = `
+          <div class="text-center py-6 space-y-2">
+            <p class="text-2xl">🎯</p>
+            <h4 class="text-sm font-bold">Aaj ke 5 Sawaal Poore Ho Gaye!</h4>
+            <p class="text-xs text-slate-500">Kal subah phir naye 5 sawaal khulenge.</p>
+          </div>
+        `;
+        return;
+      }
+      const qObj = quizBank[local.quizCount];
+      document.getElementById('quiz-question').innerText = `Q${local.quizCount + 1}. ${qObj.q}`;
+      const opts = document.getElementById('quiz-options');
+      opts.innerHTML = '';
+      qObj.opts.forEach((opt, i) => {
+        const b = document.createElement('button');
+        b.className = 'w-full text-left p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:border-emerald-500 text-xs';
+        b.innerText = opt;
+        b.onclick = () => answerQuiz(i);
+        opts.appendChild(b);
+      });
+    }
+
+    window.answerQuiz = async function(idx) {
+      const qObj = quizBank[local.quizCount];
+      const fb = document.getElementById('quiz-feedback');
+      local.quizCount++;
+      if (idx === qObj.ans) {
+        fb.className = 'text-xs font-bold mt-3 text-emerald-600';
+        fb.innerText = '✅ Sahi Jawab! +1 Point mila.';
+        await syncPointsToCloud(1);
+      } else {
+        fb.className = 'text-xs font-bold mt-3 text-rose-600';
+        fb.innerText = `❌ Galat! Sahi jawab: ${qObj.opts[qObj.ans]}`;
+        saveLocal();
+      }
+      setTimeout(() => { fb.innerText = ''; renderQuiz(); }, 1100);
+    };
+
+    // Exact Marked Wheel Logic (6 Segments, 60 deg each, Top Pointer at 0 deg)
+    // Segment 0 (0-60 deg): 0 Pt | Seg 1 (60-120): +1 Pt | Seg 2 (120-180): +2 Pts
+    // Seg 3 (180-240): 0 Pt | Seg 4 (240-300): +1 Pt | Seg 5 (300-360): +3 Pts
+    const segmentRewards = [0, 1, 2, 0, 1, 3];
+    let currentRotation = 0;
+
+    window.spinWheel = function() {
+      if (local.spinsUsed >= 2) return;
+      const btn = document.getElementById('spin-btn');
+      btn.disabled = true;
+
+      const targetIndex = Math.floor(Math.random() * 6);
+      // To bring targetIndex under Top Pointer (0 deg), wheel must rotate to (360 - (targetIndex * 60 + 30))
+      const stopAngle = 360 - (targetIndex * 60 + 30);
+      const extraSpins = 360 * 5;
+      currentRotation = currentRotation - (currentRotation % 360) + extraSpins + stopAngle;
+
+      document.getElementById('spin-wheel').style.transform = `rotate(${currentRotation}deg)`;
+
+      setTimeout(async () => {
+        const won = segmentRewards[targetIndex];
+        local.spinsUsed++;
+        document.getElementById('spin-result').innerText = won === 0 ? '😅 Teer 0 Pt par ruka! Better luck next time.' : `🎉 Teer +${won} Pts par ruka! Points jud gaye.`;
+        if (won > 0) await syncPointsToCloud(won);
+        else saveLocal();
+      }, 3300);
+    };
+
+    // Strictly 1-Per-Day Ad Reward
+    window.openAdModal = function() {
+      if (local.adClaimed) return;
+      document.getElementById('ad-modal').classList.remove('hidden');
+    };
+
+    window.claimDailyAdReward = async function() {
+      if (local.adClaimed) return;
+      local.adClaimed = true;
+      document.getElementById('ad-modal').classList.add('hidden');
+      await syncPointsToCloud(3);
+    };
+
+    function renderUI() {
+      document.getElementById('user-points').innerText = local.points;
+      document.getElementById('rank-tab-pts').innerText = local.points;
+      document.getElementById('display-name').innerText = local.name || 'Dangari Niwasi';
+      document.getElementById('display-username').innerText = local.username ? `@${local.username}` : '@guest';
+      document.getElementById('display-ward').innerText = local.ward || 'Dangari';
+
+      const chkBtn = document.getElementById('checkin-btn');
+      if (local.lastCheckIn === today) {
+        chkBtn.innerText = '✅ Done';
+        chkBtn.disabled = true;
+        chkBtn.className = 'bg-slate-200 dark:bg-slate-800 text-slate-500 font-bold px-3.5 py-2 rounded-xl text-xs';
+      }
+
+      const remSpins = Math.max(0, 2 - local.spinsUsed);
+      document.getElementById('spin-limit-badge').innerText = `${remSpins} Bache Hain`;
+      const spinBtn = document.getElementById('spin-btn');
+      if (remSpins === 0) {
+        spinBtn.disabled = true;
+        spinBtn.innerText = 'Aaj ke 2 Spins Khatam';
+        spinBtn.className = 'w-full bg-slate-300 dark:bg-slate-800 text-slate-500 font-bold py-3 rounded-xl text-xs';
+      }
+
+      const adBtn = document.getElementById('daily-ad-btn');
+      if (local.adClaimed) {
+        adBtn.disabled = true;
+        adBtn.innerText = '✅ Aaj ka Sponsor Bonus Le Liya (Kal Phir Milega)';
+        adBtn.className = 'mt-2.5 w-full bg-slate-200 dark:bg-slate-800 text-slate-500 font-bold py-2.5 rounded-xl text-xs';
+      }
+
+      renderQuiz();
+    }
+
+    window.switchTab = function(tab) {
+      ['home', 'rank', 'quiz', 'spin', 'mandi'].forEach(t => {
+        document.getElementById('view-' + t).classList.add('hidden');
+        document.getElementById('tab-' + t).className = 'tab-btn bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-semibold py-2 rounded-xl text-[11px] border border-slate-200 dark:border-slate-800';
+      });
+      document.getElementById('view-' + tab).classList.remove('hidden');
+      document.getElementById('tab-' + tab).className = 'tab-btn bg-emerald-600 text-white font-semibold py-2 rounded-xl text-[11px] shadow-sm';
+    };
+
+    window.toggleMenu = () => document.getElementById('dots-menu').classList.toggle('hidden');
+    window.toggleDarkMode = () => {
+      const isDark = document.documentElement.classList.toggle('dark');
+      document.getElementById('theme-label').innerText = isDark ? 'Dark' : 'Light';
+    };
+    window.openRulesModal = () => document.getElementById('rules-modal').classList.remove('hidden');
+    window.copySuvichar = () => {
+      navigator.clipboard.writeText(document.getElementById('suvichar-text').innerText);
+      alert('Suvichar copy ho gaya!');
+    };
+    window.shareWhatsApp = () => {
+      const msg = encodeURIComponent(`🌾 *Apna Dangari Digital Portal* 🌾\nGaon ki suchna, mandi bhav, aur Dangari Live Leaderboard me apna @username banane ke liye abhi kholein:\n${window.location.href}`);
+      window.open(`https://wa.me/?text=${msg}`, '_blank');
+    };
+    window.shareRankWhatsApp = () => {
+      const rank = document.getElementById('my-rank-badge').innerText;
+      const msg = encodeURIComponent(`🏆 *Apna Dangari Live Leaderboard* 🏆\nMeri rank abhi *${rank}* (@${local.username} • ${local.points} Pts) chal rahi hai! Mujhe follow karein aur rank me hara ke dikhayein:\n${window.location.href}`);
+      window.open(`https://wa.me/?text=${msg}`, '_blank');
+    };
+
+    if (!local.username) {
+      document.getElementById('register-modal').classList.remove('hidden');
+    }
+    renderUI();
+  </script>
+</body>
+</html>
