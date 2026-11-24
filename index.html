@@ -8,35 +8,31 @@
   <link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
   <script>tailwind.config = { darkMode: 'class' }</script>
   <style>
-    :root{--green:#087f5b;--green2:#0ba879;--bg:#f3f7f5}
+    :root{--green:#087f5b;--bg:#f3f7f5}
     *{box-sizing:border-box}
     body{font-family:'Hind','Poppins',sans-serif;background:var(--bg)}
-    .font-poppins{font-family:Poppins,sans-serif}
     .dark body{background:#071713;color:#e5eee9}
     .dark .surface{background:#10231d!important;border-color:#1e3b30!important;color:#e5eee9}
     .dark .muted{color:#a7b9b0!important}
     .dark input,.dark textarea,.dark select{background:#0b1c17!important;color:#e5eee9!important;border-color:#29463a!important}
-    .tab{min-width:0}.tab.active{background:#087f5b;color:#fff;box-shadow:0 5px 14px #087f5b30}
+    .tab.active{background:#087f5b;color:#fff}
     .page{display:none}.page.active{display:block}
     .card{background:white;border:1px solid #e4ece7;border-radius:20px;box-shadow:0 2px 8px #12331b08}
-    .btn{border-radius:13px;padding:10px 14px;font-weight:700;font-size:13px}
+    .btn{border-radius:13px;padding:10px 14px;font-weight:700;font-size:13px;cursor:pointer}
     .btn-primary{background:#087f5b;color:white}.btn-soft{background:#e8f5ef;color:#087f5b}
     .pill{border-radius:999px;padding:4px 9px;font-size:11px;font-weight:700}
-    .bottom-nav{padding-bottom:max(8px,env(safe-area-inset-bottom))}
     input,textarea,select{width:100%;border:1px solid #dbe5df;border-radius:12px;padding:11px 12px;font-size:13px;background:#fff;outline:none}
-    input:focus,textarea:focus,select:focus{border-color:#0ba879;box-shadow:0 0 0 3px #0ba87920}
-    .progress{height:8px;background:#e6eee9;border-radius:99px;overflow:hidden}.progress>i{display:block;height:100%;background:#0ba879;border-radius:99px}
-    .modal{position:fixed;inset:0;background:#06140fc9;z-index:80;display:none;align-items:center;justify-content:center;padding:18px}
+    .progress{height:8px;background:#e6eee9;border-radius:99px;overflow:hidden}.progress>i{display:block;height:100%;background:#0ba879}
+    .modal{position:fixed;inset:0;background:#06140fc9;z-index:9999;display:none;align-items:center;justify-content:center;padding:18px}
     .modal.show{display:flex}.modalbox{width:min(100%,430px);max-height:88vh;overflow:auto;background:white;border-radius:22px;padding:20px}
     .dark .modalbox{background:#10231d;color:#e5eee9}
-    .small{font-size:11px}.hide-scroll::-webkit-scrollbar{display:none}
+    .small{font-size:11px}
     @media(min-width:800px){.app-wrap{max-width:1180px;margin:auto}.desktop-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px}.bottom-nav{display:none!important}.desktop-tabs{display:flex!important}}
   </style>
 </head>
 <body class="pb-24">
 
-  <!-- TOAST -->
-  <div id="toast" class="hidden fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white text-xs font-bold px-4 py-2.5 rounded-full shadow-lg"></div>
+  <div id="toast" class="hidden fixed top-16 left-1/2 -translate-x-1/2 z-[10000] bg-slate-900 text-white text-xs font-bold px-4 py-2.5 rounded-full shadow-lg"></div>
 
   <!-- HEADER -->
   <header class="sticky top-0 z-40 surface bg-white/95 backdrop-blur border-b border-slate-200 px-4 py-3">
@@ -51,16 +47,16 @@
       <div class="flex items-center gap-2">
         <button onclick="go('rank')" class="pill bg-amber-100 text-amber-800">⭐ <span id="headerPoints">0</span> XP</button>
         <button onclick="toggleTheme()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-sm">🌙</button>
-        <button onclick="go('profile')" class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-sm">👤</button>
+        <button onclick="openAccount()" class="px-3 py-1.5 rounded-full bg-emerald-700 text-white text-xs font-bold">👤 Account</button>
       </div>
     </div>
-    <div id="topTabs" class="desktop-tabs hidden gap-2 mt-3 overflow-x-auto hide-scroll app-wrap"></div>
+    <div id="topTabs" class="desktop-tabs hidden gap-2 mt-3 overflow-x-auto app-wrap"></div>
   </header>
 
-  <!-- ADSTERRA 320x50 BANNER -->
-  <div class="app-wrap px-4 mt-3 flex flex-col items-center">
+  <!-- SAFE AD BANNER WRAPPER -->
+  <div class="app-wrap px-4 mt-3 flex flex-col items-center relative z-10 overflow-hidden">
     <span class="text-[9px] uppercase tracking-widest text-slate-400 mb-1">Advertisement</span>
-    <div class="min-h-[50px] flex items-center justify-center">
+    <div class="w-[320px] h-[50px] overflow-hidden flex items-center justify-center">
       <script>
         atOptions = {
           'key' : '8ffa9dd6e93b47211a944a3086f6fefe',
@@ -74,24 +70,22 @@
     </div>
   </div>
 
-  <div class="app-wrap px-4 mt-4">
+  <div class="app-wrap px-4 mt-4 relative z-20">
 
     <!-- PAGE 1: HOME -->
     <section id="page-home" class="page active space-y-4">
       <div class="desktop-grid">
         <div class="space-y-4">
-          <!-- HERO -->
           <div class="bg-gradient-to-br from-emerald-700 to-teal-800 text-white p-5 rounded-3xl shadow-md">
             <p class="text-xs text-emerald-100">राम-राम सा 🙏</p>
             <h2 class="text-xl font-bold mt-0.5">Apna Dangari</h2>
             <p class="text-xs text-emerald-50 mt-1">गाँव से जुड़ें, खेलें, सीखें और मिलकर आगे बढ़ें।</p>
             <div class="flex gap-2 mt-4">
-              <button onclick="go('community')" class="btn bg-white text-emerald-900">💬 Community में जाएँ</button>
+              <button onclick="openAccount()" class="btn bg-white text-emerald-900">👤 Account बनाएँ / Login</button>
               <button onclick="go('games')" class="btn bg-emerald-900/50 text-white border border-emerald-400/30">🎮 Games खेलें</button>
             </div>
           </div>
 
-          <!-- QUICK GRID -->
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
             <button onclick="go('games')" class="card surface p-3.5 text-left">
               <div class="text-xl">🎮</div>
@@ -115,15 +109,14 @@
             </button>
           </div>
 
-          <!-- USER SUMMARY CARD -->
           <div class="card surface p-4">
             <div class="flex items-center justify-between">
               <div>
                 <p class="small muted text-slate-500">आपका स्वागत है</p>
                 <h3 id="homeName" class="text-base font-bold">Guest</h3>
-                <p id="homeHandle" class="small text-emerald-700 dark:text-emerald-400">Account बनाने के लिए Profile खोलें</p>
+                <p id="homeHandle" class="small text-emerald-700 dark:text-emerald-400">Account बनाने के लिए बटन दबाएँ</p>
               </div>
-              <button onclick="openAccount()" class="btn btn-soft">Profile सेट करें</button>
+              <button onclick="openAccount()" class="btn btn-primary">Account बनाएँ</button>
             </div>
             <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-center">
               <div><b id="homePoints" class="text-base text-amber-600">0</b><div class="small muted text-slate-500">XP Points</div></div>
@@ -132,7 +125,6 @@
             </div>
           </div>
 
-          <!-- HOME POLL -->
           <div class="card surface p-4">
             <div class="flex justify-between items-center">
               <span class="pill bg-emerald-100 text-emerald-800">🗳️ गाँव की आवाज़</span>
@@ -143,7 +135,6 @@
             <button onclick="go('polls')" class="text-xs font-bold text-emerald-700 mt-3">चर्चा और Poll देखें →</button>
           </div>
 
-          <!-- HOME FEED -->
           <div class="card surface p-4">
             <div class="flex justify-between items-center mb-3">
               <h3 class="font-bold text-sm">🔥 Community की ताज़ा Posts</h3>
@@ -153,7 +144,6 @@
           </div>
         </div>
 
-        <!-- SIDEBAR -->
         <aside class="space-y-4 mt-4 md:mt-0">
           <div class="card surface p-4 bg-amber-50/60">
             <div class="flex justify-between items-center">
@@ -165,11 +155,202 @@
 
           <div class="card surface p-4 border-l-4 border-emerald-700">
             <b class="text-xs text-emerald-800">📢 ग्राम पंचायत सूचना</b>
-            <p class="text-xs mt-1.5 leading-relaxed">ग्राम सभा, सरकारी योजनाओं और पंचायत से जुड़ी सत्यापित सूचनाएँ यहाँ प्रकाशित होंगी।</p>
-            <span class="small muted text-slate-400 block mt-2">केवल सत्यापित सूचना को आधिकारिक मानें</span>
+            <p id="announcementBox" class="text-xs mt-1.5 leading-relaxed">ग्राम सभा, सरकारी योजनाओं और पंचायत से जुड़ी सत्यापित सूचनाएँ यहाँ प्रकाशित होंगी।</p>
           </div>
 
           <div class="card surface p-4">
+            <b class="text-xs block mb-2.5">🚨 Emergency Helpline</b>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <a href="tel:112" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 font-bold">🚓 Police 112</a>
+              <a href="tel:108" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 font-bold">🚑 Ambulance 108</a>
+              <a href="tel:181" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 font-bold">📢 181</a>
+              <a href="tel:1912" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 font-bold">⚡ 1912</a>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- PAGE 2: COMMUNITY -->
+    <section id="page-community" class="page space-y-4">
+      <div class="card surface p-4">
+        <div class="flex justify-between items-center">
+          <div>
+            <h2 class="font-bold text-base">🫂 Dangari Community</h2>
+            <p class="small muted text-slate-500">गाँव की बातें, सुझाव और अच्छी खबरें</p>
+          </div>
+          <span id="postCount" class="pill bg-emerald-100 text-emerald-800">Live</span>
+        </div>
+        <textarea id="postText" rows="3" class="mt-3" placeholder="अपने गाँव की बात, सुझाव या अच्छी खबर लिखें..."></textarea>
+        <div class="flex justify-between items-center mt-2.5">
+          <span class="small muted text-slate-400">सम्मानजनक भाषा रखें</span>
+          <button onclick="createPost()" class="btn btn-primary">Post करें ↗</button>
+        </div>
+      </div>
+      <div id="communityFeed" class="space-y-3"><p class="text-xs text-slate-400">Community लोड हो रही है…</p></div>
+    </section>
+
+    <!-- PAGE 3: GAMES -->
+    <section id="page-games" class="page space-y-4">
+      <div class="card surface p-4">
+        <h2 class="font-bold text-base">🎮 Games Zone</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-3">
+          <button onclick="openGame('quiz')" class="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 text-left">
+            <div class="text-2xl">🧠</div><b class="text-xs block mt-1">Daily Quiz</b>
+          </button>
+          <button onclick="openGame('memory')" class="p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 text-left">
+            <div class="text-2xl">🃏</div><b class="text-xs block mt-1">Memory Match</b>
+          </button>
+          <button onclick="openGame('tic')" class="p-3 rounded-2xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 text-left">
+            <div class="text-2xl">⭕</div><b class="text-xs block mt-1">Tic Tac Toe</b>
+          </button>
+          <button onclick="openGame('number')" class="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 text-left">
+            <div class="text-2xl">🔢</div><b class="text-xs block mt-1">Number Puzzle</b>
+          </button>
+        </div>
+      </div>
+      <div id="gameArea" class="card surface p-5 text-center">
+        <div class="text-3xl">🏅</div>
+        <h3 class="font-bold text-sm mt-2">ऊपर से कोई भी Game चुनें</h3>
+      </div>
+    </section>
+
+    <!-- PAGE 4: RANK -->
+    <section id="page-rank" class="page space-y-4">
+      <div class="bg-gradient-to-r from-emerald-700 to-teal-700 text-white p-5 rounded-3xl">
+        <p class="text-xs text-emerald-100">आपकी Community Progress</p>
+        <h2 id="rankPoints" class="text-2xl font-bold mt-1">0 XP</h2>
+      </div>
+      <div class="card surface p-4">
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="font-bold text-sm">🏆 Dangari Leaderboard</h3>
+          <span class="pill bg-emerald-100 text-emerald-800">Live</span>
+        </div>
+        <div id="leaderboard" class="space-y-2"><p class="text-xs text-slate-400">Leaderboard लोड हो रहा है…</p></div>
+      </div>
+    </section>
+
+    <!-- PAGE 5: POLLS -->
+    <section id="page-polls" class="page space-y-4">
+      <div class="card surface p-4">
+        <h2 class="font-bold text-base">🗳️ Village Polls</h2>
+        <div id="pollPage" class="mt-4"></div>
+      </div>
+    </section>
+
+    <!-- PAGE 6: EVENTS -->
+    <section id="page-events" class="page space-y-4">
+      <div class="card surface p-4">
+        <h2 class="font-bold text-base">📅 Dangari Events</h2>
+      </div>
+      <div id="eventsList" class="space-y-3"></div>
+      <div class="card surface p-4 space-y-2.5">
+        <b class="text-sm">कार्यक्रम सुझाएँ</b>
+        <input id="eventIdea" type="text" placeholder="जैसे: गाँव में कबड्डी प्रतियोगिता" />
+        <button onclick="suggestEvent()" class="btn btn-primary w-full">सुझाव भेजें</button>
+      </div>
+    </section>
+
+    <!-- PAGE 7: VILLAGE DESK -->
+    <section id="page-village" class="page space-y-4">
+      <div class="card surface p-4">
+        <h2 class="font-bold text-base">🌾 Village Desk & Mandi Bhav</h2>
+        <div id="mandiRows" class="mt-3 text-xs"></div>
+      </div>
+    </section>
+
+    <!-- PAGE 8: PROFILE -->
+    <section id="page-profile" class="page space-y-4">
+      <div class="card surface p-4 space-y-3">
+        <h3 class="font-bold text-sm">1. Account Login / Create Account</h3>
+        <p id="authStatus" class="small muted text-slate-500">आप Guest के रूप में देख रहे हैं।</p>
+        <div class="grid grid-cols-3 gap-2">
+          <button onclick="openAuth('signup')" class="btn btn-primary">Create Account</button>
+          <button onclick="openAuth('login')" class="btn btn-soft">Login</button>
+          <button onclick="logout()" class="btn bg-slate-100 text-slate-700">Logout</button>
+        </div>
+      </div>
+
+      <div class="card surface p-4 space-y-3">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-2xl">🌾</div>
+          <div>
+            <h2 id="profileTitle" class="font-bold text-base">Guest</h2>
+            <p id="profileSub" class="small muted text-slate-500">पहले ऊपर Create Account से Sign in करें</p>
+          </div>
+        </div>
+        <div><label class="small font-bold block mb-1">पूरा नाम</label><input id="profileName" type="text" placeholder="अपना नाम लिखें" /></div>
+        <div><label class="small font-bold block mb-1">Username (एक बार चुनें)</label><input id="profileUsername" type="text" placeholder="e.g. ramesh_dangari" /></div>
+        <div>
+          <label class="small font-bold block mb-1">मोहल्ला / क्षेत्र</label>
+          <select id="profileWard">
+            <option value="Main Market, Dangari">Main Market, Dangari</option>
+            <option value="Bhati Mohalla, Dangari">Bhati Mohalla, Dangari</option>
+            <option value="Bus Stand, Dangari">Bus Stand, Dangari</option>
+            <option value="Meghwal Basti, Dangari">Meghwal Basti, Dangari</option>
+            <option value="Fatehgarh / Aas-paas">Fatehgarh / Aas-paas</option>
+          </select>
+        </div>
+        <button onclick="saveProfile()" class="btn btn-primary w-full">Profile Save करें</button>
+        <button onclick="go('admin')" class="text-xs font-bold text-emerald-700 underline block pt-2">🛡️ Admin Desk खोलें</button>
+      </div>
+    </section>
+
+    <!-- PAGE 9: ADMIN DESK -->
+    <section id="page-admin" class="page space-y-4">
+      <div class="card surface p-4 space-y-3">
+        <h2 class="font-bold text-base">🛡️ Admin Desk</h2>
+        <p id="adminStatus" class="pill bg-amber-100 text-amber-800 inline-block">Admin status जाँचा जा रहा है…</p>
+        <div id="adminTools" class="hidden space-y-4 pt-3 border-t">
+          <div class="space-y-2">
+            <b class="text-xs">📢 Announcement</b>
+            <textarea id="announcementText" rows="2" placeholder="जरूरी सूचना लिखें..."></textarea>
+            <button onclick="publishAnnouncement()" class="btn btn-primary w-full">Publish Announcement</button>
+          </div>
+          <div class="space-y-2">
+            <b class="text-xs">📅 नया Event</b>
+            <input id="adminEventTitle" type="text" placeholder="Event Title" />
+            <input id="adminEventDate" type="date" />
+            <button onclick="adminCreateEvent()" class="btn btn-primary w-full">Event Publish करें</button>
+          </div>
+          <div class="space-y-2">
+            <b class="text-xs">🗳️ नया Poll</b>
+            <input id="adminPollQuestion" type="text" placeholder="नया Poll Question" />
+            <textarea id="adminPollOptions" rows="3" placeholder="Options (हर लाइन में एक)"></textarea>
+            <button onclick="adminCreatePoll()" class="btn btn-primary w-full">Poll Publish करें</button>
+          </div>
+          <div>
+            <button onclick="loadReports()" class="btn btn-soft w-full">Reports Refresh करें</button>
+            <div id="reportList" class="mt-2 text-xs"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav fixed bottom-0 inset-x-0 z-40 surface bg-white/95 backdrop-blur border-t border-slate-200 grid grid-cols-5 gap-1 px-2 py-2">
+    <button class="tab active rounded-xl py-2 text-[11px] font-bold" data-page="home" onclick="go('home')">🏠<br>Gaon</button>
+    <button class="tab rounded-xl py-2 text-[11px] font-bold" data-page="community" onclick="go('community')">🫂<br>Community</button>
+    <button class="tab rounded-xl py-2 text-[11px] font-bold" data-page="games" onclick="go('games')">🎮<br>Games</button>
+    <button class="tab rounded-xl py-2 text-[11px] font-bold" data-page="rank" onclick="go('rank')">🏆<br>Rank</button>
+    <button class="tab rounded-xl py-2 text-[11px] font-bold" data-page="profile" onclick="go('profile')">👤<br>Account</button>
+  </nav>
+
+  <!-- AUTH MODAL -->
+  <div id="authModal" class="modal">
+    <div class="modalbox space-y-3">
+      <div class="flex justify-between items-center">
+        <h3 id="authTitle" class="font-bold text-base">Account बनाएं</h3>
+        <button onclick="closeModal('authModal')" class="text-lg font-bold px-2">✕</button>
+      </div>
+      <p class="small muted text-slate-500">Email और password डालकर नया account बनाएँ:</p>
+      <input id="authEmail" type="email" placeholder="अपना Email लिखें (e.g. name@gmail.com)" />
+      <input id="authPassword" type="password" placeholder="Password (कम से कम 6 अक्षर)" />
+      <p id="authError" class="small text-rose-600 font-bold"></p>
+      <button id="authSubmit" onclick="submitAuth()" class="btn btn-primary w-full">Create Account</button>
+      <button onclick="switchAuthMode()" id="authSwitchBtn" class="small text-emerald-700 font-bold w-fulace p-4">
             <b class="text-xs block mb-2.5">🚨 Emergency Helpline</b>
             <div class="grid grid-cols-2 gap-2 text-xs">
               <a href="tel:112" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 font-bold">🚓 Police 112</a>
