@@ -63,15 +63,26 @@
 
     <!-- 1. HOME PAGE -->
     <section id="page-home" class="page active space-y-4">
-      <div class="bg-gradient-to-br from-emerald-800 to-teal-900 text-white p-5 rounded-3xl shadow">
-        <p class="text-xs text-emerald-200">राम-राम सा 🙏</p>
-        <h2 class="text-xl font-bold mt-1">Apna Dangari Portal</h2>
-        <p class="text-xs text-emerald-100 mt-1">गाँव से जुड़ें, खेलें, सीखें और मिलकर आगे बढ़ें।</p>
-        <div class="flex gap-2 mt-4">
-          <button type="button" onclick="openAccount()" class="bg-white text-emerald-900 font-bold text-xs px-4 py-2.5 rounded-xl shadow">👤 Account / Login</button>
-          <button type="button" onclick="go('games')" class="bg-emerald-700 text-white border border-emerald-500 font-bold text-xs px-4 py-2.5 rounded-xl">🎮 Games & Spin</button>
-        </div>
+      <div class="relative overflow-hidden rounded-3xl shadow-md text-white min-h-[190px] flex items-center" style="background: url('banner.jpg') center/cover no-repeat;">
+  <!-- बाएँ से दाएँ गहरा हरा ग्रेडिएंट ओवरले -->
+  <div class="absolute inset-0" style="background: linear-gradient(90deg, #064e3b 0%, rgba(6,78,59,0.92) 42%, rgba(6,78,59,0.25) 75%, rgba(6,78,59,0.05) 100%);"></div>
+
+  <!-- टेक्स्ट और बटन -->
+  <div class="relative z-10 p-5 sm:p-6 max-w-[85%]">
+    <p class="text-xs text-emerald-200 font-semibold">राम-राम सा 🙏</p>
+    <h2 class="text-xl sm:text-2xl font-bold mt-1 drop-shadow-sm">Apna Dangari Portal</h2>
+    <p class="text-xs text-emerald-50 mt-1 leading-relaxed">गाँव से जुड़ें, खेलें, सीखें और मिलकर आगे बढ़ें।</p>
+    <div class="flex flex-wrap gap-2.5 mt-4">
+      <button type="button" onclick="openAccount()" class="bg-white text-emerald-950 font-bold text-xs px-4 py-2.5 rounded-full shadow">
+        👤 Account / Login
+      </button>
+      <button type="button" onclick="go('games')" class="bg-emerald-800/90 hover:bg-emerald-700 text-white border border-emerald-400/40 font-bold text-xs px-4 py-2.5 rounded-full shadow">
+        🎮 Games & Spin
+      </button>
+    </div>
+  </div>
       </div>
+      
 
       <!-- PROFILE SUMMARY -->
       <div class="surface bg-white p-4 rounded-2xl border border-slate-200 flex items-center justify-between">
