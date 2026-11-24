@@ -8,53 +8,41 @@
   <link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
   <script>tailwind.config = { darkMode: 'class' }</script>
   <style>
-    :root{--green:#087f5b;--bg:#f3f7f5}
-    *{box-sizing:border-box}
-    body{font-family:'Hind','Poppins',sans-serif;background:var(--bg)}
+    body{font-family:'Hind','Poppins',sans-serif;background:#f3f7f5;margin:0;padding-bottom:85px}
     .dark body{background:#071713;color:#e5eee9}
     .dark .surface{background:#10231d!important;border-color:#1e3b30!important;color:#e5eee9}
-    .dark .muted{color:#a7b9b0!important}
     .dark input,.dark textarea,.dark select{background:#0b1c17!important;color:#e5eee9!important;border-color:#29463a!important}
-    .tab.active{background:#087f5b;color:#fff}
     .page{display:none}.page.active{display:block}
-    .card{background:white;border:1px solid #e4ece7;border-radius:20px;box-shadow:0 2px 8px #12331b08}
-    .btn{border-radius:13px;padding:10px 14px;font-weight:700;font-size:13px;cursor:pointer}
-    .btn-primary{background:#087f5b;color:white}.btn-soft{background:#e8f5ef;color:#087f5b}
-    .pill{border-radius:999px;padding:4px 9px;font-size:11px;font-weight:700}
-    input,textarea,select{width:100%;border:1px solid #dbe5df;border-radius:12px;padding:11px 12px;font-size:13px;background:#fff;outline:none}
+    .tab.active{background:#087f5b;color:#fff}
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:9999;display:none;align-items:center;justify-content:center;padding:16px}
+    .modal.show{display:flex}
+    .wheel-svg{transition:transform 3.2s cubic-bezier(0.15,0.75,0.15,1)}
     .progress{height:8px;background:#e6eee9;border-radius:99px;overflow:hidden}.progress>i{display:block;height:100%;background:#0ba879}
-    .modal{position:fixed;inset:0;background:#06140fc9;z-index:9999;display:none;align-items:center;justify-content:center;padding:18px}
-    .modal.show{display:flex}.modalbox{width:min(100%,430px);max-height:88vh;overflow:auto;background:white;border-radius:22px;padding:20px}
-    .dark .modalbox{background:#10231d;color:#e5eee9}
-    .small{font-size:11px}
-    @media(min-width:800px){.app-wrap{max-width:1180px;margin:auto}.desktop-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px}.bottom-nav{display:none!important}.desktop-tabs{display:flex!important}}
   </style>
 </head>
-<body class="pb-24">
+<body>
 
-  <div id="toast" class="hidden fixed top-16 left-1/2 -translate-x-1/2 z-[10000] bg-slate-900 text-white text-xs font-bold px-4 py-2.5 rounded-full shadow-lg"></div>
-
-  <!-- HEADER -->
-  <header class="sticky top-0 z-40 surface bg-white/95 backdrop-blur border-b border-slate-200 px-4 py-3">
-    <div class="app-wrap flex items-center justify-between">
-      <div class="flex items-center gap-2.5 cursor-pointer" onclick="go('home')">
-        <div class="w-9 h-9 rounded-xl bg-emerald-700 text-white flex items-center justify-center text-lg shadow">🌾</div>
-        <div>
-          <h1 class="text-base font-bold text-emerald-800 dark:text-emerald-400 leading-tight">Apna Dangari</h1>
-          <p class="small muted text-slate-500">हमारा गाँव • हमारी पहचान</p>
-        </div>
-      </div>
-      <div class="flex items-center gap-2">
-        <button onclick="go('rank')" class="pill bg-amber-100 text-amber-800">⭐ <span id="headerPoints">0</span> XP</button>
-        <button onclick="toggleTheme()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-sm">🌙</button>
-        <button onclick="openAccount()" class="px-3 py-1.5 rounded-full bg-emerald-700 text-white text-xs font-bold">👤 Account</button>
+  <!-- TOP HEADER -->
+  <header class="sticky top-0 z-50 surface bg-white/95 backdrop-blur border-b border-slate-200 px-4 py-3 flex items-center justify-between shadow-sm">
+    <div onclick="go('home')" class="flex items-center gap-2 cursor-pointer">
+      <span class="text-2xl">🌾</span>
+      <div>
+        <h1 class="text-base font-bold text-emerald-800 dark:text-emerald-400 leading-none">Apna Dangari</h1>
+        <span class="text-[11px] text-slate-500">हमारा गाँव • हमारी पहचान</span>
       </div>
     </div>
-    <div id="topTabs" class="desktop-tabs hidden gap-2 mt-3 overflow-x-auto app-wrap"></div>
+    <div class="flex items-center gap-2">
+      <button type="button" onclick="go('rank')" class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1 rounded-full">⭐ <b id="ptsBadge">0</b> XP</button>
+      <button type="button" onclick="toggleTheme()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-sm">🌙</button>
+      <button type="button" onclick="openAccount()" class="bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow">👤 Account</button>
+    </div>
   </header>
 
-  <!-- SAFE AD BANNER WRAPPER -->
-  <div class="app-wrap px-4 mt-3 flex flex-col items-center relative z-10 overflow-hidden">
+  <!-- TOAST -->
+  <div id="toast" class="hidden fixed top-16 left-1/2 -translate-x-1/2 z-[10000] bg-slate-900 text-white text-xs font-bold px-4 py-2.5 rounded-full shadow-lg"></div>
+
+  <!-- SAFE ADSTERRA 320x50 BANNER -->
+  <div class="max-w-xl mx-auto px-4 mt-3 flex flex-col items-center relative z-10 overflow-hidden">
     <span class="text-[9px] uppercase tracking-widest text-slate-400 mb-1">Advertisement</span>
     <div class="w-[320px] h-[50px] overflow-hidden flex items-center justify-center">
       <script>
@@ -70,754 +58,237 @@
     </div>
   </div>
 
-  <div class="app-wrap px-4 mt-4 relative z-20">
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-xl mx-auto px-4 mt-4 space-y-4 relative z-20">
 
-    <!-- PAGE 1: HOME -->
+    <!-- 1. HOME PAGE -->
     <section id="page-home" class="page active space-y-4">
-      <div class="desktop-grid">
-        <div class="space-y-4">
-          <div class="bg-gradient-to-br from-emerald-700 to-teal-800 text-white p-5 rounded-3xl shadow-md">
-            <p class="text-xs text-emerald-100">राम-राम सा 🙏</p>
-            <h2 class="text-xl font-bold mt-0.5">Apna Dangari</h2>
-            <p class="text-xs text-emerald-50 mt-1">गाँव से जुड़ें, खेलें, सीखें और मिलकर आगे बढ़ें।</p>
-            <div class="flex gap-2 mt-4">
-              <button onclick="openAccount()" class="btn bg-white text-emerald-900">👤 Account बनाएँ / Login</button>
-              <button onclick="go('games')" class="btn bg-emerald-900/50 text-white border border-emerald-400/30">🎮 Games खेलें</button>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-            <button onclick="go('games')" class="card surface p-3.5 text-left">
-              <div class="text-xl">🎮</div>
-              <b class="text-xs block mt-1">Games Zone</b>
-              <span class="small muted text-slate-500">Quiz, Puzzle, Memory</span>
-            </button>
-            <button onclick="go('community')" class="card surface p-3.5 text-left">
-              <div class="text-xl">🫂</div>
-              <b class="text-xs block mt-1">Community</b>
-              <span class="small muted text-slate-500">Posts और चर्चा</span>
-            </button>
-            <button onclick="go('events')" class="card surface p-3.5 text-left">
-              <div class="text-xl">📅</div>
-              <b class="text-xs block mt-1">Events</b>
-              <span class="small muted text-slate-500">गाँव के कार्यक्रम</span>
-            </button>
-            <button onclick="go('rank')" class="card surface p-3.5 text-left">
-              <div class="text-xl">🏆</div>
-              <b class="text-xs block mt-1">Leaderboard</b>
-              <span class="small muted text-slate-500">साप्ताहिक रैंक</span>
-            </button>
-          </div>
-
-          <div class="card surface p-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="small muted text-slate-500">आपका स्वागत है</p>
-                <h3 id="homeName" class="text-base font-bold">Guest</h3>
-                <p id="homeHandle" class="small text-emerald-700 dark:text-emerald-400">Account बनाने के लिए बटन दबाएँ</p>
-              </div>
-              <button onclick="openAccount()" class="btn btn-primary">Account बनाएँ</button>
-            </div>
-            <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-center">
-              <div><b id="homePoints" class="text-base text-amber-600">0</b><div class="small muted text-slate-500">XP Points</div></div>
-              <div><b id="homeRank" class="text-base text-emerald-700">—</b><div class="small muted text-slate-500">आपकी Rank</div></div>
-              <div><b id="homePosts" class="text-base">0</b><div class="small muted text-slate-500">आपकी Posts</div></div>
-            </div>
-          </div>
-
-          <div class="card surface p-4">
-            <div class="flex justify-between items-center">
-              <span class="pill bg-emerald-100 text-emerald-800">🗳️ गाँव की आवाज़</span>
-              <span class="small muted text-slate-400">Community Poll</span>
-            </div>
-            <h3 id="homePollQuestion" class="font-bold text-sm mt-2">डांगरी में सबसे पहले किस काम पर ध्यान देना चाहिए?</h3>
-            <div id="homePollOptions" class="space-y-2 mt-3"></div>
-            <button onclick="go('polls')" class="text-xs font-bold text-emerald-700 mt-3">चर्चा और Poll देखें →</button>
-          </div>
-
-          <div class="card surface p-4">
-            <div class="flex justify-between items-center mb-3">
-              <h3 class="font-bold text-sm">🔥 Community की ताज़ा Posts</h3>
-              <button onclick="go('community')" class="text-xs font-bold text-emerald-700">सभी देखें →</button>
-            </div>
-            <div id="homeFeed" class="space-y-3"><p class="text-xs text-slate-400">Posts लोड हो रही हैं…</p></div>
-          </div>
-        </div>
-
-        <aside class="space-y-4 mt-4 md:mt-0">
-          <div class="card surface p-4 bg-amber-50/60">
-            <div class="flex justify-between items-center">
-              <b class="text-xs text-amber-800">✍️ आज री मारवाड़ी बात</b>
-              <button onclick="copyQuote()" class="small font-bold text-amber-700 underline">Copy करें</button>
-            </div>
-            <p id="suvichar" class="text-xs mt-2 italic leading-relaxed">"जठे एकता है, वठे गाँव री तरक्की है।"</p>
-          </div>
-
-          <div class="card surface p-4 border-l-4 border-emerald-700">
-            <b class="text-xs text-emerald-800">📢 ग्राम पंचायत सूचना</b>
-            <p id="announcementBox" class="text-xs mt-1.5 leading-relaxed">ग्राम सभा, सरकारी योजनाओं और पंचायत से जुड़ी सत्यापित सूचनाएँ यहाँ प्रकाशित होंगी।</p>
-          </div>
-
-          <div class="card surface p-4">
-            <b class="text-xs block mb-2.5">🚨 Emergency Helpline</b>
-            <div class="grid grid-cols-2 gap-2 text-xs">
-              <a href="tel:112" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 font-bold">🚓 Police 112</a>
-              <a href="tel:108" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 font-bold">🚑 Ambulance 108</a>
-              <a href="tel:181" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 font-bold">📢 181</a>
-              <a href="tel:1912" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 font-bold">⚡ 1912</a>
-            </div>
-          </div>
-        </aside>
-      </div>
-    </section>
-
-    <!-- PAGE 2: COMMUNITY -->
-    <section id="page-community" class="page space-y-4">
-      <div class="card surface p-4">
-        <div class="flex justify-between items-center">
-          <div>
-            <h2 class="font-bold text-base">🫂 Dangari Community</h2>
-            <p class="small muted text-slate-500">गाँव की बातें, सुझाव और अच्छी खबरें</p>
-          </div>
-          <span id="postCount" class="pill bg-emerald-100 text-emerald-800">Live</span>
-        </div>
-        <textarea id="postText" rows="3" class="mt-3" placeholder="अपने गाँव की बात, सुझाव या अच्छी खबर लिखें..."></textarea>
-        <div class="flex justify-between items-center mt-2.5">
-          <span class="small muted text-slate-400">सम्मानजनक भाषा रखें</span>
-          <button onclick="createPost()" class="btn btn-primary">Post करें ↗</button>
-        </div>
-      </div>
-      <div id="communityFeed" class="space-y-3"><p class="text-xs text-slate-400">Community लोड हो रही है…</p></div>
-    </section>
-
-    <!-- PAGE 3: GAMES -->
-    <section id="page-games" class="page space-y-4">
-      <div class="card surface p-4">
-        <h2 class="font-bold text-base">🎮 Games Zone</h2>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-3">
-          <button onclick="openGame('quiz')" class="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 text-left">
-            <div class="text-2xl">🧠</div><b class="text-xs block mt-1">Daily Quiz</b>
-          </button>
-          <button onclick="openGame('memory')" class="p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 text-left">
-            <div class="text-2xl">🃏</div><b class="text-xs block mt-1">Memory Match</b>
-          </button>
-          <button onclick="openGame('tic')" class="p-3 rounded-2xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 text-left">
-            <div class="text-2xl">⭕</div><b class="text-xs block mt-1">Tic Tac Toe</b>
-          </button>
-          <button onclick="openGame('number')" class="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 text-left">
-            <div class="text-2xl">🔢</div><b class="text-xs block mt-1">Number Puzzle</b>
-          </button>
-        </div>
-      </div>
-      <div id="gameArea" class="card surface p-5 text-center">
-        <div class="text-3xl">🏅</div>
-        <h3 class="font-bold text-sm mt-2">ऊपर से कोई भी Game चुनें</h3>
-      </div>
-    </section>
-
-    <!-- PAGE 4: RANK -->
-    <section id="page-rank" class="page space-y-4">
-      <div class="bg-gradient-to-r from-emerald-700 to-teal-700 text-white p-5 rounded-3xl">
-        <p class="text-xs text-emerald-100">आपकी Community Progress</p>
-        <h2 id="rankPoints" class="text-2xl font-bold mt-1">0 XP</h2>
-      </div>
-      <div class="card surface p-4">
-        <div class="flex justify-between items-center mb-3">
-          <h3 class="font-bold text-sm">🏆 Dangari Leaderboard</h3>
-          <span class="pill bg-emerald-100 text-emerald-800">Live</span>
-        </div>
-        <div id="leaderboard" class="space-y-2"><p class="text-xs text-slate-400">Leaderboard लोड हो रहा है…</p></div>
-      </div>
-    </section>
-
-    <!-- PAGE 5: POLLS -->
-    <section id="page-polls" class="page space-y-4">
-      <div class="card surface p-4">
-        <h2 class="font-bold text-base">🗳️ Village Polls</h2>
-        <div id="pollPage" class="mt-4"></div>
-      </div>
-    </section>
-
-    <!-- PAGE 6: EVENTS -->
-    <section id="page-events" class="page space-y-4">
-      <div class="card surface p-4">
-        <h2 class="font-bold text-base">📅 Dangari Events</h2>
-      </div>
-      <div id="eventsList" class="space-y-3"></div>
-      <div class="card surface p-4 space-y-2.5">
-        <b class="text-sm">कार्यक्रम सुझाएँ</b>
-        <input id="eventIdea" type="text" placeholder="जैसे: गाँव में कबड्डी प्रतियोगिता" />
-        <button onclick="suggestEvent()" class="btn btn-primary w-full">सुझाव भेजें</button>
-      </div>
-    </section>
-
-    <!-- PAGE 7: VILLAGE DESK -->
-    <section id="page-village" class="page space-y-4">
-      <div class="card surface p-4">
-        <h2 class="font-bold text-base">🌾 Village Desk & Mandi Bhav</h2>
-        <div id="mandiRows" class="mt-3 text-xs"></div>
-      </div>
-    </section>
-
-    <!-- PAGE 8: PROFILE -->
-    <section id="page-profile" class="page space-y-4">
-      <div class="card surface p-4 space-y-3">
-        <h3 class="font-bold text-sm">1. Account Login / Create Account</h3>
-        <p id="authStatus" class="small muted text-slate-500">आप Guest के रूप में देख रहे हैं।</p>
-        <div class="grid grid-cols-3 gap-2">
-          <button onclick="openAuth('signup')" class="btn btn-primary">Create Account</button>
-          <button onclick="openAuth('login')" class="btn btn-soft">Login</button>
-          <button onclick="logout()" class="btn bg-slate-100 text-slate-700">Logout</button>
+      <div class="bg-gradient-to-br from-emerald-800 to-teal-900 text-white p-5 rounded-3xl shadow">
+        <p class="text-xs text-emerald-200">राम-राम सा 🙏</p>
+        <h2 class="text-xl font-bold mt-1">Apna Dangari Portal</h2>
+        <p class="text-xs text-emerald-100 mt-1">गाँव से जुड़ें, खेलें, सीखें और मिलकर आगे बढ़ें।</p>
+        <div class="flex gap-2 mt-4">
+          <button type="button" onclick="openAccount()" class="bg-white text-emerald-900 font-bold text-xs px-4 py-2.5 rounded-xl shadow">👤 Account / Login</button>
+          <button type="button" onclick="go('games')" class="bg-emerald-700 text-white border border-emerald-500 font-bold text-xs px-4 py-2.5 rounded-xl">🎮 Games & Spin</button>
         </div>
       </div>
 
-      <div class="card surface p-4 space-y-3">
-        <div class="flex items-center gap-3">
-          <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-2xl">🌾</div>
-          <div>
-            <h2 id="profileTitle" class="font-bold text-base">Guest</h2>
-            <p id="profileSub" class="small muted text-slate-500">पहले ऊपर Create Account से Sign in करें</p>
-          </div>
-        </div>
-        <div><label class="small font-bold block mb-1">पूरा नाम</label><input id="profileName" type="text" placeholder="अपना नाम लिखें" /></div>
-        <div><label class="small font-bold block mb-1">Username (एक बार चुनें)</label><input id="profileUsername" type="text" placeholder="e.g. ramesh_dangari" /></div>
+      <!-- PROFILE SUMMARY -->
+      <div class="surface bg-white p-4 rounded-2xl border border-slate-200 flex items-center justify-between">
         <div>
-          <label class="small font-bold block mb-1">मोहल्ला / क्षेत्र</label>
-          <select id="profileWard">
-            <option value="Main Market, Dangari">Main Market, Dangari</option>
-            <option value="Bhati Mohalla, Dangari">Bhati Mohalla, Dangari</option>
-            <option value="Bus Stand, Dangari">Bus Stand, Dangari</option>
-            <option value="Meghwal Basti, Dangari">Meghwal Basti, Dangari</option>
-            <option value="Fatehgarh / Aas-paas">Fatehgarh / Aas-paas</option>
-          </select>
+          <p class="text-[11px] text-slate-500">स्वागत है</p>
+          <h3 id="homeUserName" class="text-base font-bold">Guest</h3>
+          <p id="homeUserSub" class="text-xs text-emerald-700 dark:text-emerald-400">Account बनाने के लिए दाएँ बटन दबाएँ</p>
         </div>
-        <button onclick="saveProfile()" class="btn btn-primary w-full">Profile Save करें</button>
-        <button onclick="go('admin')" class="text-xs font-bold text-emerald-700 underline block pt-2">🛡️ Admin Desk खोलें</button>
+        <button type="button" onclick="go('profile')" class="bg-emerald-50 text-emerald-800 font-bold text-xs px-3 py-2 rounded-xl border border-emerald-200">Profile →</button>
+      </div>
+
+      <!-- QUICK MENU -->
+      <div class="grid grid-cols-4 gap-2 text-center text-[11px] font-bold">
+        <button type="button" onclick="go('community')" class="surface bg-white p-3 rounded-2xl border border-slate-200">🫂<br>Community</button>
+        <button type="button" onclick="go('games')" class="surface bg-white p-3 rounded-2xl border border-slate-200">🎡<br>Games/Spin</button>
+        <button type="button" onclick="go('events')" class="surface bg-white p-3 rounded-2xl border border-slate-200">📅<br>Events</button>
+        <button type="button" onclick="go('village')" class="surface bg-white p-3 rounded-2xl border border-slate-200">🌾<br>Mandi Bhav</button>
+      </div>
+
+      <!-- LIVE POLL -->
+      <div class="surface bg-white p-4 rounded-2xl border border-slate-200 space-y-2.5">
+        <div class="flex justify-between items-center">
+          <span class="text-[11px] font-bold bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full">🗳️ गाँव की आवाज़ (Live Poll)</span>
+          <button type="button" onclick="go('polls')" class="text-xs font-bold text-emerald-700">रिजल्ट देखें →</button>
+        </div>
+        <h3 id="homePollQ" class="text-sm font-bold">डांगरी में सबसे पहले किस काम पर ध्यान देना चाहिए?</h3>
+        <div id="homePollOpts" class="space-y-2"></div>
+      </div>
+
+      <!-- SARPANCH DESK -->
+      <div class="surface bg-white p-4 rounded-2xl border-l-4 border-emerald-700 border-y border-r border-slate-200">
+        <b class="text-xs text-emerald-800 dark:text-emerald-400">📢 ग्राम पंचायत सूचना</b>
+        <p id="announcementBox" class="text-xs mt-1.5 leading-relaxed">ग्राम सभा, सरकारी योजनाओं और पंचायत से जुड़ी सत्यापित सूचनाएँ यहाँ प्रकाशित होंगी।</p>
+      </div>
+
+      <!-- MARWARI SUVICHAR -->
+      <div class="bg-amber-50 dark:bg-slate-900 p-4 rounded-2xl border border-amber-200 dark:border-amber-700/40">
+        <div class="flex justify-between items-center">
+          <b class="text-xs text-amber-900 dark:text-amber-400">✍️ आज री मारवाड़ी बात</b>
+          <button type="button" onclick="copyQuote()" class="text-[11px] font-bold text-amber-700 underline">Copy करें</button>
+        </div>
+        <p id="suvichar" class="text-xs mt-1 italic">"जठे एकता है, वठे गाँव री तरक्की है।"</p>
+      </div>
+
+      <!-- EMERGENCY HELPLINE -->
+      <div class="surface bg-white p-4 rounded-2xl border border-slate-200">
+        <b class="text-xs block mb-2">🚨 Emergency Helpline</b>
+        <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+          <a href="tel:112" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800">🚓 Police 112</a>
+          <a href="tel:108" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800">🚑 Ambulance 108</a>
+          <a href="tel:181" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800">📢 CM Helpline 181</a>
+          <a href="tel:1912" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800">⚡ Bijli 1912</a>
+        </div>
       </div>
     </section>
 
-    <!-- PAGE 9: ADMIN DESK -->
+    <!-- 2. COMMUNITY PAGE -->
+    <section id="page-community" class="page space-y-4">
+      <div class="surface bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
+        <div class="flex justify-between items-center">
+          <h2 class="text-base font-bold">🫂 Dangari Community</h2>
+          <span id="postCount" class="text-[11px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">Live</span>
+        </div>
+        <textarea id="postInput" rows="3" class="w-full border border-slate-300 rounded-xl p-3 text-xs" placeholder="अपने गाँव की बात, सुझाव या अच्छी खबर लिखें..."></textarea>
+        <button type="button" onclick="submitPost()" class="w-full bg-emerald-700 text-white font-bold text-xs py-2.5 rounded-xl">Post करें ↗</button>
+      </div>
+      <div id="feedBox" class="space-y-3"></div>
+    </section>
+
+    <!-- 3. GAMES & SPIN PAGE -->
+    <section id="page-games" class="page space-y-4">
+      <div class="surface bg-white p-4 rounded-2xl border border-slate-200">
+        <h2 class="text-base font-bold mb-3">🎮 Games & Lucky Spin Zone</h2>
+        <div class="grid grid-cols-2 gap-2.5 text-xs font-bold">
+          <button type="button" onclick="openGame('spin')" class="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 text-left">🎡 Lucky Spin Wheel</button>
+          <button type="button" onclick="openGame('quiz')" class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 text-left">🧠 Daily Quiz</button>
+          <button type="button" onclick="openGame('memory')" class="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 text-left">🃏 Memory Match</button>
+          <button type="button" onclick="openGame('tic')" class="p-3 rounded-xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 text-left">⭕ Tic Tac Toe</button>
+          <button type="button" onclick="openGame('number')" class="p-3 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 text-left col-span-2">🔢 Number Puzzle (1-8)</button>
+        </div>
+      </div>
+      <div id="gameBox" class="surface bg-white p-5 rounded-2xl border border-slate-200 text-center text-xs text-slate-500">
+        ऊपर से कोई भी Game या Spin चुनें
+      </div>
+    </section>
+
+    <!-- 4. LEADERBOARD PAGE -->
+    <section id="page-rank" class="page space-y-4">
+      <div class="bg-emerald-800 text-white p-5 rounded-3xl">
+        <p class="text-xs text-emerald-200">आपकी Live Progress</p>
+        <h2 class="text-2xl font-bold mt-1"><span id="rankPts">0</span> XP</h2>
+      </div>
+      <div class="surface bg-white p-4 rounded-2xl border border-slate-200">
+        <h2 class="text-base font-bold mb-3">🏆 Dangari Live Leaderboard</h2>
+        <div id="rankBox" class="space-y-2 text-xs">लोड हो रहा है...</div>
+      </div>
+    </section>
+
+    <!-- 5. POLLS PAGE -->
+    <section id="page-polls" class="page space-y-4">
+      <div class="surface bg-white p-4 rounded-2xl border border-slate-200">
+        <h2 class="text-base font-bold">🗳️ Village Poll Results</h2>
+        <div id="pollResultBox" class="mt-3 space-y-3 text-xs"></div>
+      </div>
+    </section>
+
+    <!-- 6. EVENTS PAGE -->
+    <section id="page-events" class="page space-y-4">
+      <div class="surface bg-white p-4 rounded-2xl border border-slate-200">
+        <h2 class="text-base font-bold mb-3">📅 Dangari Events</h2>
+        <div id="eventsBox" class="space-y-2 text-xs"></div>
+      </div>
+      <div class="surface bg-white p-4 rounded-2xl border border-slate-200 space-y-2.5">
+        <b class="text-xs">नया कार्यक्रम सुझाएँ</b>
+        <input id="eventIdea" type="text" class="w-full border border-slate-300 rounded-xl p-2.5 text-xs" placeholder="जैसे: गाँव में कबड्डी प्रतियोगिता" />
+        <button type="button" onclick="suggestEvent()" class="w-full bg-emerald-700 text-white font-bold text-xs py-2.5 rounded-xl">सुझाव भेजें</button>
+      </div>
+    </section>
+
+    <!-- 7. VILLAGE & MANDI BHAV PAGE -->
+    <section id="page-village" class="page space-y-4">
+      <div class="surface bg-white p-4 rounded-2xl border border-slate-200">
+        <h2 class="text-base font-bold mb-3">🌾 Jaisalmer / Barmer Mandi Bhav</h2>
+        <div class="divide-y divide-slate-200 text-xs">
+          <div class="py-2.5 flex justify-between"><span>🌱 जीरा (Jeera)</span><b class="text-emerald-700">₹24,800 - ₹26,400</b></div>
+          <div class="py-2.5 flex justify-between"><span>🌿 ईसबगोल (Isabgol)</span><b class="text-emerald-700">₹13,400 - ₹14,600</b></div>
+          <div class="py-2.5 flex justify-between"><span>🌾 ग्वार (Guar)</span><b class="text-amber-700">₹5,180 - ₹5,450</b></div>
+          <div class="py-2.5 flex justify-between"><span>🌽 बाजरा (Bajra)</span><b class="text-amber-700">₹2,380 - ₹2,520</b></div>
+          <div class="py-2.5 flex justify-between"><span>🌼 सरसों (Sarson)</span><b class="text-emerald-700">₹5,650 - ₹5,980</b></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. PROFILE & ADMIN ACCESS PAGE -->
+    <section id="page-profile" class="page space-y-4">
+      <div class="surface bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
+        <h2 class="text-base font-bold">👤 आपका Account & Profile</h2>
+        <p id="authInfo" class="text-xs text-slate-500">Guest मोड</p>
+        <div class="grid grid-cols-3 gap-2">
+          <button type="button" onclick="openAuthModal('signup')" class="bg-emerald-700 text-white font-bold text-xs py-2 rounded-xl">Sign Up</button>
+          <button type="button" onclick="openAuthModal('login')" class="bg-emerald-100 text-emerald-900 font-bold text-xs py-2 rounded-xl">Login</button>
+          <button type="button" onclick="doLogout()" class="bg-slate-200 text-slate-800 font-bold text-xs py-2 rounded-xl">Logout</button>
+        </div>
+        <hr>
+        <input id="profName" type="text" class="w-full border border-slate-300 rounded-xl p-2.5 text-xs" placeholder="पूरा नाम" />
+        <input id="profUser" type="text" class="w-full border border-slate-300 rounded-xl p-2.5 text-xs" placeholder="Username (e.g. ramesh_dangari)" />
+        <select id="profWard" class="w-full border border-slate-300 rounded-xl p-2.5 text-xs">
+          <option value="Main Market, Dangari">Main Market, Dangari</option>
+          <option value="Bhati Mohalla, Dangari">Bhati Mohalla, Dangari</option>
+          <option value="Bus Stand, Dangari">Bus Stand, Dangari</option>
+          <option value="Meghwal Basti, Dangari">Meghwal Basti, Dangari</option>
+          <option value="Fatehgarh / Aas-paas">Fatehgarh / Aas-paas</option>
+        </select>
+        <button type="button" onclick="saveUserProfile()" class="w-full bg-emerald-700 text-white font-bold text-xs py-2.5 rounded-xl">Profile Save करें</button>
+        <button type="button" onclick="go('admin')" class="text-xs font-bold text-emerald-700 underline block pt-2">🛡️ Admin Desk खोलें</button>
+      </div>
+    </section>
+
+    <!-- 9. ADMIN PANEL PAGE -->
     <section id="page-admin" class="page space-y-4">
-      <div class="card surface p-4 space-y-3">
-        <h2 class="font-bold text-base">🛡️ Admin Desk</h2>
-        <p id="adminStatus" class="pill bg-amber-100 text-amber-800 inline-block">Admin status जाँचा जा रहा है…</p>
+      <div class="surface bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
+        <h2 class="text-base font-bold">🛡️ Admin Desk</h2>
+        <p id="adminStatus" class="text-xs font-bold bg-amber-100 text-amber-800 px-3 py-1 rounded-full inline-block">जाँच हो रही है...</p>
         <div id="adminTools" class="hidden space-y-4 pt-3 border-t">
           <div class="space-y-2">
-            <b class="text-xs">📢 Announcement</b>
-            <textarea id="announcementText" rows="2" placeholder="जरूरी सूचना लिखें..."></textarea>
-            <button onclick="publishAnnouncement()" class="btn btn-primary w-full">Publish Announcement</button>
+            <b class="text-xs">📢 नई पंचायत सूचना</b>
+            <textarea id="admAnn" rows="2" class="w-full border rounded-xl p-2.5 text-xs" placeholder="सूचना लिखें..."></textarea>
+            <button type="button" onclick="pubAnn()" class="w-full bg-emerald-700 text-white font-bold text-xs py-2 rounded-xl">Publish करें</button>
           </div>
           <div class="space-y-2">
             <b class="text-xs">📅 नया Event</b>
-            <input id="adminEventTitle" type="text" placeholder="Event Title" />
-            <input id="adminEventDate" type="date" />
-            <button onclick="adminCreateEvent()" class="btn btn-primary w-full">Event Publish करें</button>
+            <input id="admEvTitle" type="text" class="w-full border rounded-xl p-2.5 text-xs" placeholder="Event का नाम" />
+            <input id="admEvDate" type="date" class="w-full border rounded-xl p-2.5 text-xs" />
+            <button type="button" onclick="pubEvent()" class="w-full bg-emerald-700 text-white font-bold text-xs py-2 rounded-xl">Event डालें</button>
           </div>
           <div class="space-y-2">
             <b class="text-xs">🗳️ नया Poll</b>
-            <input id="adminPollQuestion" type="text" placeholder="नया Poll Question" />
-            <textarea id="adminPollOptions" rows="3" placeholder="Options (हर लाइन में एक)"></textarea>
-            <button onclick="adminCreatePoll()" class="btn btn-primary w-full">Poll Publish करें</button>
-          </div>
-          <div>
-            <button onclick="loadReports()" class="btn btn-soft w-full">Reports Refresh करें</button>
-            <div id="reportList" class="mt-2 text-xs"></div>
+            <input id="admPollQ" type="text" class="w-full border rounded-xl p-2.5 text-xs" placeholder="नया सवाल" />
+            <textarea id="admPollOpts" rows="3" class="w-full border rounded-xl p-2.5 text-xs" placeholder="हर लाइन में एक विकल्प लिखें"></textarea>
+            <button type="button" onclick="pubPoll()" class="w-full bg-emerald-700 text-white font-bold text-xs py-2 rounded-xl">Poll बदलें</button>
           </div>
         </div>
       </div>
     </section>
 
-  </div>
+  </main>
 
-  <!-- BOTTOM NAV -->
-  <nav class="bottom-nav fixed bottom-0 inset-x-0 z-40 surface bg-white/95 backdrop-blur border-t border-slate-200 grid grid-cols-5 gap-1 px-2 py-2">
-    <button class="tab active rounded-xl py-2 text-[11px] font-bold" data-page="home" onclick="go('home')">🏠<br>Gaon</button>
-    <button class="tab rounded-xl py-2 text-[11px] font-bold" data-page="community" onclick="go('community')">🫂<br>Community</button>
-    <button class="tab rounded-xl py-2 text-[11px] font-bold" data-page="games" onclick="go('games')">🎮<br>Games</button>
-    <button class="tab rounded-xl py-2 text-[11px] font-bold" data-page="rank" onclick="go('rank')">🏆<br>Rank</button>
-    <button class="tab rounded-xl py-2 text-[11px] font-bold" data-page="profile" onclick="go('profile')">👤<br>Account</button>
+  <!-- BOTTOM NAVIGATION -->
+  <nav class="fixed bottom-0 inset-x-0 z-50 surface bg-white/95 backdrop-blur border-t border-slate-200 grid grid-cols-5 py-2 px-1 text-[11px] font-bold text-slate-700">
+    <button type="button" onclick="go('home')" class="flex flex-col items-center">🏠<span>Gaon</span></button>
+    <button type="button" onclick="go('community')" class="flex flex-col items-center">🫂<span>Community</span></button>
+    <button type="button" onclick="go('games')" class="flex flex-col items-center">🎮<span>Games</span></button>
+    <button type="button" onclick="go('rank')" class="flex flex-col items-center">🏆<span>Rank</span></button>
+    <button type="button" onclick="go('profile')" class="flex flex-col items-center">👤<span>Profile</span></button>
   </nav>
 
   <!-- AUTH MODAL -->
   <div id="authModal" class="modal">
-    <div class="modalbox space-y-3">
+    <div class="surface bg-white w-full max-w-sm rounded-2xl p-5 space-y-3 shadow-2xl">
       <div class="flex justify-between items-center">
-        <h3 id="authTitle" class="font-bold text-base">Account बनाएं</h3>
-        <button onclick="closeModal('authModal')" class="text-lg font-bold px-2">✕</button>
+        <h3 id="modalTitle" class="text-base font-bold text-emerald-800">नया Account बनाएँ</h3>
+        <button type="button" onclick="closeAuthModal()" class="text-lg font-bold px-2">✕</button>
       </div>
-      <p class="small muted text-slate-500">Email और password डालकर नया account बनाएँ:</p>
-      <input id="authEmail" type="email" placeholder="अपना Email लिखें (e.g. name@gmail.com)" />
-      <input id="authPassword" type="password" placeholder="Password (कम से कम 6 अक्षर)" />
-      <p id="authError" class="small text-rose-600 font-bold"></p>
-      <button id="authSubmit" onclick="submitAuth()" class="btn btn-primary w-full">Create Account</button>
-      <button onclick="switchAuthMode()" id="authSwitchBtn" class="small text-emerald-700 font-bold w-fulace p-4">
-            <b class="text-xs block mb-2.5">🚨 Emergency Helpline</b>
-            <div class="grid grid-cols-2 gap-2 text-xs">
-              <a href="tel:112" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 font-bold">🚓 Police 112</a>
-              <a href="tel:108" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 font-bold">🚑 Ambulance 108</a>
-              <a href="tel:181" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 font-bold">📢 181</a>
-              <a href="tel:1912" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 font-bold">⚡ 1912</a>
-            </div>
-            <p class="small muted text-slate-400 mt-2">Emergency में स्थानीय उपलब्धता की पुष्टि करें।</p>
-          </div>
-        </aside>
-      </div>
-    </section>
-
-    <!-- PAGE 2: COMMUNITY -->
-    <section id="page-community" class="page space-y-4">
-      <div class="card surface p-4">
-        <div class="flex justify-between items-center">
-          <div>
-            <h2 class="font-bold text-base">🫂 Dangari Community</h2>
-            <p class="small muted text-slate-500">गाँव की बातें, सुझाव और अच्छी खबरें</p>
-          </div>
-          <span id="postCount" class="pill bg-emerald-100 text-emerald-800">Live</span>
-        </div>
-        <textarea id="postText" rows="3" class="mt-3" placeholder="अपने गाँव की बात, सुझाव या अच्छी खबर लिखें..."></textarea>
-        <div class="flex justify-between items-center mt-2.5">
-          <span class="small muted text-slate-400">सम्मानजनक भाषा रखें • निजी जानकारी न डालें</span>
-          <button onclick="createPost()" class="btn btn-primary">Post करें ↗</button>
-        </div>
-        <div class="flex gap-2 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
-          <button onclick="go('community')" class="pill bg-emerald-700 text-white">सभी Posts</button>
-          <button onclick="go('events')" class="pill bg-slate-100 text-slate-700">Events</button>
-          <button onclick="go('polls')" class="pill bg-slate-100 text-slate-700">Polls</button>
-        </div>
-      </div>
-      <div id="communityFeed" class="space-y-3"><p class="text-xs text-slate-400">Community लोड हो रही है…</p></div>
-    </section>
-
-    <!-- PAGE 3: GAMES -->
-    <section id="page-games" class="page space-y-4">
-      <div class="card surface p-4">
-        <h2 class="font-bold text-base">🎮 Games Zone</h2>
-        <p class="small muted text-slate-500">सीखें, खेलें और अपना Personal Best बनाएँ</p>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-3">
-          <button onclick="openGame('quiz')" class="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 text-left">
-            <div class="text-2xl">🧠</div><b class="text-xs block mt-1">Daily Quiz</b><span class="small muted">ज्ञान चुनौती</span>
-          </button>
-          <button onclick="openGame('memory')" class="p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 text-left">
-            <div class="text-2xl">🃏</div><b class="text-xs block mt-1">Memory Match</b><span class="small muted">याददाश्त गेम</span>
-          </button>
-          <button onclick="openGame('tic')" class="p-3 rounded-2xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 text-left">
-            <div class="text-2xl">⭕</div><b class="text-xs block mt-1">Tic Tac Toe</b><span class="small muted">दो खिलाड़ियों का खेल</span>
-          </button>
-          <button onclick="openGame('number')" class="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 text-left">
-            <div class="text-2xl">🔢</div><b class="text-xs block mt-1">Number Puzzle</b><span class="small muted">दिमागी चुनौती</span>
-          </button>
-        </div>
-      </div>
-      <div id="gameArea" class="card surface p-5 text-center">
-        <div class="text-3xl">🏅</div>
-        <h3 class="font-bold text-sm mt-2">अपना अगला Challenge चुनें</h3>
-        <p class="small muted text-slate-500 mt-1">Games के Scores अभ्यास और मनोरंजन के लिए हैं।</p>
-      </div>
-    </section>
-
-    <!-- PAGE 4: RANK -->
-    <section id="page-rank" class="page space-y-4">
-      <div class="bg-gradient-to-r from-emerald-700 to-teal-700 text-white p-5 rounded-3xl">
-        <p class="text-xs text-emerald-100">आपकी Community Progress</p>
-        <h2 id="rankPoints" class="text-2xl font-bold mt-1">0 XP</h2>
-        <p class="small text-emerald-100 mt-1">सीखने, भाग लेने और योगदान से अपना रिकॉर्ड बनाएं।</p>
-      </div>
-      <div class="card surface p-4">
-        <div class="flex justify-between items-center mb-3">
-          <h3 class="font-bold text-sm">🏆 Dangari Leaderboard</h3>
-          <span class="pill bg-emerald-100 text-emerald-800">Live</span>
-        </div>
-        <div id="leaderboard" class="space-y-2"><p class="text-xs text-slate-400">Leaderboard लोड हो रहा है…</p></div>
-        <p class="small muted text-slate-400 mt-3">नोट: XP मनोरंजन/भागीदारी स्कोर है, कोई नकद इनाम या आधिकारिक पंचायत रैंक नहीं। सार्वजनिक रैंकिंग के लिए प्रोफाइल में दिखने वाला नाम ही इस्तेमाल होगा।</p>
-      </div>
-    </section>
-
-    <!-- PAGE 5: POLLS -->
-    <section id="page-polls" class="page space-y-4">
-      <div class="card surface p-4">
-        <h2 class="font-bold text-base">🗳️ Village Polls</h2>
-        <p class="small muted text-slate-500">ये केवल समुदाय की राय है, आधिकारिक मतदान नहीं।</p>
-        <div id="pollPage" class="mt-4"></div>
-      </div>
-      <div class="card surface p-4 bg-slate-50">
-        <b class="text-xs">💡 चर्चा का नियम</b>
-        <p class="small muted text-slate-500 mt-1">व्यक्तिगत आरोप, जाति/धर्म पर टिप्पणी या धमकी न करें। विकास के मुद्दों पर सम्मानपूर्वक बात करें।</p>
-      </div>
-    </section>
-
-    <!-- PAGE 6: EVENTS -->
-    <section id="page-events" class="page space-y-4">
-      <div class="card surface p-4">
-        <h2 class="font-bold text-base">📅 Dangari Events</h2>
-        <p class="small muted text-slate-500">खेल, बैठकें, प्रतियोगिताएँ और सामुदायिक कार्यक्रम</p>
-      </div>
-      <div id="eventsList" class="space-y-3"></div>
-      <div class="card surface p-4 space-y-2.5">
-        <b class="text-sm">कार्यक्रम सुझाएँ</b>
-        <p class="small muted text-slate-500">आपका सुझाव Admin Review के बाद प्रकाशित हो सकता है।</p>
-        <input id="eventIdea" type="text" placeholder="जैसे: गाँव में कबड्डी प्रतियोगिता या सफाई अभियान" />
-        <button onclick="suggestEvent()" class="btn btn-primary w-full">सुझाव भेजें</button>
-      </div>
-    </section>
-
-    <!-- PAGE 7: VILLAGE DESK -->
-    <section id="page-village" class="page space-y-4">
-      <div class="card surface p-4">
-        <h2 class="font-bold text-base">🌾 Village Desk</h2>
-        <p class="small muted text-slate-500">डांगरी से जुड़ी उपयोगी जानकारी</p>
-        <div class="grid grid-cols-2 gap-2.5 mt-3 text-xs">
-          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800"><b>🏛️ पंचायत सूचना</b><p class="small muted mt-1">सत्यापित घोषणाएँ और ग्राम सभा अपडेट।</p></div>
-          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800"><b>🛣️ विकास Tracker</b><p class="small muted mt-1">काम की स्थिति, फोटो और तारीख Admin से सत्यापित।</p></div>
-          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800"><b>📸 Photo Wall</b><p class="small muted mt-1">गाँव की यादें और कार्यक्रम।</p></div>
-          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800"><b>🌱 Village Mission</b><p class="small muted mt-1">सफाई, पौधारोपण और जनभागीदारी।</p></div>
-        </div>
-      </div>
-      <div class="card surface p-4">
-        <h3 class="font-bold text-sm">🌾 Mandi Bhav</h3>
-        <p class="small muted text-slate-500 mt-1">भाव रोज बदलते हैं। नीचे दिए गए भाव तभी प्रकाशित करें जब ताज़ा मंडी स्रोत से पुष्टि हो।</p>
-        <div id="mandiRows" class="mt-3 text-xs"></div>
-        <p class="small text-amber-700 mt-2">अभी Live Market API जुड़ा नहीं है; गलत/पुराने भाव को वर्तमान भाव न मानें।</p>
-      </div>
-    </section>
-
-    <!-- PAGE 8: PROFILE -->
-    <section id="page-profile" class="page space-y-4">
-      <div class="card surface p-4 space-y-3">
-        <div class="flex items-center gap-3">
-          <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-2xl">🌾</div>
-          <div>
-            <h2 id="profileTitle" class="font-bold text-base">Guest</h2>
-            <p id="profileSub" class="small muted text-slate-500">Sign in नहीं किया</p>
-          </div>
-        </div>
-        <div><label class="small font-bold block mb-1">पूरा नाम</label><input id="profileName" type="text" placeholder="अपना नाम लिखें" /></div>
-        <div><label class="small font-bold block mb-1">Username (एक बार चुनें)</label><input id="profileUsername" type="text" placeholder="e.g. ramesh_dangari" /></div>
-        <div>
-          <label class="small font-bold block mb-1">मोहल्ला / क्षेत्र</label>
-          <select id="profileWard">
-            <option value="Main Market, Dangari">Main Market, Dangari</option>
-            <option value="Bhati Mohalla, Dangari">Bhati Mohalla, Dangari</option>
-            <option value="Bus Stand, Dangari">Bus Stand, Dangari</option>
-            <option value="Meghwal Basti, Dangari">Meghwal Basti, Dangari</option>
-            <option value="Fatehgarh / Aas-paas">Fatehgarh / Aas-paas</option>
-          </select>
-        </div>
-        <button onclick="saveProfile()" class="btn btn-primary w-full">Profile Save करें</button>
-      </div>
-
-      <div class="card surface p-4 space-y-3">
-        <h3 class="font-bold text-sm">Account</h3>
-        <p id="authStatus" class="small muted text-slate-500">आप Guest के रूप में देख रहे हैं।</p>
-        <div class="grid grid-cols-3 gap-2">
-          <button onclick="openAuth('login')" class="btn btn-soft">Login</button>
-          <button onclick="openAuth('signup')" class="btn btn-primary">Create Account</button>
-          <button onclick="logout()" class="btn bg-slate-100 text-slate-700">Logout</button>
-        </div>
-        <button onclick="go('admin')" class="text-xs font-boler border-slate-200 dark:border-slate-800">
-      <div class="flex justify-between items-center mb-3">
-        <h3 class="text-sm font-bold">🔥 Dangari Live Leaderboard</h3>
-        <span class="text-[10px] text-emerald-600 font-semibold flex items-center gap-1">● Live Sync</span>
-      </div>
-      <div id="leaderboard-list" class="space-y-2.5 text-xs">
-        <p class="text-center text-slate-400 py-4">Live data load ho raha hai...</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- TAB 3: DAILY LIMITED QUIZ (5 QUESTIONS / DAY) -->
-  <section id="view-quiz" class="hidden px-4 mt-4 space-y-4">
-    <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
-      <div class="flex justify-between items-center">
-        <span class="text-xs font-bold text-emerald-600">🧠 Daily Dangari & Rajasthan Quiz</span>
-        <span id="quiz-limit-badge" class="text-xs bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-full font-semibold">0/5 Aaj</span>
-      </div>
-      <div id="quiz-container" class="mt-3">
-        <h3 id="quiz-question" class="text-sm font-bold leading-snug">Loading...</h3>
-        <div id="quiz-options" class="mt-3 space-y-2"></div>
-        <p id="quiz-feedback" class="text-xs font-semibold mt-3"></p>
-      </div>
-    </div>
-  </section>
-
-  <!-- TAB 4: MARKED SPIN WHEEL (2 SPINS / DAY + 1 DAILY AD REWARD) -->
-  <section id="view-spin" class="hidden px-4 mt-4 text-center space-y-4">
-    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
-      <div class="flex justify-between items-center">
-        <h3 class="text-sm font-bold text-emerald-600">🎡 Dangari Lucky Spin</h3>
-        <span id="spin-limit-badge" class="text-xs bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 px-2.5 py-0.5 rounded-full font-bold">2 Bache Hain</span>
-      </div>
-      <p class="text-[11px] text-slate-500 mt-1">Teer (▼) jahan rukega wahi points milenge!</p>
-
-      <!-- MARKED SVG WHEEL WITH TOP POINTER -->
-      <div class="my-5 flex flex-col items-center relative">
-        <div class="text-rose-600 text-2xl font-bold -mb-2 z-10 drop-shadow">▼</div>
-        <div class="w-56 h-56 rounded-full border-4 border-slate-800 dark:border-amber-400 shadow-xl overflow-hidden relative">
-          <svg id="spin-wheel" class="wheel-svg w-full h-full" viewBox="0 0 200 200">
-            <g transform="translate(100,100)">
-              <path d="M0,0 L0,-100 A100,100 0 0,1 86.6,-50 Z" fill="#64748b"/>
-              <path d="M0,0 L86.6,-50 A100,100 0 0,1 86.6,50 Z" fill="#10b981"/>
-              <path d="M0,0 L86.6,50 A100,100 0 0,1 0,100 Z" fill="#f59e0b"/>
-              <path d="M0,0 L0,100 A100,100 0 0,1 -86.6,50 Z" fill="#475569"/>
-              <path d="M0,0 L-86.6,50 A100,100 0 0,1 -86.6,-50 Z" fill="#059669"/>
-              <path d="M0,0 L-86.6,-50 A100,100 0 0,1 0,-100 Z" fill="#e11d48"/>
-
-              <text x="32" y="-55" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(30 32,-55)">0 Pt</text>
-              <text x="64" y="0" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(90 64,0)">+1 Pt</text>
-              <text x="32" y="58" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(150 32,58)">+2 Pts</text>
-              <text x="-32" y="58" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(210 -32,58)">0 Pt</text>
-              <text x="-64" y="0" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(270 -64,0)">+1 Pt</text>
-              <text x="-32" y="-55" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(330 -32,-55)">+3 Pts</text>
-            </g>
-          </svg>
-          <div class="absolute inset-0 m-auto w-12 h-12 rounded-full bg-white dark:bg-slate-900 border-2 border-slate-300 flex items-center justify-center font-bold text-[10px] shadow">
-            DANGARI
-          </div>
-        </div>
-      </div>
-
-      <button onclick="spinWheel()" id="spin-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs shadow">
-        🎡 Wheel Ghumayein
-      </button>
-
-      <!-- ONE-TIME DAILY SPONSOR AD REWARD -->
-      <button onclick="openAdModal()" id="daily-ad-btn" class="mt-2.5 w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 rounded-xl text-xs shadow">
-        🎬 Daily Sponsor Bonus (+3 Pts • 1/Day)
-      </button>
-
-      <p id="spin-result" class="text-xs font-bold mt-3 text-emerald-600"></p>
-    </div>
-  </section>
-
-  <!-- TAB 5: MANDI BHAV -->
-  <section id="view-mandi" class="hidden px-4 mt-4 space-y-3">
-    <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
-      <h3 class="text-sm font-bold text-emerald-600 mb-3">🌾 Jaisalmer / Barmer Mandi Bhav</h3>
-      <div class="divide-y divide-slate-200 dark:divide-slate-800 text-xs">
-        <div class="py-2.5 flex justify-between"><span>🌱 Jeera (जीरा)</span><span class="font-bold text-emerald-600">₹24,800 - ₹26,400</span></div>
-        <div class="py-2.5 flex justify-between"><span>🌿 Isabgol (ईसबगोल)</span><span class="font-bold text-emerald-600">₹13,400 - ₹14,600</span></div>
-        <div class="py-2.5 flex justify-between"><span>🌾 Guar (ग्वार)</span><span class="font-bold text-amber-600">₹5,180 - ₹5,450</span></div>
-        <div class="py-2.5 flex justify-between"><span>🌽 Bajra (बाजरा)</span><span class="font-bold text-amber-600">₹2,380 - ₹2,520</span></div>
-        <div class="py-2.5 flex justify-between"><span>🌼 Sarson (सरसों)</span><span class="font-bold text-emerald-600">₹5,650 - ₹5,980</span></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ONE-TIME REGISTRATION MODAL -->
-  <div id="register-modal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 max-w-sm w-full p-5 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700">
-      <h3 class="text-base font-bold text-emerald-600">🌾 Apna Dangari Account Banayein</h3>
-      <p class="text-[11px] text-slate-500 mt-1">Ek baar account banne ke baad aapka naam aur rank poore gaon ko live dikhega.</p>
-      
-      <div class="mt-3 space-y-2.5 text-xs">
-        <div>
-          <label class="font-semibold block mb-1">Poora Naam *</label>
-          <input id="reg-name" type="text" placeholder="e.g. Ramesh Bhati" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
-        </div>
-        <div>
-          <label class="font-semibold block mb-1">Unique Username * (Bina space ke)</label>
-          <input id="reg-username" type="text" placeholder="e.g. ramesh_dangari" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 lowercase" />
-        </div>
-        <div>
-          <label class="font-semibold block mb-1">Mohalla / Gaon *</label>
-          <select id="reg-ward" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
-            <option value="Main Market, Dangari">Main Market, Dangari</option>
-            <option value="Bhati Mohalla, Dangari">Bhati Mohalla, Dangari</option>
-            <option value="Bus Stand, Dangari">Bus Stand, Dangari</option>
-            <option value="Meghwal Basti, Dangari">Meghwal Basti, Dangari</option>
-            <option value="Fatehgarh / Aas-paas">Fatehgarh / Aas-paas</option>
-          </select>
-        </div>
-        <div>
-          <label class="font-semibold block mb-1">Mobile Number (Optional - Private rahega)</label>
-          <input id="reg-phone" type="tel" maxlength="10" placeholder="10 digit mobile number (optional)" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
-        </div>
-      </div>
-
-      <p id="reg-error" class="text-[11px] text-rose-600 font-semibold mt-2"></p>
-      <button id="reg-submit-btn" onclick="registerUser()" class="mt-3 w-full bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-xs shadow">
-        Account Banayein & Shuru Karein
-      </button>
+      <input id="emailInput" type="email" class="w-full border border-slate-300 rounded-xl p-3 text-xs" placeholder="अपना Email लिखें (e.g. abc@gmail.com)" />
+      <input id="passInput" type="password" class="w-full border border-slate-300 rounded-xl p-3 text-xs" placeholder="Password (कम से कम 6 अक्षर)" />
+      <p id="modalErr" class="text-xs text-rose-600 font-bold"></p>
+      <button type="button" id="modalBtn" onclick="handleAuthSubmit()" class="w-full bg-emerald-700 text-white font-bold text-xs py-3 rounded-xl">Create Account</button>
+      <button type="button" onclick="toggleAuthMode()" class="w-full text-center text-xs text-emerald-700 font-bold py-1">Login / Sign Up बदलें</button>
     </div>
   </div>
 
-  <!-- SPONSOR AD REWARD MODAL (ADSTERRA SMARTLINK LIVE) -->
-  <div id="ad-modal" class="hidden fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 max-w-sm w-full p-5 rounded-2xl text-center shadow-xl border border-amber-400">
-      <span class="text-[10px] uppercase tracking-widest text-amber-600 font-bold">Daily Sponsor Bonus</span>
-      <h4 class="text-base font-bold mt-1">+3 Bonus Points Paayein!</h4>
-      <p class="text-xs text-slate-500 mt-1.5">Yeh bonus din me sirf 1 baar milta hai. Sponsor link kholne par points turant jud jayenge.</p>
-      <a href="https://asiafilm.org/4/713f3a20d216c585a996e9c1b2d5aebb" target="_blank" rel="noopener noreferrer" onclick="claimDailyAdReward()" class="block mt-4 w-full bg-amber-500 text-white font-bold py-2.5 rounded-xl text-xs shadow">
-        🔗 Sponsor Link Kholein (+3 Pts)
-      </a>
-      <button onclick="document.getElementById('ad-modal').classList.add('hidden')" class="mt-3 text-xs text-slate-400 underline">Band Karein</button>
-    </div>
-  </div>
+  <!-- FIREBASE SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
-  <!-- RULES MODAL -->
-  <div id="rules-modal" class="hidden fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 max-w-sm w-full p-5 rounded-2xl shadow-xl text-xs space-y-2">
-      <h3 class="text-sm font-bold text-emerald-600">📜 Apna Dangari Security & Rules</h3>
-      <p>• <b>Unique Username:</b> Har user ka apna alag @username hota hai jise badla nahi ja sakta.</p>
-      <p>• <b>Anti-Spam Limit:</b> Roz 5 Quiz (+1 Pt), 2 Spins (0 se +3 Pts), 1 Check-in (+2 Pts), 1 Poll (+2 Pts), aur 1 Spoext-emerald-600 font-semibold flex items-center gap-1">● Live Sync</span>
-      </div>
-      <div id="leaderboard-list" class="space-y-2.5 text-xs">
-        <p class="text-center text-slate-400 py-4">Live data load ho raha hai...</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- TAB 3: DAILY LIMITED QUIZ (5 QUESTIONS / DAY) -->
-  <section id="view-quiz" class="hidden px-4 mt-4 space-y-4">
-    <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
-      <div class="flex justify-between items-center">
-        <span class="text-xs font-bold text-emerald-600">🧠 Daily Dangari & Rajasthan Quiz</span>
-        <span id="quiz-limit-badge" class="text-xs bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-full font-semibold">0/5 Aaj</span>
-      </div>
-      <div id="quiz-container" class="mt-3">
-        <h3 id="quiz-question" class="text-sm font-bold leading-snug">Loading...</h3>
-        <div id="quiz-options" class="mt-3 space-y-2"></div>
-        <p id="quiz-feedback" class="text-xs font-semibold mt-3"></p>
-      </div>
-    </div>
-  </section>
-
-  <!-- TAB 4: MARKED SPIN WHEEL (2 SPINS / DAY + 1 DAILY AD REWARD) -->
-  <section id="view-spin" class="hidden px-4 mt-4 text-center space-y-4">
-    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
-      <div class="flex justify-between items-center">
-        <h3 class="text-sm font-bold text-emerald-600">🎡 Dangari Lucky Spin</h3>
-        <span id="spin-limit-badge" class="text-xs bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 px-2.5 py-0.5 rounded-full font-bold">2 Bache Hain</span>
-      </div>
-      <p class="text-[11px] text-slate-500 mt-1">Teer (▼) jahan rukega wahi points milenge!</p>
-
-      <!-- MARKED SVG WHEEL WITH TOP POINTER -->
-      <div class="my-5 flex flex-col items-center relative">
-        <div class="text-rose-600 text-2xl font-bold -mb-2 z-10 drop-shadow">▼</div>
-        <div class="w-56 h-56 rounded-full border-4 border-slate-800 dark:border-amber-400 shadow-xl overflow-hidden relative">
-          <svg id="spin-wheel" class="wheel-svg w-full h-full" viewBox="0 0 200 200">
-            <!-- 6 Segments (60 deg each) -->
-            <g transform="translate(100,100)">
-              <path d="M0,0 L0,-100 A100,100 0 0,1 86.6,-50 Z" fill="#64748b"/>
-              <path d="M0,0 L86.6,-50 A100,100 0 0,1 86.6,50 Z" fill="#10b981"/>
-              <path d="M0,0 L86.6,50 A100,100 0 0,1 0,100 Z" fill="#f59e0b"/>
-              <path d="M0,0 L0,100 A100,100 0 0,1 -86.6,50 Z" fill="#475569"/>
-              <path d="M0,0 L-86.6,50 A100,100 0 0,1 -86.6,-50 Z" fill="#059669"/>
-              <path d="M0,0 L-86.6,-50 A100,100 0 0,1 0,-100 Z" fill="#e11d48"/>
-
-              <!-- Labels -->
-              <text x="32" y="-55" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(30 32,-55)">0 Pt</text>
-              <text x="64" y="0" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(90 64,0)">+1 Pt</text>
-              <text x="32" y="58" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(150 32,58)">+2 Pts</text>
-              <text x="-32" y="58" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(210 -32,58)">0 Pt</text>
-              <text x="-64" y="0" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(270 -64,0)">+1 Pt</text>
-              <text x="-32" y="-55" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(330 -32,-55)">+3 Pts</text>
-            </g>
-          </svg>
-          <div class="absolute inset-0 m-auto w-12 h-12 rounded-full bg-white dark:bg-slate-900 border-2 border-slate-300 flex items-center justify-center font-bold text-[10px] shadow">
-            DANGARI
-          </div>
-        </div>
-      </div>
-
-      <button onclick="spinWheel()" id="spin-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs shadow">
-        🎡 Wheel Ghumayein
-      </button>
-
-      <!-- ONE-TIME DAILY SPONSOR AD REWARD (ANTI-SPAM) -->
-      <button onclick="openAdModal()" id="daily-ad-btn" class="mt-2.5 w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 rounded-xl text-xs shadow">
-        🎬 Daily Sponsor Bonus (+3 Pts • 1/Day)
-      </button>
-
-      <p id="spin-result" class="text-xs font-bold mt-3 text-emerald-600"></p>
-    </div>
-  </section>
-
-  <!-- TAB 5: MANDI BHAV -->
-  <section id="view-mandi" class="hidden px-4 mt-4 space-y-3">
-    <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
-      <h3 class="text-sm font-bold text-emerald-600 mb-3">🌾 Jaisalmer / Barmer Mandi Bhav</h3>
-      <div class="divide-y divide-slate-200 dark:divide-slate-800 text-xs">
-        <div class="py-2.5 flex justify-between"><span>🌱 Jeera (जीरा)</span><span class="font-bold text-emerald-600">₹24,800 - ₹26,400</span></div>
-        <div class="py-2.5 flex justify-between"><span>🌿 Isabgol (ईसबगोल)</span><span class="font-bold text-emerald-600">₹13,400 - ₹14,600</span></div>
-        <div class="py-2.5 flex justify-between"><span>🌾 Guar (ग्वार)</span><span class="font-bold text-amber-600">₹5,180 - ₹5,450</span></div>
-        <div class="py-2.5 flex justify-between"><span>🌽 Bajra (बाजरा)</span><span class="font-bold text-amber-600">₹2,380 - ₹2,520</span></div>
-        <div class="py-2.5 flex justify-between"><span>🌼 Sarson (सरसों)</span><span class="font-bold text-emerald-600">₹5,650 - ₹5,980</span></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ONE-TIME REGISTRATION MODAL (UNIQUE @USERNAME + OPTIONAL MOBILE) -->
-  <div id="register-modal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 max-w-sm w-full p-5 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700">
-      <h3 class="text-base font-bold text-emerald-600">🌾 Apna Dangari Account Banayein</h3>
-      <p class="text-[11px] text-slate-500 mt-1">Ek baar account banne ke baad aapka naam aur rank poore gaon ko live dikhega.</p>
-      
-      <div class="mt-3 space-y-2.5 text-xs">
-        <div>
-          <label class="font-semibold block mb-1">Poora Naam *</label>
-          <input id="reg-name" type="text" placeholder="e.g. Ramesh Bhati" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
-        </div>
-        <div>
-          <label class="font-semibold block mb-1">Unique Username * (Bina space ke)</label>
-          <input id="reg-username" type="text" placeholder="e.g. ramesh_dangari" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 lowercase" />
-        </div>
-        <div>
-          <label class="font-semibold block mb-1">Mohalla / Gaon *</label>
-          <select id="reg-ward" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
-            <option value="Main Market, Dangari">Main Market, Dangari</option>
-            <option value="Bhati Mohalla, Dangari">Bhati Mohalla, Dangari</option>
-            <option value="Bus Stand, Dangari">Bus Stand, Dangari</option>
-            <option value="Meghwal Basti, Dangari">Meghwal Basti, Dangari</option>
-            <option value="Fatehgarh / Aas-paas">Fatehgarh / Aas-paas</option>
-          </select>
-        </div>
-        <div>
-          <label class="font-semibold block mb-1">Mobile Number (Optional - Private rahega)</label>
-          <input id="reg-phone" type="tel" maxlength="10" placeholder="10 digit mobile number (optional)" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800" />
-        </div>
-      </div>
-
-      <p id="reg-error" class="text-[11px] text-rose-600 font-semibold mt-2"></p>
-      <button id="reg-submit-btn" onclick="registerUser()" class="mt-3 w-full bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-xs shadow">
-        Account Banayein & Shuru Karein
-      </button>
-    </div>
-  </div>
-
-  <!-- SPONSOR AD REWARD MODAL (STRICTLY 1 PER DAY) -->
-  <div id="ad-modal" class="hidden fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 max-w-sm w-full p-5 rounded-2xl text-center shadow-xl border border-amber-400">
-      <span class="text-[10px] uppercase tracking-widest text-amber-600 font-bold">Daily Sponsor Bonus</span>
-      <h4 class="text-base font-bold mt-1">+3 Bonus Points Paayein!</h4>
-      <p class="text-xs text-slate-500 mt-1.5">Yeh bonus din me sirf 1 baar milta hai. Sponsor link kholne par points turant jud jayenge.</p>
-      <!-- YAHAN APNA ADSTERRA / MONETAG DIRECT LINK DAALEIN -->
-      <a href="https://example.com" target="_blank" onclick="claimDailyAdReward()" class="block mt-4 w-full bg-amber-500 text-white font-bold py-2.5 rounded-xl text-xs shadow">
-        🔗 Sponsor Link Kholein (+3 Pts)
-      </a>
-      <button onclick="document.getElementById('ad-modal').classList.add('hidden')" class="mt-3 text-xs text-slate-400 underline">Band Karein</button>
-    </div>
-  </div>
-
-  <!-- RULES MODAL -->
-  <div id="rules-modal" class="hidden fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 max-w-sm w-full p-5 rounded-2xl shadow-xl text-xs space-y-2">
-      <h3 class="text-sm font-bold text-emerald-600">📜 Apna Dangari Security & Rules</h3>
-      <p>• <b>Unique Username:</b> Har user ka apna alag @username hota hai jise badla nahi ja sakta.</p>
-      <p>• <b>Anti-Spam Limit:</b> Roz 5 Quiz (+1 Pt), 2 Spins (0 se +3 Pts), 1 Check-in (+2 Pts), 1 Poll (+2 Pts), aur 1 Sponsor Bonus (+3 Pts).</p>
-      <button onclick="document.getElementById('rules-modal').classList.add('hidden')" class="mt-3 w-full bg-slate-800 text-white py-2 rounded-xl font-bold">Theek Hai</button>
-    </div>
-  </div>
-
-  <!-- BOTTOM FIXED AD SLOT -->
-  <div class="fixed bottom-0 inset-x-0 z-40 bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 py-2 px-4 text-center">
-    <p class="text-[10px] text-slate-400">[ Bottom Sticky Ad Slot - Yahan Ad Script Paste Karein ]</p>
-  </div>
-
-  <!-- FIREBASE SDK & APP LOGIC -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getDatabase, ref, get, set, update, onValue, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBnUXYPK0c1JQZ-Z1TVi40p0t5Xjctta7g",
       authDomain: "apna-dangari.firebaseapp.com",
@@ -828,357 +299,321 @@
       appId: "1:755645879753:web:c3ec521bd6c3e9f932c418"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
 
-    const today = new Date().toDateString();
-    let local = JSON.parse(localStorage.getItem('dangari_secure_user')) || {
-      username: '', name: '', ward: '', points: 0,
-      lastCheckIn: '', lastPollDate: '', pollChoice: -1,
-      quizDate: '', quizCount: 0,
-      spinDate: '', spinsUsed: 0,
-      adDate: '', adClaimed: false,
-      following: {}
-    };
+    let user = null, profile = null, authMode = 'signup', activePoll = null;
+    const defaultOpts = ['गाँव की सड़क और नाली', 'पीने के पानी की सुविधा', 'बिजली और Street Lights', 'युवाओं के लिए खेल मैदान'];
 
-    if (local.quizDate !== today) { local.quizDate = today; local.quizCount = 0; }
-    if (local.spinDate !== today) { local.spinDate = today; local.spinsUsed = 0; }
-    if (local.adDate !== today) { local.adDate = today; local.adClaimed = false; }
-
-    let liveUsers = {};
-    let livePoll = { opt0: 0, opt1: 0, opt2: 0, opt3: 0 };
-
-    function saveLocal() {
-      localStorage.setItem('dangari_secure_user', JSON.stringify(local));
-      renderUI();
+    function notify(msg) {
+      const b = document.getElementById('toast');
+      b.textContent = msg;
+      b.classList.remove('hidden');
+      setTimeout(() => b.classList.add('hidden'), 2800);
     }
 
-    async function syncPointsToCloud(addedPts) {
-      if (!local.username || addedPts <= 0 || addedPts > 3) return;
-      local.points += addedPts;
-      saveLocal();
-      try {
-        await update(ref(db, `users/${local.username}`), {
-          points: increment(addedPts)
-        });
-      } catch (e) {
-        console.error("Sync error:", e);
-      }
+    function toggleTheme() { document.documentElement.classList.toggle('dark'); }
+    function copyQuote() { navigator.clipboard?.writeText(document.getElementById('suvichar').textContent); notify('Copy हो गया!'); }
+
+    function go(id) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page-' + id)?.classList.add('active');
+      if (id === 'rank') loadRank();
+      if (id === 'polls') renderPollResults();
+      if (id === 'events') loadEvents();
+      if (id === 'admin') checkAdmin();
+      window.scrollTo(0, 0);
     }
 
-    // Listen to Real Live Leaderboard
-    onValue(ref(db, 'users'), (snap) => {
-      liveUsers = snap.val() || {};
-      if (local.username && liveUsers[local.username]) {
-        local.points = liveUsers[local.username].points || 0;
-        saveLocal();
-      }
-      renderLeaderboard();
-    });
+    function openAccount() { if (!user) openAuthModal('signup'); else go('profile'); }
+    function openAuthModal(mode) {
+      authMode = mode;
+      document.getElementById('modalTitle').textContent = mode === 'signup' ? 'नया Account बनाएँ' : 'Login करें';
+      document.getElementById('modalBtn').textContent = mode === 'signup' ? 'Create Account' : 'Login';
+      document.getElementById('modalErr').textContent = '';
+      document.getElementById('authModal').classList.add('show');
+    }
+    function closeAuthModal() { document.getElementById('authModal').classList.remove('show'); }
+    function toggleAuthMode() { openAuthModal(authMode === 'signup' ? 'login' : 'signup'); }
 
-    // Listen to Real Live Poll
-    onValue(ref(db, 'poll'), (snap) => {
-      if (snap.exists()) livePoll = snap.val();
-      renderPoll();
-    });
-
-    // Registration with Unique @username Check
-    window.registerUser = async function() {
-      const name = document.getElementById('reg-name').value.trim();
-      const rawUser = document.getElementById('reg-username').value.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
-      const ward = document.getElementById('reg-ward').value;
-      const phone = document.getElementById('reg-phone').value.trim();
-      const err = document.getElementById('reg-error');
-      const btn = document.getElementById('reg-submit-btn');
-
-      if (name.length < 2) { err.innerText = "Kripya apna sahi naam likhein."; return; }
-      if (rawUser.length < 3) { err.innerText = "Username kam se kam 3 akshar ka hona chahiye (e.g. ramesh01)."; return; }
-
-      btn.disabled = true;
-      btn.innerText = "Check ho raha hai...";
-      err.innerText = "";
-
+    async function handleAuthSubmit() {
+      const email = document.getElementById('emailInput').value.trim();
+      const pass = document.getElementById('passInput').value;
+      const err = document.getElementById('modalErr');
+      if (!email || pass.length < 6) { err.textContent = 'सही Email और कम से कम 6 अक्षर का Password डालें।'; return; }
       try {
-        const userRef = ref(db, `users/${rawUser}`);
-        const existing = await get(userRef);
-        if (existing.exists()) {
-          err.innerText = `@${rawUser} pehle se liya ja chuka hai! Koi aur username chunein.`;
-          btn.disabled = false;
-          btn.innerText = "Account Banayein & Shuru Karein";
-          return;
+        if (authMode === 'signup') await auth.createUserWithEmailAndPassword(email, pass);
+        else await auth.signInWithEmailAndPassword(email, pass);
+        closeAuthModal();
+        notify('✅ Account खुल गया!');
+        go('profile');
+      } catch (e) { err.textContent = e.message; }
+    }
+
+    async function doLogout() { await auth.signOut(); notify('Logout हो गया'); }
+
+    auth.onAuthStateChanged(async u => {
+      user = u;
+      if (u) {
+        const ref = db.ref('users/' + u.uid);
+        const snap = await ref.once('value');
+        if (!snap.exists()) {
+          await ref.set({ name: 'नया सदस्य', username: 'user_' + u.uid.slice(0, 5), ward: 'Main Market, Dangari', points: 0 });
         }
-
-        await set(userRef, {
-          name: name,
-          username: rawUser,
-          ward: ward,
-          phone: phone || "",
-          points: 0,
-          followersCount: 0,
-          createdAt: Date.now()
+        ref.on('value', s => {
+          profile = s.val() || {};
+          document.getElementById('homeUserName').textContent = profile.name || 'सदस्य';
+          document.getElementById('homeUserSub').textContent = '@' + (profile.username || '') + ' • ' + (profile.ward || '');
+          document.getElementById('authInfo').textContent = '✅ Logged in: ' + u.email;
+          document.getElementById('ptsBadge').textContent = profile.points || 0;
+          document.getElementById('rankPts').textContent = profile.points || 0;
+          document.getElementById('profName').value = profile.name || '';
+          document.getElementById('profUser').value = profile.username || '';
+          document.getElementById('profWard').value = profile.ward || 'Main Market, Dangari';
         });
-
-        local.name = name;
-        local.username = rawUser;
-        local.ward = ward;
-        local.points = 0;
-        saveLocal();
-        document.getElementById('register-modal').classList.add('hidden');
-      } catch (e) {
-        err.innerText = "Network error! Firebase Rules check karein.";
-        btn.disabled = false;
-        btn.innerText = "Account Banayein & Shuru Karein";
-      }
-    };
-
-    // Follow / Unfollow Toggle
-    window.toggleFollow = async function(targetUser) {
-      if (!local.username || targetUser === local.username) return;
-      const isFollowing = !!local.following[targetUser];
-      if (isFollowing) {
-        delete local.following[targetUser];
-        saveLocal();
-        await update(ref(db, `users/${targetUser}`), { followersCount: increment(-1) });
       } else {
-        local.following[targetUser] = true;
-        saveLocal();
-        await update(ref(db, `users/${targetUser}`), { followersCount: increment(1) });
+        profile = null;
+        document.getElementById('homeUserName').textContent = 'Guest';
+        document.getElementById('homeUserSub').textContent = 'Account बनाने के लिए दाएँ बटन दबाएँ';
+        document.getElementById('authInfo').textContent = 'Guest मोड';
+        document.getElementById('ptsBadge').textContent = '0';
       }
-    };
+    });
 
-    function renderLeaderboard() {
-      const arr = Object.values(liveUsers);
-      arr.sort((a, b) => (b.points || 0) - (a.points || 0));
+    async function saveUserProfile() {
+      if (!user) return openAuthModal('signup');
+      const name = document.getElementById('profName').value.trim();
+      const username = document.getElementById('profUser').value.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
+      const ward = document.getElementById('profWard').value;
+      if (name.length < 2 || username.length < 3) return notify('नाम और Username सही से भरें');
+      try {
+        await db.ref('usernames/' + username).set(user.uid);
+        await db.ref('users/' + user.uid).update({ name, username, ward });
+        notify('✅ Profile Save हो गई!');
+      } catch (e) { notify('Error: ' + e.message); }
+    }
 
-      const myIdx = arr.findIndex(u => u.username === local.username);
-      document.getElementById('my-rank-badge').innerText = myIdx >= 0 ? `#${myIdx + 1}` : '#--';
-      if (local.username && liveUsers[local.username]) {
-        document.getElementById('my-followers-count').innerText = liveUsers[local.username].followersCount || 0;
-      }
+    async function addXP(pts) {
+      if (!user) return;
+      const cur = Number(profile?.points || 0);
+      await db.ref('users/' + user.uid).update({ points: cur + pts });
+    }
 
-      const list = document.getElementById('leaderboard-list');
-      if (arr.length === 0) {
-        list.innerHTML = `<p class="text-center text-slate-400 py-4">Abhi koi player nahi hai. Pehle champion aap banein!</p>`;
-        return;
-      }
+    // LIVE POLL & ANNOUNCEMENTS
+    db.ref('polls/active').on('value', s => {
+      activePoll = s.val() || { id: 'default', question: 'डांगरी में सबसे पहले किस काम पर ध्यान देना चाहिए?', options: defaultOpts };
+      document.getElementById('homePollQ').textContent = activePoll.question;
+      document.getElementById('homePollOpts').innerHTML = (activePoll.options || defaultOpts).map((o, i) =>
+        `<button type="button" onclick="castVote(${i})" class="w-full text-left p-2.5 rounded-xl border border-slate-200 text-xs font-semibold hover:bg-emerald-50">${o}</button>`
+      ).join('');
+    });
 
-      list.innerHTML = '';
-      arr.slice(0, 25).forEach((u, idx) => {
-        const isMe = u.username === local.username;
-        const isFollowing = !!local.following[u.username];
-        const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`;
-        const row = document.createElement('div');
-        row.className = `p-2.5 rounded-xl flex items-center justify-between ${isMe ? 'bg-emerald-50 dark:bg-emerald-500/20 border border-emerald-400' : 'bg-slate-50 dark:bg-slate-800'}`;
-        row.innerHTML = `
-          <div class="flex items-center gap-2.5">
-            <span class="w-6 text-center font-bold">${medal}</span>
-            <div>
-              <p class="font-bold">${u.name} ${isMe ? '(Aap)' : ''}</p>
-              <p class="text-[10px] text-slate-500">@${u.username} • ${u.ward} • ${u.followersCount || 0} Followers</p>
+    db.ref('announcements').limitToLast(1).on('value', s => {
+      s.forEach(c => { document.getElementById('announcementBox').textContent = c.val().text; });
+    });
+
+    async function castVote(i) {
+      if (!user) return openAuthModal('signup');
+      const pid = activePoll?.id || 'default';
+      try {
+        await db.ref('pollVotes/' + pid + '/' + user.uid).set(i);
+        notify('✅ आपका Vote दर्ज हो गया!');
+        renderPollResults();
+      } catch (e) { notify('आप इस Poll में पहले ही Vote कर चुके हैं'); }
+    }
+
+    async function renderPollResults() {
+      const pid = activePoll?.id || 'default';
+      const opts = activePoll?.options || defaultOpts;
+      const snap = await db.ref('pollVotes/' + pid).once('value');
+      const votes = Object.values(snap.val() || {});
+      const total = votes.length;
+      document.getElementById('pollResultBox').innerHTML = `<b class="text-sm">${activePoll?.question || ''}</b><p class="text-slate-500">कुल Votes: ${total}</p>` +
+        opts.map((o, i) => {
+          const c = votes.filter(v => v === i).length;
+          const pct = total ? Math.round((c / total) * 100) : 0;
+          return `<div><div class="flex justify-between font-bold"><span>${o}</span><span>${pct}% (${c})</span></div><div class="progress mt-1"><i style="width:${pct}%"></i></div></div>`;
+        }).join('');
+    } 
+     // COMMUNITY
+    async function submitPost() {
+      if (!user) return openAuthModal('signup');
+      const text = document.getElementById('postInput').value.trim();
+      if (text.length < 3) return notify('थोड़ा और लिखें');
+      await db.ref('posts').push({ uid: user.uid, name: profile?.name || 'सदस्य', username: profile?.username || 'member', text, createdAt: Date.now() });
+      document.getElementById('postInput').value = '';
+      notify('✅ Post प्रकाशित हो गई!');
+    }
+
+    db.ref('posts').limitToLast(25).on('value', s => {
+      const arr = [];
+      s.forEach(c => arr.push({ id: c.key, ...c.val() }));
+      arr.reverse();
+      document.getElementById('postCount').textContent = arr.length + ' Posts';
+      document.getElementById('feedBox').innerHTML = arr.map(p =>
+        `<div class="surface bg-white p-3.5 rounded-2xl border border-slate-200 text-xs space-y-2">
+          <div class="flex justify-between"><b>${p.name} <span class="text-slate-400 font-normal">@${p.username}</span></b><button type="button" onclick="repPost('${p.id}')" class="text-rose-600">Report</button></div>
+          <p class="text-sm">${p.text}</p>
+        </div>`
+      ).join('') || '<p class="text-xs text-slate-400 text-center">अभी कोई Post नहीं है</p>';
+    });
+
+    async function repPost(id) {
+      if (!user) return openAuthModal('signup');
+      const r = prompt('Report का कारण लिखें:');
+      if (!r) return;
+      await db.ref('reports').push({ postId: id, uid: user.uid, reason: r, status: 'open' });
+      notify('Report भेज दी गई');
+    }
+
+    // LEADERBOARD
+    function loadRank() {
+      db.ref('users').once('value', s => {
+        const list = [];
+        s.forEach(c => list.push(c.val()));
+        list.sort((a, b) => (b.points || 0) - (a.points || 0));
+        document.getElementById('rankBox').innerHTML = list.map((u, i) =>
+          `<div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800">
+            <span><b>#${i + 1}</b> ${u.name} <span class="text-slate-400">(@${u.username} • ${u.ward})</span></span>
+            <b class="text-amber-700">${u.points || 0} XP</b>
+          </div>`
+        ).join('') || 'कोई सदस्य नहीं';
+      });
+    }
+
+    // EVENTS
+    function loadEvents() {
+      db.ref('events').limitToLast(15).on('value', s => {
+        const arr = [];
+        s.forEach(c => arr.push(c.val()));
+        document.getElementById('eventsBox').innerHTML = arr.reverse().map(e =>
+          `<div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 flex justify-between"><b>${e.title}</b><span class="text-emerald-700 font-bold">${e.date || ''}</span></div>`
+        ).join('') || 'अभी कोई कार्यक्रम नहीं है';
+      });
+    }
+
+    async function suggestEvent() {
+      if (!user) return openAuthModal('signup');
+      const title = document.getElementById('eventIdea').value.trim();
+      if (title.length < 4) return notify('सुझाव लिखें');
+      await db.ref('eventSuggestions').push({ uid: user.uid, title, status: 'pending' });
+      document.getElementById('eventIdea').value = '';
+      notify('✅ सुझाव Admin को भेज दिया गया');
+    }
+
+    // GAMES & MARKED SPIN WHEEL
+    function openGame(type) {
+      const box = document.getElementById('gameBox');
+      if (type === 'spin') {
+        box.innerHTML = `
+          <h3 class="font-bold text-sm text-emerald-700">🎡 Dangari Lucky Spin</h3>
+          <p class="text-[11px] text-slate-500 mt-1">तीर (▼) जहाँ रुकेगा वही XP Points मिलेंगे!</p>
+          <div class="my-4 flex flex-col items-center">
+            <div class="text-rose-600 text-2xl font-bold -mb-2 z-10">▼</div>
+            <div class="w-48 h-48 rounded-full border-4 border-slate-800 overflow-hidden">
+              <svg id="wheelSvg" class="wheel-svg w-full h-full" viewBox="0 0 200 200">
+                <g transform="translate(100,100)">
+                  <path d="M0,0 L0,-100 A100,100 0 0,1 86.6,-50 Z" fill="#64748b"/>
+                  <path d="M0,0 L86.6,-50 A100,100 0 0,1 86.6,50 Z" fill="#10b981"/>
+                  <path d="M0,0 L86.6,50 A100,100 0 0,1 0,100 Z" fill="#f59e0b"/>
+                  <path d="M0,0 L0,100 A100,100 0 0,1 -86.6,50 Z" fill="#475569"/>
+                  <path d="M0,0 L-86.6,50 A100,100 0 0,1 -86.6,-50 Z" fill="#059669"/>
+                  <path d="M0,0 L-86.6,-50 A100,100 0 0,1 0,-100 Z" fill="#e11d48"/>
+                  <text x="32" y="-55" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(30 32,-55)">0 XP</text>
+                  <text x="64" y="0" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(90 64,0)">+1 XP</text>
+                  <text x="32" y="58" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(150 32,58)">+2 XP</text>
+                  <text x="-32" y="58" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(210 -32,58)">0 XP</text>
+                  <text x="-64" y="0" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(270 -64,0)">+1 XP</text>
+                  <text x="-32" y="-55" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(330 -32,-55)">+3 XP</text>
+                </g>
+              </svg>
             </div>
           </div>
-          <div class="flex items-center gap-2">
-            <span class="font-bold text-amber-600 dark:text-amber-400">${u.points || 0} Pts</span>
-            ${!isMe ? `<button onclick="toggleFollow('${u.username}')" class="px-2.5 py-1 rounded-lg text-[10px] font-bold ${isFollowing ? 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200' : 'bg-emerald-600 text-white'}">${isFollowing ? 'Following' : '+ Follow'}</button>` : ''}
+          <button type="button" id="spinBtn" onclick="doSpin()" class="w-full bg-emerald-700 text-white font-bold text-xs py-2.5 rounded-xl">🎡 Wheel घुमाएँ</button>
+          <p id="spinMsg" class="text-xs font-bold text-emerald-700 mt-2"></p>
+        `;
+      } else if (type === 'quiz') {
+        box.innerHTML = `
+          <h3 class="font-bold text-sm mb-2">🧠 सवाल: डांगरी गाँव किस तहसील में आता है?</h3>
+          <div class="space-y-2">
+            <button type="button" onclick="ansQuiz(true)" class="w-full p-2.5 rounded-xl border text-xs font-bold">A. फतेहगढ़ (Fatehgarh)</button>
+            <button type="button" onclick="ansQuiz(false)" class="w-full p-2.5 rounded-xl border text-xs font-bold">B. पोकरण (Pokaran)</button>
           </div>
         `;
-        list.appendChild(row);
-      });
-    }
-
-    // Poll Logic
-    const pollLabels = ["🛣️ Gaon ki Sadak aur Nali", "💧 Peene ke Paani ki Suvidha", "⚡ Bijli aur Street Lights", "🏏 Yuvaon ke liye Khel Maidan"];
-    function renderPoll() {
-      const container = document.getElementById('poll-options');
-      container.innerHTML = '';
-      const counts = [livePoll.opt0 || 0, livePoll.opt1 || 0, livePoll.opt2 || 0, livePoll.opt3 || 0];
-      const total = counts.reduce((a, b) => a + b, 0);
-      const voted = local.lastPollDate === today;
-
-      pollLabels.forEach((lbl, i) => {
-        const pct = total > 0 ? Math.round((counts[i] / total) * 100) : 0;
-        const btn = document.createElement('button');
-        btn.disabled = voted;
-        btn.onclick = () => votePoll(i);
-        btn.className = `w-full text-left p-2.5 rounded-xl border transition ${local.pollChoice === i && voted ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 font-bold' : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800'}`;
-        btn.innerHTML = `<div class="flex justify-between"><span>${lbl}</span><span>${voted ? pct + '%' : ''}</span></div>`;
-        container.appendChild(btn);
-      });
-      document.getElementById('poll-status').innerText = voted ? `✅ Vote darj ho gaya (Kul ${total} gaon ke votes)` : 'Vote dein aur +2 Points paayein';
-    }
-
-    window.votePoll = async function(idx) {
-      if (local.lastPollDate === today) return;
-      local.lastPollDate = today;
-      local.pollChoice = idx;
-      await syncPointsToCloud(2);
-      await update(ref(db, 'poll'), { [`opt${idx}`]: increment(1) });
-    };
-
-    window.dailyCheckIn = async function() {
-      if (local.lastCheckIn === today) return;
-      local.lastCheckIn = today;
-      await syncPointsToCloud(2);
-    };
-
-    // Quiz Logic (5/Day)
-    const quizBank = [
-      { q: "Dangari gaon kis tehsil ke antargat aata hai?", opts: ["Pokaran", "Fatehgarh", "Sam", "Bhaniyana"], ans: 1 },
-      { q: "Jaisalmer zile ki sthapna kisne ki thi?", opts: ["Rawal Jaisal", "Rao Jodha", "Rao Bika", "Maharana Pratap"], ans: 0 },
-      { q: "Rajasthan ka rajya vriksh (State Tree) kaunsa hai?", opts: ["Neem", "Peepal", "Khejri", "Rohida"], ans: 2 },
-      { q: "Thar registan me kharif ki mukhya fasal kaunsi hai?", opts: ["Bajra aur Guar", "Chawal", "Ganna", "Kapas"], ans: 0 },
-      { q: "Gram Panchayat ka mukhiya kaun hota hai?", opts: ["Patwari", "Sarpanch", "Tehsildar", "BDO"], ans: 1 }
-    ];
-
-    function renderQuiz() {
-      document.getElementById('quiz-limit-badge').innerText = `${local.quizCount}/5 Aaj`;
-      const container = document.getElementById('quiz-container');
-      if (local.quizCount >= 5) {
-        container.innerHTML = `
-          <div class="text-center py-6 space-y-2">
-            <p class="text-2xl">🎯</p>
-            <h4 class="text-sm font-bold">Aaj ke 5 Sawaal Poore Ho Gaye!</h4>
-            <p class="text-xs text-slate-500">Kal subah phir naye 5 sawaal khulenge.</p>
-          </div>
-        `;
-        return;
+      } else if (type === 'memory') {
+        const icons = ['🌵','🐪','🌞','🏜️','🌵','🐪','🌞','🏜️'].sort(() => Math.random() - 0.5);
+        let open = [], done = [];
+        box.innerHTML = `<h3 class="font-bold text-sm mb-2">🃏 Memory Match</h3><div class="grid grid-cols-4 gap-2 max-w-xs mx-auto">` +
+          icons.map((_, i) => `<button type="button" id="m${i}" onclick="flipM(${i})" class="h-14 rounded-xl bg-emerald-700 text-white text-xl font-bold">?</button>`).join('') + `</div>`;
+        window.flipM = i => {
+          if (done.includes(i) || open.includes(i) || open.length === 2) return;
+          open.push(i); document.getElementById('m' + i).textContent = icons[i];
+          if (open.length === 2) {
+            if (icons[open[0]] === icons[open[1]]) { done.push(...open); open = []; if (done.length === 8) { notify('🎉 जीत गए! +2 XP'); addXP(2); } }
+            else { const p = [...open]; setTimeout(() => { p.forEach(k => document.getElementById('m' + k).textContent = '?'); open = []; }, 600); }
+          }
+        };
+      } else if (type === 'tic') {
+        let b = Array(9).fill(''), t = 'X', over = false;
+        box.innerHTML = `<h3 class="font-bold text-sm mb-2">⭕ Tic Tac Toe (<span id="ttTurn">X</span> की बारी)</h3><div class="grid grid-cols-3 gap-2 max-w-[220px] mx-auto">` +
+          b.map((_, i) => `<button type="button" id="t${i}" onclick="moveT(${i})" class="h-16 rounded-xl bg-slate-100 text-2xl font-bold"></button>`).join('') + `</div>`;
+        window.moveT = i => {
+          if (over || b[i]) return;
+          b[i] = t; document.getElementById('t' + i).textContent = t;
+          const w = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+          if (w.some(x => x.every(k => b[k] === t))) { notify('🎉 ' + t + ' जीत गया!'); over = true; }
+          else { t = t === 'X' ? 'O' : 'X'; document.getElementById('ttTurn').textContent = t; }
+        };
+      } else if (type === 'number') {
+        let n = [1,2,3,4,5,6,7,0,8];
+        const draw = () => {
+          box.innerHTML = `<h3 class="font-bold text-sm mb-2">🔢 Number Puzzle (1 से 8 क्रम में लगाएँ)</h3><div class="grid grid-cols-3 gap-2 max-w-[220px] mx-auto">` +
+            n.map((v, i) => `<button type="button" onclick="mvN(${i})" class="h-16 rounded-xl ${v ? 'bg-emerald-100 text-emerald-900' : 'bg-slate-100'} text-xl font-bold">${v || ''}</button>`).join('') + `</div>`;
+        };
+        window.mvN = i => {
+          const z = n.indexOf(0);
+          if ([z-3, z+3, z-1, z+1].includes(i)) { [n[i], n[z]] = [n[z], n[i]]; draw(); if (n.join(',') === '1,2,3,4,5,6,7,8,0') { notify('🎉 Puzzle पूरा! +3 XP'); addXP(3); } }
+        };
+        draw();
       }
-      const qObj = quizBank[local.quizCount];
-      document.getElementById('quiz-question').innerText = `Q${local.quizCount + 1}. ${qObj.q}`;
-      const opts = document.getElementById('quiz-options');
-      opts.innerHTML = '';
-      qObj.opts.forEach((opt, i) => {
-        const b = document.createElement('button');
-        b.className = 'w-full text-left p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:border-emerald-500 text-xs';
-        b.innerText = opt;
-        b.onclick = () => answerQuiz(i);
-        opts.appendChild(b);
-      });
     }
 
-    window.answerQuiz = async function(idx) {
-      const qObj = quizBank[local.quizCount];
-      const fb = document.getElementById('quiz-feedback');
-      local.quizCount++;
-      if (idx === qObj.ans) {
-        fb.className = 'text-xs font-bold mt-3 text-emerald-600';
-        fb.innerText = '✅ Sahi Jawab! +1 Point mila.';
-        await syncPointsToCloud(1);
-      } else {
-        fb.className = 'text-xs font-bold mt-3 text-rose-600';
-        fb.innerText = `❌ Galat! Sahi jawab: ${qObj.opts[qObj.ans]}`;
-        saveLocal();
-      }
-      setTimeout(() => { fb.innerText = ''; renderQuiz(); }, 1100);
-    };
-
-    // Exact Marked Wheel Logic (6 Segments, 60 deg each, Top Pointer at 0 deg)
-    // Segment 0 (0-60 deg): 0 Pt | Seg 1 (60-120): +1 Pt | Seg 2 (120-180): +2 Pts
-    // Seg 3 (180-240): 0 Pt | Seg 4 (240-300): +1 Pt | Seg 5 (300-360): +3 Pts
-    const segmentRewards = [0, 1, 2, 0, 1, 3];
-    let currentRotation = 0;
-
-    window.spinWheel = function() {
-      if (local.spinsUsed >= 2) return;
-      const btn = document.getElementById('spin-btn');
-      btn.disabled = true;
-
-      const targetIndex = Math.floor(Math.random() * 6);
-      // To bring targetIndex under Top Pointer (0 deg), wheel must rotate to (360 - (targetIndex * 60 + 30))
-      const stopAngle = 360 - (targetIndex * 60 + 30);
-      const extraSpins = 360 * 5;
-      currentRotation = currentRotation - (currentRotation % 360) + extraSpins + stopAngle;
-
-      document.getElementById('spin-wheel').style.transform = `rotate(${currentRotation}deg)`;
-
-      setTimeout(async () => {
-        const won = segmentRewards[targetIndex];
-        local.spinsUsed++;
-        document.getElementById('spin-result').innerText = won === 0 ? '😅 Teer 0 Pt par ruka! Better luck next time.' : `🎉 Teer +${won} Pts par ruka! Points jud gaye.`;
-        if (won > 0) await syncPointsToCloud(won);
-        else saveLocal();
+    let wheelRot = 0;
+    window.doSpin = function() {
+      if (!user) return openAuthModal('signup');
+      const rewards = [0, 1, 2, 0, 1, 3];
+      const idx = Math.floor(Math.random() * 6);
+      const stop = 360 - (idx * 60 + 30);
+      wheelRot = wheelRot - (wheelRot % 360) + (360 * 5) + stop;
+      document.getElementById('wheelSvg').style.transform = `rotate(${wheelRot}deg)`;
+      document.getElementById('spinBtn').disabled = true;
+      setTimeout(() => {
+        const won = rewards[idx];
+        document.getElementById('spinMsg').textContent = won ? `🎉 तीर +${won} XP पर रुका!` : '😅 0 XP पर रुका!';
+        if (won > 0) addXP(won);
+        document.getElementById('spinBtn').disabled = false;
       }, 3300);
     };
 
-    // Strictly 1-Per-Day Ad Reward
-    window.openAdModal = function() {
-      if (local.adClaimed) return;
-      document.getElementById('ad-modal').classList.remove('hidden');
+    window.ansQuiz = function(ok) {
+      if (!ok) return notify('❌ गलत जवाब! सही उत्तर: फतेहगढ़');
+      notify('✅ सही जवाब! +2 XP मिले');
+      addXP(2);
     };
 
-    window.claimDailyAdReward = async function() {
-      if (local.adClaimed) return;
-      local.adClaimed = true;
-      document.getElementById('ad-modal').classList.add('hidden');
-      await syncPointsToCloud(3);
-    };
-
-    function renderUI() {
-      document.getElementById('user-points').innerText = local.points;
-      document.getElementById('rank-tab-pts').innerText = local.points;
-      document.getElementById('display-name').innerText = local.name || 'Dangari Niwasi';
-      document.getElementById('display-username').innerText = local.username ? `@${local.username}` : '@guest';
-      document.getElementById('display-ward').innerText = local.ward || 'Dangari';
-
-      const chkBtn = document.getElementById('checkin-btn');
-      if (local.lastCheckIn === today) {
-        chkBtn.innerText = '✅ Done';
-        chkBtn.disabled = true;
-        chkBtn.className = 'bg-slate-200 dark:bg-slate-800 text-slate-500 font-bold px-3.5 py-2 rounded-xl text-xs';
-      }
-
-      const remSpins = Math.max(0, 2 - local.spinsUsed);
-      document.getElementById('spin-limit-badge').innerText = `${remSpins} Bache Hain`;
-      const spinBtn = document.getElementById('spin-btn');
-      if (remSpins === 0) {
-        spinBtn.disabled = true;
-        spinBtn.innerText = 'Aaj ke 2 Spins Khatam';
-        spinBtn.className = 'w-full bg-slate-300 dark:bg-slate-800 text-slate-500 font-bold py-3 rounded-xl text-xs';
-      }
-
-      const adBtn = document.getElementById('daily-ad-btn');
-      if (local.adClaimed) {
-        adBtn.disabled = true;
-        adBtn.innerText = '✅ Aaj ka Sponsor Bonus Le Liya (Kal Phir Milega)';
-        adBtn.className = 'mt-2.5 w-full bg-slate-200 dark:bg-slate-800 text-slate-500 font-bold py-2.5 rounded-xl text-xs';
-      }
-
-      renderQuiz();
-    }
-
-    window.switchTab = function(tab) {
-      ['home', 'rank', 'quiz', 'spin', 'mandi'].forEach(t => {
-        document.getElementById('view-' + t).classList.add('hidden');
-        document.getElementById('tab-' + t).className = 'tab-btn bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-semibold py-2 rounded-xl text-[11px] border border-slate-200 dark:border-slate-800';
+    // ADMIN FUNCTIONS
+    function checkAdmin() {
+      if (!user) { document.getElementById('adminStatus').textContent = 'पहले Login करें'; return; }
+      db.ref('admins/' + user.uid).once('value', s => {
+        const ok = s.val() === true;
+        document.getElementById('adminStatus').textContent = ok ? '✅ Verified Admin' : '❌ Admin Access नहीं है';
+        document.getElementById('adminTools').classList.toggle('hidden', !ok);
       });
-      document.getElementById('view-' + tab).classList.remove('hidden');
-      document.getElementById('tab-' + tab).className = 'tab-btn bg-emerald-600 text-white font-semibold py-2 rounded-xl text-[11px] shadow-sm';
-    };
-
-    window.toggleMenu = () => document.getElementById('dots-menu').classList.toggle('hidden');
-    window.toggleDarkMode = () => {
-      const isDark = document.documentElement.classList.toggle('dark');
-      document.getElementById('theme-label').innerText = isDark ? 'Dark' : 'Light';
-    };
-    window.openRulesModal = () => document.getElementById('rules-modal').classList.remove('hidden');
-    window.copySuvichar = () => {
-      navigator.clipboard.writeText(document.getElementById('suvichar-text').innerText);
-      alert('Suvichar copy ho gaya!');
-    };
-    window.shareWhatsApp = () => {
-      const msg = encodeURIComponent(`🌾 *Apna Dangari Digital Portal* 🌾\nGaon ki suchna, mandi bhav, aur Dangari Live Leaderboard me apna @username banane ke liye abhi kholein:\n${window.location.href}`);
-      window.open(`https://wa.me/?text=${msg}`, '_blank');
-    };
-    window.shareRankWhatsApp = () => {
-      const rank = document.getElementById('my-rank-badge').innerText;
-      const msg = encodeURIComponent(`🏆 *Apna Dangari Live Leaderboard* 🏆\nMeri rank abhi *${rank}* (@${local.username} • ${local.points} Pts) chal rahi hai! Mujhe follow karein aur rank me hara ke dikhayein:\n${window.location.href}`);
-      window.open(`https://wa.me/?text=${msg}`, '_blank');
-    };
-
-    if (!local.username) {
-      document.getElementById('register-modal').classList.remove('hidden');
     }
-    renderUI();
+    async function pubAnn() { const t = document.getElementById('admAnn').value.trim(); if (t) { await db.ref('announcements').push({ text: t, by: user.uid, createdAt: Date.now() }); document.getElementById('admAnn').value = ''; notify('✅ सूचना प्रकाशित'); } }
+    async function pubEvent() { const title = document.getElementById('admEvTitle').value.trim(), date = document.getElementById('admEvDate').value; if (title) { await db.ref('events').push({ title, date }); notify('✅ Event जुड़ गया'); } }
+    async function pubPoll() { const q = document.getElementById('admPollQ').value.trim(), o = document.getElementById('admPollOpts').value.split('\n').map(x => x.trim()).filter(Boolean); if (q && o.length > 1) { await db.ref('polls/active').set({ id: 'p_' + Date.now(), question: q, options: o }); notify('✅ नया Poll चालू हो गया'); } }
   </script>
 </body>
 </html>
