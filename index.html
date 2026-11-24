@@ -3,54 +3,62 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Apna Dangari - Gaon Ka Digital Portal</title>
+  <title>Apna Dangari | हमारा गाँव, हमारी पहचान</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
   <script>tailwind.config = { darkMode: 'class' }</script>
   <style>
-    body { font-family: 'Poppins', sans-serif; }
-    .wheel-svg { transition: transform 3.2s cubic-bezier(0.15, 0.75, 0.15, 1); }
+    :root{--green:#087f5b;--green2:#0ba879;--bg:#f3f7f5}
+    *{box-sizing:border-box}
+    body{font-family:'Hind','Poppins',sans-serif;background:var(--bg)}
+    .font-poppins{font-family:Poppins,sans-serif}
+    .dark body{background:#071713;color:#e5eee9}
+    .dark .surface{background:#10231d!important;border-color:#1e3b30!important;color:#e5eee9}
+    .dark .muted{color:#a7b9b0!important}
+    .dark input,.dark textarea,.dark select{background:#0b1c17!important;color:#e5eee9!important;border-color:#29463a!important}
+    .tab{min-width:0}.tab.active{background:#087f5b;color:#fff;box-shadow:0 5px 14px #087f5b30}
+    .page{display:none}.page.active{display:block}
+    .card{background:white;border:1px solid #e4ece7;border-radius:20px;box-shadow:0 2px 8px #12331b08}
+    .btn{border-radius:13px;padding:10px 14px;font-weight:700;font-size:13px}
+    .btn-primary{background:#087f5b;color:white}.btn-soft{background:#e8f5ef;color:#087f5b}
+    .pill{border-radius:999px;padding:4px 9px;font-size:11px;font-weight:700}
+    .bottom-nav{padding-bottom:max(8px,env(safe-area-inset-bottom))}
+    input,textarea,select{width:100%;border:1px solid #dbe5df;border-radius:12px;padding:11px 12px;font-size:13px;background:#fff;outline:none}
+    input:focus,textarea:focus,select:focus{border-color:#0ba879;box-shadow:0 0 0 3px #0ba87920}
+    .progress{height:8px;background:#e6eee9;border-radius:99px;overflow:hidden}.progress>i{display:block;height:100%;background:#0ba879;border-radius:99px}
+    .modal{position:fixed;inset:0;background:#06140fc9;z-index:80;display:none;align-items:center;justify-content:center;padding:18px}
+    .modal.show{display:flex}.modalbox{width:min(100%,430px);max-height:88vh;overflow:auto;background:white;border-radius:22px;padding:20px}
+    .dark .modalbox{background:#10231d;color:#e5eee9}
+    .small{font-size:11px}.hide-scroll::-webkit-scrollbar{display:none}
+    @media(min-width:800px){.app-wrap{max-width:1180px;margin:auto}.desktop-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px}.bottom-nav{display:none!important}.desktop-tabs{display:flex!important}}
   </style>
 </head>
-<body class="bg-slate-100 text-slate-900 dark:bg-slate-950 dark:text-slate-100 pb-20 transition-colors duration-200">
+<body class="pb-24">
 
-  <!-- TOP HEADER WITH 3-DOTS MENU -->
-  <header class="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur border-b border-slate-200 dark:border-slate-800 px-4 py-3 flex items-center justify-between shadow-sm">
-    <div class="flex items-center gap-2.5">
-      <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-lg shadow">🌾</div>
-      <div>
-        <h1 class="text-base font-bold text-emerald-700 dark:text-emerald-400 leading-tight">Apna Dangari</h1>
-        <p class="text-[11px] text-slate-500 dark:text-slate-400">Gram Panchayat Dangari • Live</p>
-      </div>
-    </div>
+  <!-- TOAST -->
+  <div id="toast" class="hidden fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white text-xs font-bold px-4 py-2.5 rounded-full shadow-lg"></div>
 
-    <div class="flex items-center gap-2">
-      <button onclick="switchTab('rank')" class="bg-amber-100 dark:bg-amber-500/20 border border-amber-300 dark:border-amber-500/40 px-2.5 py-1 rounded-full text-xs font-bold text-amber-800 dark:text-amber-300 flex items-center gap-1">
-        ⭐ <span id="user-points">0</span> Pts
-      </button>
-
-      <!-- 3-DOTS MENU -->
-      <div class="relative">
-        <button onclick="toggleMenu()" class="w-8 h-8 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 flex items-center justify-center text-lg font-bold">⋮</button>
-        <div id="dots-menu" class="hidden absolute right-0 mt-2 w-52 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-50 text-xs">
-          <button onclick="toggleDarkMode(); toggleMenu();" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between">
-            <span>🌓 Dark / Light Mode</span>
-            <span id="theme-label" class="text-[10px] font-bold text-emerald-600">Light</span>
-          </button>
-          <button onclick="openRulesModal(); toggleMenu();" class="w-full text-left px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800">
-            📜 Points & Rules Guide
-          </button>
-          <div class="border-t border-slate-200 dark:border-slate-800 my-1"></div>
-          <button onclick="shareWhatsApp(); toggleMenu();" class="w-full text-left px-4 py-2.5 text-emerald-600 dark:text-emerald-400 font-semibold hover:bg-slate-100 dark:hover:bg-slate-800">
-            📲 WhatsApp par Share Karein
-          </button>
+  <!-- HEADER -->
+  <header class="sticky top-0 z-40 surface bg-white/95 backdrop-blur border-b border-slate-200 px-4 py-3">
+    <div class="app-wrap flex items-center justify-between">
+      <div class="flex items-center gap-2.5 cursor-pointer" onclick="go('home')">
+        <div class="w-9 h-9 rounded-xl bg-emerald-700 text-white flex items-center justify-center text-lg shadow">🌾</div>
+        <div>
+          <h1 class="text-base font-bold text-emerald-800 dark:text-emerald-400 leading-tight">Apna Dangari</h1>
+          <p class="small muted text-slate-500">हमारा गाँव • हमारी पहचान</p>
         </div>
       </div>
+      <div class="flex items-center gap-2">
+        <button onclick="go('rank')" class="pill bg-amber-100 text-amber-800">⭐ <span id="headerPoints">0</span> XP</button>
+        <button onclick="toggleTheme()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-sm">🌙</button>
+        <button onclick="go('profile')" class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-sm">👤</button>
+      </div>
     </div>
+    <div id="topTabs" class="desktop-tabs hidden gap-2 mt-3 overflow-x-auto hide-scroll app-wrap"></div>
   </header>
 
-  <!-- TOP BANNER AD (ADSTERRA 320x50 LIVE) -->
-  <div id="ad-top-banner" class="mx-4 mt-3 flex flex-col items-center justify-center overflow-hidden">
+  <!-- ADSTERRA 320x50 BANNER -->
+  <div class="app-wrap px-4 mt-3 flex flex-col items-center">
     <span class="text-[9px] uppercase tracking-widest text-slate-400 mb-1">Advertisement</span>
     <div class="min-h-[50px] flex items-center justify-center">
       <script>
@@ -66,92 +74,265 @@
     </div>
   </div>
 
-  <!-- NAVIGATION TABS -->
-  <nav class="grid grid-cols-5 gap-1.5 px-4 mt-3">
-    <button onclick="switchTab('home')" id="tab-home" class="tab-btn bg-emerald-600 text-white font-semibold py-2 rounded-xl text-[11px] shadow-sm">🏠 Gaon</button>
-    <button onclick="switchTab('rank')" id="tab-rank" class="tab-btn bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-semibold py-2 rounded-xl text-[11px] border border-slate-200 dark:border-slate-800">🏆 Rank</button>
-    <button onclick="switchTab('quiz')" id="tab-quiz" class="tab-btn bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-semibold py-2 rounded-xl text-[11px] border border-slate-200 dark:border-slate-800">🧠 Quiz</button>
-    <button onclick="switchTab('spin')" id="tab-spin" class="tab-btn bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-semibold py-2 rounded-xl text-[11px] border border-slate-200 dark:border-slate-800">🎡 Spin</button>
-    <button onclick="switchTab('mandi')" id="tab-mandi" class="tab-btn bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-semibold py-2 rounded-xl text-[11px] border border-slate-200 dark:border-slate-800">🌾 Bhav</button>
-  </nav>
+  <div class="app-wrap px-4 mt-4">
 
-  <!-- TAB 1: GAON HOME -->
-  <main id="view-home" class="px-4 mt-4 space-y-4">
-    <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex items-center justify-between">
-      <div>
-        <p class="text-[11px] text-slate-500">Ram-Ram Sa 🙏</p>
-        <h2 id="display-name" class="text-base font-bold">Loading...</h2>
-        <p class="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">
-          <span id="display-username">@user</span> • <span id="display-ward">Dangari</span>
-        </p>
+    <!-- PAGE 1: HOME -->
+    <section id="page-home" class="page active space-y-4">
+      <div class="desktop-grid">
+        <div class="space-y-4">
+          <!-- HERO -->
+          <div class="bg-gradient-to-br from-emerald-700 to-teal-800 text-white p-5 rounded-3xl shadow-md">
+            <p class="text-xs text-emerald-100">राम-राम सा 🙏</p>
+            <h2 class="text-xl font-bold mt-0.5">Apna Dangari</h2>
+            <p class="text-xs text-emerald-50 mt-1">गाँव से जुड़ें, खेलें, सीखें और मिलकर आगे बढ़ें।</p>
+            <div class="flex gap-2 mt-4">
+              <button onclick="go('community')" class="btn bg-white text-emerald-900">💬 Community में जाएँ</button>
+              <button onclick="go('games')" class="btn bg-emerald-900/50 text-white border border-emerald-400/30">🎮 Games खेलें</button>
+            </div>
+          </div>
+
+          <!-- QUICK GRID -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            <button onclick="go('games')" class="card surface p-3.5 text-left">
+              <div class="text-xl">🎮</div>
+              <b class="text-xs block mt-1">Games Zone</b>
+              <span class="small muted text-slate-500">Quiz, Puzzle, Memory</span>
+            </button>
+            <button onclick="go('community')" class="card surface p-3.5 text-left">
+              <div class="text-xl">🫂</div>
+              <b class="text-xs block mt-1">Community</b>
+              <span class="small muted text-slate-500">Posts और चर्चा</span>
+            </button>
+            <button onclick="go('events')" class="card surface p-3.5 text-left">
+              <div class="text-xl">📅</div>
+              <b class="text-xs block mt-1">Events</b>
+              <span class="small muted text-slate-500">गाँव के कार्यक्रम</span>
+            </button>
+            <button onclick="go('rank')" class="card surface p-3.5 text-left">
+              <div class="text-xl">🏆</div>
+              <b class="text-xs block mt-1">Leaderboard</b>
+              <span class="small muted text-slate-500">साप्ताहिक रैंक</span>
+            </button>
+          </div>
+
+          <!-- USER SUMMARY CARD -->
+          <div class="card surface p-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="small muted text-slate-500">आपका स्वागत है</p>
+                <h3 id="homeName" class="text-base font-bold">Guest</h3>
+                <p id="homeHandle" class="small text-emerald-700 dark:text-emerald-400">Account बनाने के लिए Profile खोलें</p>
+              </div>
+              <button onclick="openAccount()" class="btn btn-soft">Profile सेट करें</button>
+            </div>
+            <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-center">
+              <div><b id="homePoints" class="text-base text-amber-600">0</b><div class="small muted text-slate-500">XP Points</div></div>
+              <div><b id="homeRank" class="text-base text-emerald-700">—</b><div class="small muted text-slate-500">आपकी Rank</div></div>
+              <div><b id="homePosts" class="text-base">0</b><div class="small muted text-slate-500">आपकी Posts</div></div>
+            </div>
+          </div>
+
+          <!-- HOME POLL -->
+          <div class="card surface p-4">
+            <div class="flex justify-between items-center">
+              <span class="pill bg-emerald-100 text-emerald-800">🗳️ गाँव की आवाज़</span>
+              <span class="small muted text-slate-400">Community Poll</span>
+            </div>
+            <h3 id="homePollQuestion" class="font-bold text-sm mt-2">डांगरी में सबसे पहले किस काम पर ध्यान देना चाहिए?</h3>
+            <div id="homePollOptions" class="space-y-2 mt-3"></div>
+            <button onclick="go('polls')" class="text-xs font-bold text-emerald-700 mt-3">चर्चा और Poll देखें →</button>
+          </div>
+
+          <!-- HOME FEED -->
+          <div class="card surface p-4">
+            <div class="flex justify-between items-center mb-3">
+              <h3 class="font-bold text-sm">🔥 Community की ताज़ा Posts</h3>
+              <button onclick="go('community')" class="text-xs font-bold text-emerald-700">सभी देखें →</button>
+            </div>
+            <div id="homeFeed" class="space-y-3"><p class="text-xs text-slate-400">Posts लोड हो रही हैं…</p></div>
+          </div>
+        </div>
+
+        <!-- SIDEBAR -->
+        <aside class="space-y-4 mt-4 md:mt-0">
+          <div class="card surface p-4 bg-amber-50/60">
+            <div class="flex justify-between items-center">
+              <b class="text-xs text-amber-800">✍️ आज री मारवाड़ी बात</b>
+              <button onclick="copyQuote()" class="small font-bold text-amber-700 underline">Copy करें</button>
+            </div>
+            <p id="suvichar" class="text-xs mt-2 italic leading-relaxed">"जठे एकता है, वठे गाँव री तरक्की है।"</p>
+          </div>
+
+          <div class="card surface p-4 border-l-4 border-emerald-700">
+            <b class="text-xs text-emerald-800">📢 ग्राम पंचायत सूचना</b>
+            <p class="text-xs mt-1.5 leading-relaxed">ग्राम सभा, सरकारी योजनाओं और पंचायत से जुड़ी सत्यापित सूचनाएँ यहाँ प्रकाशित होंगी।</p>
+            <span class="small muted text-slate-400 block mt-2">केवल सत्यापित सूचना को आधिकारिक मानें</span>
+          </div>
+
+          <div class="card surface p-4">
+            <b class="text-xs block mb-2.5">🚨 Emergency Helpline</b>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <a href="tel:112" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 font-bold">🚓 Police 112</a>
+              <a href="tel:108" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 font-bold">🚑 Ambulance 108</a>
+              <a href="tel:181" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 font-bold">📢 181</a>
+              <a href="tel:1912" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 font-bold">⚡ 1912</a>
+            </div>
+            <p class="small muted text-slate-400 mt-2">Emergency में स्थानीय उपलब्धता की पुष्टि करें।</p>
+          </div>
+        </aside>
       </div>
-      <button id="checkin-btn" onclick="dailyCheckIn()" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-3.5 py-2 rounded-xl text-xs shadow">
-        📅 Check-in (+2)
-      </button>
-    </div>
+    </section>
 
-    <!-- MARWARI SUVICHAR -->
-    <div class="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-slate-900 dark:to-slate-800 p-4 rounded-2xl border border-amber-200 dark:border-amber-500/30">
-      <div class="flex justify-between items-center mb-1">
-        <span class="text-[11px] font-bold text-amber-700 dark:text-amber-400">✍️ Aaj Ri Marwari Baat</span>
-        <button onclick="copySuvichar()" class="text-[11px] bg-white dark:bg-slate-700 px-2 py-0.5 rounded-md border border-amber-200 dark:border-slate-600 font-medium">Copy</button>
+    <!-- PAGE 2: COMMUNITY -->
+    <section id="page-community" class="page space-y-4">
+      <div class="card surface p-4">
+        <div class="flex justify-between items-center">
+          <div>
+            <h2 class="font-bold text-base">🫂 Dangari Community</h2>
+            <p class="small muted text-slate-500">गाँव की बातें, सुझाव और अच्छी खबरें</p>
+          </div>
+          <span id="postCount" class="pill bg-emerald-100 text-emerald-800">Live</span>
+        </div>
+        <textarea id="postText" rows="3" class="mt-3" placeholder="अपने गाँव की बात, सुझाव या अच्छी खबर लिखें..."></textarea>
+        <div class="flex justify-between items-center mt-2.5">
+          <span class="small muted text-slate-400">सम्मानजनक भाषा रखें • निजी जानकारी न डालें</span>
+          <button onclick="createPost()" class="btn btn-primary">Post करें ↗</button>
+        </div>
+        <div class="flex gap-2 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <button onclick="go('community')" class="pill bg-emerald-700 text-white">सभी Posts</button>
+          <button onclick="go('events')" class="pill bg-slate-100 text-slate-700">Events</button>
+          <button onclick="go('polls')" class="pill bg-slate-100 text-slate-700">Polls</button>
+        </div>
       </div>
-      <p id="suvichar-text" class="text-xs text-slate-700 dark:text-slate-200 italic leading-relaxed">
-        "जठे संतोष है वठे ही सुख है, अर जठे एकता है वठे ही गांव री तरक्की है।"
-      </p>
-    </div>
+      <div id="communityFeed" class="space-y-3"><p class="text-xs text-slate-400">Community लोड हो रही है…</p></div>
+    </section>
 
-    <!-- LIVE GAON POLL (FIREBASE SYNCED) -->
-    <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
-      <div class="flex justify-between items-center">
-        <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase">🗳️ Gaon Ki Awaaz (Live Poll)</span>
-        <span class="text-[11px] text-slate-400">+2 Pts</span>
+    <!-- PAGE 3: GAMES -->
+    <section id="page-games" class="page space-y-4">
+      <div class="card surface p-4">
+        <h2 class="font-bold text-base">🎮 Games Zone</h2>
+        <p class="small muted text-slate-500">सीखें, खेलें और अपना Personal Best बनाएँ</p>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-3">
+          <button onclick="openGame('quiz')" class="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 text-left">
+            <div class="text-2xl">🧠</div><b class="text-xs block mt-1">Daily Quiz</b><span class="small muted">ज्ञान चुनौती</span>
+          </button>
+          <button onclick="openGame('memory')" class="p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 text-left">
+            <div class="text-2xl">🃏</div><b class="text-xs block mt-1">Memory Match</b><span class="small muted">याददाश्त गेम</span>
+          </button>
+          <button onclick="openGame('tic')" class="p-3 rounded-2xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 text-left">
+            <div class="text-2xl">⭕</div><b class="text-xs block mt-1">Tic Tac Toe</b><span class="small muted">दो खिलाड़ियों का खेल</span>
+          </button>
+          <button onclick="openGame('number')" class="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 text-left">
+            <div class="text-2xl">🔢</div><b class="text-xs block mt-1">Number Puzzle</b><span class="small muted">दिमागी चुनौती</span>
+          </button>
+        </div>
       </div>
-      <h3 class="text-sm font-bold mt-1.5">Dangari me sabse pehle kis kaam par dhyan dena chahiye?</h3>
-      <div id="poll-options" class="mt-3 space-y-2 text-xs"></div>
-      <p id="poll-status" class="text-[11px] text-slate-500 mt-2"></p>
-    </div>
-
-    <!-- SARPANCH DESK -->
-    <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border-l-4 border-emerald-600 border-y border-r border-slate-200 dark:border-slate-800">
-      <span class="text-[10px] bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded font-bold">Gram Panchayat Suchna</span>
-      <h3 class="text-sm font-bold mt-1.5">Sarpanch Desk: Shri Bherusingh Bhati</h3>
-      <p class="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
-        Dangari gram panchayat ke sabhi niwasiyon ke liye sarkari yojanaon aur gram sabha ki jankari yahan uplabdh rahegi.
-      </p>
-    </div>
-
-    <!-- EMERGENCY HELPLINE -->
-    <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
-      <h3 class="text-sm font-bold mb-2.5">🚨 Emergency Helpline</h3>
-      <div class="grid grid-cols-2 gap-2 text-xs">
-        <a href="tel:112" class="bg-slate-50 dark:bg-slate-800 p-2.5 rounded-xl flex justify-between border border-slate-200 dark:border-slate-700"><span>🚓 Police</span><span class="font-bold text-emerald-600">112</span></a>
-        <a href="tel:108" class="bg-slate-50 dark:bg-slate-800 p-2.5 rounded-xl flex justify-between border border-slate-200 dark:border-slate-700"><span>🚑 Ambulance</span><span class="font-bold text-rose-600">108</span></a>
-        <a href="tel:18001806507" class="bg-slate-50 dark:bg-slate-800 p-2.5 rounded-xl flex justify-between border border-slate-200 dark:border-slate-700"><span>⚡ Bijli</span><span class="font-bold text-sky-600">Call</span></a>
-        <a href="tel:181" class="bg-slate-50 dark:bg-slate-800 p-2.5 rounded-xl flex justify-between border border-slate-200 dark:border-slate-700"><span>📢 CM Helpline</span><span class="font-bold text-amber-600">181</span></a>
+      <div id="gameArea" class="card surface p-5 text-center">
+        <div class="text-3xl">🏅</div>
+        <h3 class="font-bold text-sm mt-2">अपना अगला Challenge चुनें</h3>
+        <p class="small muted text-slate-500 mt-1">Games के Scores अभ्यास और मनोरंजन के लिए हैं।</p>
       </div>
-    </div>
-  </main>
+    </section>
 
-  <!-- TAB 2: REAL LIVE LEADERBOARD & FOLLOW SYSTEM -->
-  <section id="view-rank" class="hidden px-4 mt-4 space-y-4">
-    <div class="bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-4 rounded-2xl shadow">
-      <div class="flex justify-between items-center">
+    <!-- PAGE 4: RANK -->
+    <section id="page-rank" class="page space-y-4">
+      <div class="bg-gradient-to-r from-emerald-700 to-teal-700 text-white p-5 rounded-3xl">
+        <p class="text-xs text-emerald-100">आपकी Community Progress</p>
+        <h2 id="rankPoints" class="text-2xl font-bold mt-1">0 XP</h2>
+        <p class="small text-emerald-100 mt-1">सीखने, भाग लेने और योगदान से अपना रिकॉर्ड बनाएं।</p>
+      </div>
+      <div class="card surface p-4">
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="font-bold text-sm">🏆 Dangari Leaderboard</h3>
+          <span class="pill bg-emerald-100 text-emerald-800">Live</span>
+        </div>
+        <div id="leaderboard" class="space-y-2"><p class="text-xs text-slate-400">Leaderboard लोड हो रहा है…</p></div>
+        <p class="small muted text-slate-400 mt-3">नोट: XP मनोरंजन/भागीदारी स्कोर है, कोई नकद इनाम या आधिकारिक पंचायत रैंक नहीं। सार्वजनिक रैंकिंग के लिए प्रोफाइल में दिखने वाला नाम ही इस्तेमाल होगा।</p>
+      </div>
+    </section>
+
+    <!-- PAGE 5: POLLS -->
+    <section id="page-polls" class="page space-y-4">
+      <div class="card surface p-4">
+        <h2 class="font-bold text-base">🗳️ Village Polls</h2>
+        <p class="small muted text-slate-500">ये केवल समुदाय की राय है, आधिकारिक मतदान नहीं।</p>
+        <div id="pollPage" class="mt-4"></div>
+      </div>
+      <div class="card surface p-4 bg-slate-50">
+        <b class="text-xs">💡 चर्चा का नियम</b>
+        <p class="small muted text-slate-500 mt-1">व्यक्तिगत आरोप, जाति/धर्म पर टिप्पणी या धमकी न करें। विकास के मुद्दों पर सम्मानपूर्वक बात करें।</p>
+      </div>
+    </section>
+
+    <!-- PAGE 6: EVENTS -->
+    <section id="page-events" class="page space-y-4">
+      <div class="card surface p-4">
+        <h2 class="font-bold text-base">📅 Dangari Events</h2>
+        <p class="small muted text-slate-500">खेल, बैठकें, प्रतियोगिताएँ और सामुदायिक कार्यक्रम</p>
+      </div>
+      <div id="eventsList" class="space-y-3"></div>
+      <div class="card surface p-4 space-y-2.5">
+        <b class="text-sm">कार्यक्रम सुझाएँ</b>
+        <p class="small muted text-slate-500">आपका सुझाव Admin Review के बाद प्रकाशित हो सकता है।</p>
+        <input id="eventIdea" type="text" placeholder="जैसे: गाँव में कबड्डी प्रतियोगिता या सफाई अभियान" />
+        <button onclick="suggestEvent()" class="btn btn-primary w-full">सुझाव भेजें</button>
+      </div>
+    </section>
+
+    <!-- PAGE 7: VILLAGE DESK -->
+    <section id="page-village" class="page space-y-4">
+      <div class="card surface p-4">
+        <h2 class="font-bold text-base">🌾 Village Desk</h2>
+        <p class="small muted text-slate-500">डांगरी से जुड़ी उपयोगी जानकारी</p>
+        <div class="grid grid-cols-2 gap-2.5 mt-3 text-xs">
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800"><b>🏛️ पंचायत सूचना</b><p class="small muted mt-1">सत्यापित घोषणाएँ और ग्राम सभा अपडेट।</p></div>
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800"><b>🛣️ विकास Tracker</b><p class="small muted mt-1">काम की स्थिति, फोटो और तारीख Admin से सत्यापित।</p></div>
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800"><b>📸 Photo Wall</b><p class="small muted mt-1">गाँव की यादें और कार्यक्रम।</p></div>
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800"><b>🌱 Village Mission</b><p class="small muted mt-1">सफाई, पौधारोपण और जनभागीदारी।</p></div>
+        </div>
+      </div>
+      <div class="card surface p-4">
+        <h3 class="font-bold text-sm">🌾 Mandi Bhav</h3>
+        <p class="small muted text-slate-500 mt-1">भाव रोज बदलते हैं। नीचे दिए गए भाव तभी प्रकाशित करें जब ताज़ा मंडी स्रोत से पुष्टि हो।</p>
+        <div id="mandiRows" class="mt-3 text-xs"></div>
+        <p class="small text-amber-700 mt-2">अभी Live Market API जुड़ा नहीं है; गलत/पुराने भाव को वर्तमान भाव न मानें।</p>
+      </div>
+    </section>
+
+    <!-- PAGE 8: PROFILE -->
+    <section id="page-profile" class="page space-y-4">
+      <div class="card surface p-4 space-y-3">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-2xl">🌾</div>
+          <div>
+            <h2 id="profileTitle" class="font-bold text-base">Guest</h2>
+            <p id="profileSub" class="small muted text-slate-500">Sign in नहीं किया</p>
+          </div>
+        </div>
+        <div><label class="small font-bold block mb-1">पूरा नाम</label><input id="profileName" type="text" placeholder="अपना नाम लिखें" /></div>
+        <div><label class="small font-bold block mb-1">Username (एक बार चुनें)</label><input id="profileUsername" type="text" placeholder="e.g. ramesh_dangari" /></div>
         <div>
-          <p class="text-xs text-emerald-100">Aapki Live Dangari Rank</p>
-          <h2 id="my-rank-badge" class="text-2xl font-bold mt-0.5">#--</h2>
+          <label class="small font-bold block mb-1">मोहल्ला / क्षेत्र</label>
+          <select id="profileWard">
+            <option value="Main Market, Dangari">Main Market, Dangari</option>
+            <option value="Bhati Mohalla, Dangari">Bhati Mohalla, Dangari</option>
+            <option value="Bus Stand, Dangari">Bus Stand, Dangari</option>
+            <option value="Meghwal Basti, Dangari">Meghwal Basti, Dangari</option>
+            <option value="Fatehgarh / Aas-paas">Fatehgarh / Aas-paas</option>
+          </select>
         </div>
-        <div class="text-right">
-          <p class="text-xs text-emerald-100">Followers: <span id="my-followers-count" class="font-bold">0</span></p>
-          <p class="text-xl font-bold"><span id="rank-tab-pts">0</span> Pts</p>
-        </div>
+        <button onclick="saveProfile()" class="btn btn-primary w-full">Profile Save करें</button>
       </div>
-      <button onclick="shareRankWhatsApp()" class="mt-3 w-full bg-white text-emerald-800 font-bold py-2 rounded-xl text-xs shadow">
-        🏆 Apni Live Rank WhatsApp par Share Karein
-      </button>
-    </div>
 
-    <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
+      <div class="card surface p-4 space-y-3">
+        <h3 class="font-bold text-sm">Account</h3>
+        <p id="authStatus" class="small muted text-slate-500">आप Guest के रूप में देख रहे हैं।</p>
+        <div class="grid grid-cols-3 gap-2">
+          <button onclick="openAuth('login')" class="btn btn-soft">Login</button>
+          <button onclick="openAuth('signup')" class="btn btn-primary">Create Account</button>
+          <button onclick="logout()" class="btn bg-slate-100 text-slate-700">Logout</button>
+        </div>
+        <button onclick="go('admin')" class="text-xs font-boler border-slate-200 dark:border-slate-800">
       <div class="flex justify-between items-center mb-3">
         <h3 class="text-sm font-bold">🔥 Dangari Live Leaderboard</h3>
         <span class="text-[10px] text-emerald-600 font-semibold flex items-center gap-1">● Live Sync</span>
