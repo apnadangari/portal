@@ -2,139 +2,144 @@
 <html lang="hi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Apna Dangari | हमारा गाँव, हमारी पहचान</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Apna Dangari | हमारा गाँव • हमारी पहचान</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script>tailwind.config = { darkMode: 'class' }</script>
   <style>
-    body{font-family:'Hind','Poppins',sans-serif;background:#f3f7f5;margin:0;padding-bottom:85px}
+    body{font-family:'Hind',sans-serif;background:#f3f7f5;color:#0f172a;padding-bottom:84px;-webkit-tap-highlight-color:transparent}
     .dark body{background:#071713;color:#e5eee9}
-    .dark .surface{background:#10231d!important;border-color:#1e3b30!important;color:#e5eee9}
-    .dark input,.dark textarea,.dark select{background:#0b1c17!important;color:#e5eee9!important;border-color:#29463a!important}
+    .dark .surface{background:#10231d!important;border-color:#1e3b30!important}
+    .dark input,.dark textarea,.dark select{background:#0b1c17!important;border-color:#234438!important;color:#fff!important}
     .page{display:none}.page.active{display:block}
     .tab.active{background:#087f5b;color:#fff}
-    .modal{position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:9999;display:none;align-items:center;justify-content:center;padding:16px}
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:90;display:none;align-items:center;justify-content:center;padding:16px}
     .modal.show{display:flex}
     .wheel-svg{transition:transform 3.2s cubic-bezier(0.15,0.75,0.15,1)}
-    .progress{height:8px;background:#e6eee9;border-radius:99px;overflow:hidden}.progress>i{display:block;height:100%;background:#0ba879}
+    canvas{touch-action:none}
   </style>
 </head>
 <body>
 
   <!-- TOP HEADER -->
-  <header class="sticky top-0 z-50 surface bg-white/95 backdrop-blur border-b border-slate-200 px-4 py-3 flex items-center justify-between shadow-sm">
+  <header class="sticky top-0 z-50 surface bg-white/95 backdrop-blur border-b border-emerald-100 px-4 py-2.5 flex items-center justify-between">
     <div onclick="go('home')" class="flex items-center gap-2 cursor-pointer">
       <span class="text-2xl">🌾</span>
       <div>
-        <h1 class="text-base font-bold text-emerald-800 dark:text-emerald-400 leading-none">Apna Dangari</h1>
+        <h1 class="text-base font-bold text-emerald-800 dark:text-emerald-400 leading-tight">Apna Dangari</h1>
         <span class="text-[11px] text-slate-500">हमारा गाँव • हमारी पहचान</span>
       </div>
     </div>
     <div class="flex items-center gap-2">
-      <button type="button" onclick="go('rank')" class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1 rounded-full">⭐ <b id="ptsBadge">0</b> XP</button>
-      <button type="button" onclick="toggleTheme()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-sm">🌙</button>
-      <button type="button" onclick="openAccount()" class="bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow">👤 Account</button>
+      <button type="button" onclick="go('rank')" class="bg-amber-100 text-amber-900 font-bold text-xs px-2.5 py-1.5 rounded-full">⭐ <span id="hdrPoints">0</span> XP</button>
+      <button type="button" onclick="toggleTheme()" class="w-8 h-8 rounded-full surface bg-emerald-50 text-sm">🌙</button>
+      <button type="button" onclick="openAccount()" id="hdrUserBtn" class="bg-emerald-700 text-white text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5">
+        <img id="hdrAvatar" src="" class="w-4 h-4 rounded-full object-cover hidden" />
+        <span id="hdrBtnTxt">👤 Account</span>
+      </button>
     </div>
   </header>
 
   <!-- TOAST -->
-  <div id="toast" class="hidden fixed top-16 left-1/2 -translate-x-1/2 z-[10000] bg-slate-900 text-white text-xs font-bold px-4 py-2.5 rounded-full shadow-lg"></div>
+  <div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 z-[120] bg-slate-900 text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-xl hidden"></div>
 
-  <!-- SAFE ADSTERRA 320x50 BANNER -->
-  <div class="max-w-xl mx-auto px-4 mt-3 flex flex-col items-center relative z-10 overflow-hidden">
-    <span class="text-[9px] uppercase tracking-widest text-slate-400 mb-1">Advertisement</span>
-    <div class="w-[320px] h-[50px] overflow-hidden flex items-center justify-center">
-      <script>
-        atOptions = {
-          'key' : '8ffa9dd6e93b47211a944a3086f6fefe',
-          'format' : 'iframe',
-          'height' : 50,
-          'width' : 320,
-          'params' : {}
-        };
-      </script>
-      <script data-cfasync="false" src="https://bicea.org/22/8ffa9dd6e93b47211a944a3086f6fefe"></script>
+  <!-- ADSTERRA BANNER (320x50) -->
+  <div class="max-w-lg mx-auto px-3 pt-2.5">
+    <div class="surface bg-white border border-slate-200 rounded-xl py-1.5 px-2 text-center overflow-hidden">
+      <div class="text-[9px] uppercase tracking-widest text-slate-400 mb-1">Advertisement</div>
+      <div class="flex justify-center min-h-[50px]">
+        <script type="text/javascript">
+          atOptions = {
+            'key' : '37d6b180eeea06cdbc5f3ef9882f963b',
+            'format' : 'iframe',
+            'height' : 50,
+            'width' : 320,
+            'params' : {}
+          };
+        </script>
+        <script type="text/javascript" src="https://www.highperformanceformat.com/37d6b180eeea06cdbc5f3ef9882f963b/invoke.js"></script>
+      </div>
     </div>
   </div>
 
   <!-- MAIN CONTAINER -->
-  <main class="max-w-xl mx-auto px-4 mt-4 space-y-4 relative z-20">
+  <main class="max-w-lg mx-auto px-3 pt-3 space-y-4">
 
     <!-- 1. HOME PAGE -->
     <section id="page-home" class="page active space-y-4">
-      <div class="relative overflow-hidden rounded-3xl shadow-md text-white min-h-[190px] flex items-center" style="background: url('banner.jpg') center/cover no-repeat;">
-  <!-- बाएँ से दाएँ गहरा हरा ग्रेडिएंट ओवरले -->
-  <div class="absolute inset-0" style="background: linear-gradient(90deg, #064e3b 0%, rgba(6,78,59,0.92) 42%, rgba(6,78,59,0.25) 75%, rgba(6,78,59,0.05) 100%);"></div>
-
-  <!-- टेक्स्ट और बटन -->
-  <div class="relative z-10 p-5 sm:p-6 max-w-[85%]">
-    <p class="text-xs text-emerald-200 font-semibold">राम-राम सा 🙏</p>
-    <h2 class="text-xl sm:text-2xl font-bold mt-1 drop-shadow-sm">Apna Dangari Portal</h2>
-    <p class="text-xs text-emerald-50 mt-1 leading-relaxed">गाँव से जुड़ें, खेलें, सीखें और मिलकर आगे बढ़ें।</p>
-    <div class="flex flex-wrap gap-2.5 mt-4">
-      <button type="button" onclick="openAccount()" class="bg-white text-emerald-950 font-bold text-xs px-4 py-2.5 rounded-full shadow">
-        👤 Account / Login
-      </button>
-      <button type="button" onclick="go('games')" class="bg-emerald-800/90 hover:bg-emerald-700 text-white border border-emerald-400/40 font-bold text-xs px-4 py-2.5 rounded-full shadow">
-        🎮 Games & Spin
-      </button>
-    </div>
-  </div>
-      </div>
-      
-
-      <!-- PROFILE SUMMARY -->
-      <div class="surface bg-white p-4 rounded-2xl border border-slate-200 flex items-center justify-between">
-        <div>
-          <p class="text-[11px] text-slate-500">स्वागत है</p>
-          <h3 id="homeUserName" class="text-base font-bold">Guest</h3>
-          <p id="homeUserSub" class="text-xs text-emerald-700 dark:text-emerald-400">Account बनाने के लिए दाएँ बटन दबाएँ</p>
+      <!-- Hero Banner with banner.jpg & Gradient Overlay -->
+      <div class="relative overflow-hidden rounded-3xl shadow-md text-white min-h-[195px] flex items-center bg-emerald-950">
+        <img src="banner.jpg" alt="Apna Dangari" class="absolute inset-0 w-full h-full object-cover object-right" onerror="this.style.display='none'" />
+        <div class="absolute inset-0" style="background: linear-gradient(90deg, #064e3b 0%, rgba(6,78,59,0.95) 45%, rgba(6,78,59,0.35) 75%, rgba(6,78,59,0.05) 100%);"></div>
+        <div class="relative z-10 p-5 max-w-[88%]">
+          <p class="text-xs text-emerald-200 font-semibold">राम-राम सा 🙏</p>
+          <h2 class="text-xl font-bold mt-1">Apna Dangari Portal</h2>
+          <p class="text-xs text-emerald-50 mt-1 leading-relaxed">गाँव से जुड़ें, खेलें, सीखें और मिलकर आगे बढ़ें।</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <button type="button" onclick="openAccount()" class="bg-white text-emerald-950 font-bold text-xs px-4 py-2.5 rounded-full shadow">👤 Account / Login</button>
+            <button type="button" onclick="go('games')" class="bg-emerald-800/90 text-white border border-emerald-400/40 font-bold text-xs px-4 py-2.5 rounded-full shadow">🎮 Games & Spin</button>
+          </div>
         </div>
-        <button type="button" onclick="go('profile')" class="bg-emerald-50 text-emerald-800 font-bold text-xs px-3 py-2 rounded-xl border border-emerald-200">Profile →</button>
       </div>
 
-      <!-- QUICK MENU -->
-      <div class="grid grid-cols-4 gap-2 text-center text-[11px] font-bold">
-        <button type="button" onclick="go('community')" class="surface bg-white p-3 rounded-2xl border border-slate-200">🫂<br>Community</button>
-        <button type="button" onclick="go('games')" class="surface bg-white p-3 rounded-2xl border border-slate-200">🎡<br>Games/Spin</button>
-        <button type="button" onclick="go('events')" class="surface bg-white p-3 rounded-2xl border border-slate-200">📅<br>Events</button>
-        <button type="button" onclick="go('village')" class="surface bg-white p-3 rounded-2xl border border-slate-200">🌾<br>Mandi Bhav</button>
-      </div>
-
-      <!-- LIVE POLL -->
-      <div class="surface bg-white p-4 rounded-2xl border border-slate-200 space-y-2.5">
-        <div class="flex justify-between items-center">
-          <span class="text-[11px] font-bold bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full">🗳️ गाँव की आवाज़ (Live Poll)</span>
-          <button type="button" onclick="go('polls')" class="text-xs font-bold text-emerald-700">रिजल्ट देखें →</button>
+      <!-- User Status Card -->
+      <div class="surface bg-white p-4 rounded-2xl border border-slate-200 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <img id="homeAvatar" src="https://ui-avatars.com/api/?name=Guest&background=065f46&color=fff" class="w-11 h-11 rounded-full object-cover border-2 border-emerald-600" />
+          <div>
+            <p class="text-[11px] text-slate-500">स्वागत है</p>
+            <p id="homeName" class="font-bold text-base leading-tight">Guest ग्रामीण</p>
+            <p id="homeMeta" class="text-xs text-emerald-700 font-medium">लॉगिन करें और अपना गाँव चुनें</p>
+          </div>
         </div>
-        <h3 id="homePollQ" class="text-sm font-bold">डांगरी में सबसे पहले किस काम पर ध्यान देना चाहिए?</h3>
-        <div id="homePollOpts" class="space-y-2"></div>
+        <button type="button" onclick="go('profile')" class="bg-emerald-50 text-emerald-800 font-bold text-xs px-3 py-2 rounded-xl shrink-0">Profile →</button>
       </div>
 
-      <!-- SARPANCH DESK -->
-      <div class="surface bg-white p-4 rounded-2xl border-l-4 border-emerald-700 border-y border-r border-slate-200">
-        <b class="text-xs text-emerald-800 dark:text-emerald-400">📢 ग्राम पंचायत सूचना</b>
-        <p id="announcementBox" class="text-xs mt-1.5 leading-relaxed">ग्राम सभा, सरकारी योजनाओं और पंचायत से जुड़ी सत्यापित सूचनाएँ यहाँ प्रकाशित होंगी।</p>
+      <!-- Quick Menu -->
+      <div class="grid grid-cols-4 gap-2 text-center">
+        <button type="button" onclick="go('community')" class="surface bg-white p-3 rounded-2xl border border-slate-200"><div class="text-xl">🗣️</div><div class="text-[11px] font-bold mt-1">Community</div></button>
+        <button type="button" onclick="go('games')" class="surface bg-white p-3 rounded-2xl border border-slate-200"><div class="text-xl">🎮</div><div class="text-[11px] font-bold mt-1">Pro Games</div></button>
+        <button type="button" onclick="go('events')" class="surface bg-white p-3 rounded-2xl border border-slate-200"><div class="text-xl">📅</div><div class="text-[11px] font-bold mt-1">Events</div></button>
+        <button type="button" onclick="go('mandi')" class="surface bg-white p-3 rounded-2xl border border-slate-200"><div class="text-xl">🌾</div><div class="text-[11px] font-bold mt-1">Mandi Bhav</div></button>
       </div>
 
-      <!-- MARWARI SUVICHAR -->
-      <div class="bg-amber-50 dark:bg-slate-900 p-4 rounded-2xl border border-amber-200 dark:border-amber-700/40">
-        <div class="flex justify-between items-center">
-          <b class="text-xs text-amber-900 dark:text-amber-400">✍️ आज री मारवाड़ी बात</b>
-          <button type="button" onclick="copyQuote()" class="text-[11px] font-bold text-amber-700 underline">Copy करें</button>
+      <!-- Live Poll -->
+      <div class="surface bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="bg-emerald-100 text-emerald-900 text-xs font-bold px-2.5 py-1 rounded-full">🗳️ गाँव की आवाज़ (Live Poll)</span>
+          <button type="button" onclick="togglePollRes()" id="pollResBtn" class="text-xs font-bold text-emerald-700">रिजल्ट देखें →</button>
         </div>
-        <p id="suvichar" class="text-xs mt-1 italic">"जठे एकता है, वठे गाँव री तरक्की है।"</p>
+        <h3 id="pollQ" class="font-bold text-sm">डांगरी में सबसे पहले किस काम पर ध्यान देना चाहिए?</h3>
+        <div id="pollOpts" class="space-y-2"></div>
+        <p id="pollInfo" class="text-[11px] text-slate-500">वोट करने के लिए Login ज़रूरी है • 1 व्यक्ति = 1 वोट</p>
       </div>
 
-      <!-- EMERGENCY HELPLINE -->
-      <div class="surface bg-white p-4 rounded-2xl border border-slate-200">
-        <b class="text-xs block mb-2">🚨 Emergency Helpline</b>
+      <!-- Verified Announcements -->
+      <div class="surface bg-white p-4 rounded-2xl border-l-4 border-emerald-600 border border-slate-200 space-y-2">
+        <h3 class="font-bold text-sm text-emerald-800 dark:text-emerald-400">📢 ग्राम पंचायत सूचना</h3>
+        <div id="noticeList" class="space-y-2 text-xs text-slate-600 dark:text-slate-300">
+          <p>ग्राम सभा, सरकारी योजनाओं और पंचायत से जुड़ी सत्यापित सूचनाएँ यहाँ प्रकाशित होंगी।</p>
+        </div>
+      </div>
+
+      <!-- Marwari Quote -->
+      <div class="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 p-4 rounded-2xl">
+        <div class="flex justify-between items-center mb-1">
+          <span class="text-xs font-bold text-amber-800 dark:text-amber-300">✍️ आज री मारवाड़ी बात</span>
+          <button type="button" onclick="copyQuote()" class="text-xs font-bold text-amber-900 underline">Copy करें</button>
+        </div>
+        <p id="quoteTxt" class="text-sm font-semibold text-amber-950 dark:text-amber-100">“जठे एकता है, वठे गाँव री तरक्की है।”</p>
+      </div>
+
+      <!-- Emergency Helpline -->
+      <div class="surface bg-white p-4 rounded-2xl border border-slate-200 space-y-2">
+        <h3 class="font-bold text-sm">🚨 Emergency Helpline</h3>
         <div class="grid grid-cols-2 gap-2 text-xs font-bold">
-          <a href="tel:112" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800">🚓 Police 112</a>
-          <a href="tel:108" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800">🚑 Ambulance 108</a>
-          <a href="tel:181" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800">📢 CM Helpline 181</a>
-          <a href="tel:1912" class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800">⚡ Bijli 1912</a>
+          <a href="tel:112" class="bg-rose-50 text-rose-800 p-2.5 rounded-xl">🚓 Police 112</a>
+          <a href="tel:108" class="bg-emerald-50 text-emerald-800 p-2.5 rounded-xl">🚑 Ambulance 108</a>
+          <a href="tel:101" class="bg-amber-50 text-amber-800 p-2.5 rounded-xl">🚒 Fire 101</a>
+          <a href="tel:181" class="bg-blue-50 text-blue-800 p-2.5 rounded-xl">👩 Women 181</a>
         </div>
       </div>
     </section>
@@ -143,130 +148,159 @@
     <section id="page-community" class="page space-y-4">
       <div class="surface bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
         <div class="flex justify-between items-center">
-          <h2 class="text-base font-bold">🫂 Dangari Community</h2>
-          <span id="postCount" class="text-[11px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">Live</span>
+          <h2 class="font-bold text-base">🗣️ Dangari Community</h2>
+          <span id="postCount" class="text-xs bg-emerald-100 text-emerald-900 font-bold px-2.5 py-1 rounded-full">0 Posts</span>
         </div>
-        <textarea id="postInput" rows="3" class="w-full border border-slate-300 rounded-xl p-3 text-xs" placeholder="अपने गाँव की बात, सुझाव या अच्छी खबर लिखें..."></textarea>
-        <button type="button" onclick="submitPost()" class="w-full bg-emerald-700 text-white font-bold text-xs py-2.5 rounded-xl">Post करें ↗</button>
+        <textarea id="postInput" rows="3" maxlength="500" placeholder="अपने गाँव की बात, सुझाव या अच्छी खबर लिखें..." class="w-full p-3 rounded-xl border border-slate-200 text-sm outline-none"></textarea>
+        <button type="button" onclick="createPost()" class="w-full bg-emerald-700 text-white font-bold text-sm py-2.5 rounded-xl">Post करें ↗</button>
       </div>
-      <div id="feedBox" class="space-y-3"></div>
+      <div id="feedList" class="space-y-3"></div>
     </section>
 
-    <!-- 3. GAMES & SPIN PAGE -->
+    <!-- 3. PRO GAMES & SPIN PAGE -->
     <section id="page-games" class="page space-y-4">
-      <div class="surface bg-white p-4 rounded-2xl border border-slate-200">
-        <h2 class="text-base font-bold mb-3">🎮 Games & Lucky Spin Zone</h2>
+      <div class="surface bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
+        <div class="flex justify-between items-center">
+          <h2 class="font-bold text-base">🎮 Pro Games & Daily Spin</h2>
+          <span id="spinQuotaBadge" class="text-[11px] bg-amber-100 text-amber-900 font-bold px-2.5 py-1 rounded-full">🎡 3/3 Spins Left</span>
+        </div>
         <div class="grid grid-cols-2 gap-2.5 text-xs font-bold">
-          <button type="button" onclick="openGame('spin')" class="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 text-left">🎡 Lucky Spin Wheel</button>
-          <button type="button" onclick="openGame('quiz')" class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 text-left">🧠 Daily Quiz</button>
-          <button type="button" onclick="openGame('memory')" class="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 text-left">🃏 Memory Match</button>
-          <button type="button" onclick="openGame('tic')" class="p-3 rounded-xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 text-left">⭕ Tic Tac Toe</button>
-          <button type="button" onclick="openGame('number')" class="p-3 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 text-left col-span-2">🔢 Number Puzzle (1-8)</button>
+          <button type="button" onclick="openGame('spin')" class="bg-rose-50 border border-rose-200 text-rose-900 p-3 rounded-2xl text-left">
+            <div class="text-lg">🎡</div>
+            <div class="mt-1">Daily Lucky Spin</div>
+            <div class="text-[10px] font-normal text-rose-700">दिन में सिर्फ 3 बार</div>
+          </button>
+          <button type="button" onclick="openGame('quiz')" class="bg-emerald-50 border border-emerald-200 text-emerald-900 p-3 rounded-2xl text-left">
+            <div class="text-lg">🧠</div>
+            <div class="mt-1">5-Q Daily Quiz</div>
+            <div class="text-[10px] font-normal text-emerald-700">5 सवाल • Anti-Spam</div>
+          </button>
+          <button type="button" onclick="openGame('desert')" class="bg-amber-50 border border-amber-200 text-amber-900 p-3 rounded-2xl text-left">
+            <div class="text-lg">🐪</div>
+            <div class="mt-1">Desert Race</div>
+            <div class="text-[10px] font-normal text-amber-700">थार जीप रेस (Pro)</div>
+          </button>
+          <button type="button" onclick="openGame('ludo')" class="bg-indigo-50 border border-indigo-200 text-indigo-900 p-3 rounded-2xl text-left">
+            <div class="text-lg">🎲</div>
+            <div class="mt-1">Multiplayer Ludo</div>
+            <div class="text-[10px] font-normal text-indigo-700">Room Code से खेलें</div>
+          </button>
         </div>
       </div>
-      <div id="gameBox" class="surface bg-white p-5 rounded-2xl border border-slate-200 text-center text-xs text-slate-500">
-        ऊपर से कोई भी Game या Spin चुनें
+
+      <div id="gameArena" class="surface bg-white p-4 rounded-2xl border border-slate-200 min-h-[260px]">
+        <p class="text-center text-xs text-slate-500 py-14">ऊपर से कोई भी Pro Game या Daily Spin चुनें</p>
       </div>
     </section>
 
-    <!-- 4. LEADERBOARD PAGE -->
-    <section id="page-rank" class="page space-y-4">
-      <div class="bg-emerald-800 text-white p-5 rounded-3xl">
-        <p class="text-xs text-emerald-200">आपकी Live Progress</p>
-        <h2 class="text-2xl font-bold mt-1"><span id="rankPts">0</span> XP</h2>
-      </div>
-      <div class="surface bg-white p-4 rounded-2xl border border-slate-200">
-        <h2 class="text-base font-bold mb-3">🏆 Dangari Live Leaderboard</h2>
-        <div id="rankBox" class="space-y-2 text-xs">लोड हो रहा है...</div>
-      </div>
-    </section>
-
-    <!-- 5. POLLS PAGE -->
-    <section id="page-polls" class="page space-y-4">
-      <div class="surface bg-white p-4 rounded-2xl border border-slate-200">
-        <h2 class="text-base font-bold">🗳️ Village Poll Results</h2>
-        <div id="pollResultBox" class="mt-3 space-y-3 text-xs"></div>
-      </div>
-    </section>
-
-    <!-- 6. EVENTS PAGE -->
+    <!-- 4. EVENTS PAGE -->
     <section id="page-events" class="page space-y-4">
-      <div class="surface bg-white p-4 rounded-2xl border border-slate-200">
-        <h2 class="text-base font-bold mb-3">📅 Dangari Events</h2>
-        <div id="eventsBox" class="space-y-2 text-xs"></div>
-      </div>
-      <div class="surface bg-white p-4 rounded-2xl border border-slate-200 space-y-2.5">
-        <b class="text-xs">नया कार्यक्रम सुझाएँ</b>
-        <input id="eventIdea" type="text" class="w-full border border-slate-300 rounded-xl p-2.5 text-xs" placeholder="जैसे: गाँव में कबड्डी प्रतियोगिता" />
+      <div class="surface bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
+        <h2 class="font-bold text-base">📅 गाँव के कार्यक्रम (Events)</h2>
+        <div id="eventList" class="space-y-2.5 text-xs">
+          <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200">
+            <div class="font-bold text-emerald-900">ग्राम स्वच्छता व वृक्षारोपण अभियान</div>
+            <div class="text-slate-600 mt-1">📍 पंचायत चौक, डांगरी • सुबह 8:00 बजे</div>
+          </div>
+        </div>
+        <hr class="border-slate-200">
+        <h3 class="font-bold text-xs">नया कार्यक्रम सुझाएँ (Admin अनुमोदन के बाद दिखेगा)</h3>
+        <input id="evTitle" type="text" placeholder="कार्यक्रम का नाम" class="w-full p-2.5 rounded-xl border border-slate-200 text-xs" />
+        <input id="evDate" type="text" placeholder="तारीख और स्थान" class="w-full p-2.5 rounded-xl border border-slate-200 text-xs" />
         <button type="button" onclick="suggestEvent()" class="w-full bg-emerald-700 text-white font-bold text-xs py-2.5 rounded-xl">सुझाव भेजें</button>
       </div>
     </section>
 
-    <!-- 7. VILLAGE & MANDI BHAV PAGE -->
-    <section id="page-village" class="page space-y-4">
-      <div class="surface bg-white p-4 rounded-2xl border border-slate-200">
-        <h2 class="text-base font-bold mb-3">🌾 Jaisalmer / Barmer Mandi Bhav</h2>
+    <!-- 5. MANDI BHAV PAGE -->
+    <section id="page-mandi" class="page space-y-4">
+      <div class="surface bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
+        <h2 class="font-bold text-base">🌾 ताज़ा मंडी भाव (अनुमानित ₹/क्विंटल)</h2>
         <div class="divide-y divide-slate-200 text-xs">
-          <div class="py-2.5 flex justify-between"><span>🌱 जीरा (Jeera)</span><b class="text-emerald-700">₹24,800 - ₹26,400</b></div>
-          <div class="py-2.5 flex justify-between"><span>🌿 ईसबगोल (Isabgol)</span><b class="text-emerald-700">₹13,400 - ₹14,600</b></div>
-          <div class="py-2.5 flex justify-between"><span>🌾 ग्वार (Guar)</span><b class="text-amber-700">₹5,180 - ₹5,450</b></div>
-          <div class="py-2.5 flex justify-between"><span>🌽 बाजरा (Bajra)</span><b class="text-amber-700">₹2,380 - ₹2,520</b></div>
-          <div class="py-2.5 flex justify-between"><span>🌼 सरसों (Sarson)</span><b class="text-emerald-700">₹5,650 - ₹5,980</b></div>
+          <div class="py-2.5 flex justify-between"><span class="font-bold">जीरा (Jeera)</span><span class="text-emerald-700 font-bold">₹23,500 – ₹25,200</span></div>
+          <div class="py-2.5 flex justify-between"><span class="font-bold">ईसबगोल (Isabgol)</span><span class="text-emerald-700 font-bold">₹13,200 – ₹14,400</span></div>
+          <div class="py-2.5 flex justify-between"><span class="font-bold">बाजरा (Bajra)</span><span class="text-emerald-700 font-bold">₹2,350 – ₹2,550</span></div>
+          <div class="py-2.5 flex justify-between"><span class="font-bold">ग्वार (Guar)</span><span class="text-emerald-700 font-bold">₹5,150 – ₹5,450</span></div>
+          <div class="py-2.5 flex justify-between"><span class="font-bold">सरसों (Mustard)</span><span class="text-emerald-700 font-bold">₹5,400 – ₹5,750</span></div>
         </div>
       </div>
     </section>
 
-    <!-- 8. PROFILE & ADMIN ACCESS PAGE -->
+    <!-- 6. LEADERBOARD PAGE -->
+    <section id="page-rank" class="page space-y-4">
+      <div class="surface bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
+        <div class="flex justify-between items-center">
+          <h2 class="font-bold text-base">🏆 Dangari Leaderboard</h2>
+          <span id="totalUsersBadge" class="text-xs text-emerald-700 font-bold">0 सदस्य</span>
+        </div>
+        <div id="rankList" class="space-y-2"></div>
+      </div>
+    </section>
+
+    <!-- 7. PROFILE PAGE -->
     <section id="page-profile" class="page space-y-4">
       <div class="surface bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
-        <h2 class="text-base font-bold">👤 आपका Account & Profile</h2>
-        <p id="authInfo" class="text-xs text-slate-500">Guest मोड</p>
-        <div class="grid grid-cols-3 gap-2">
-          <button type="button" onclick="openAuthModal('signup')" class="bg-emerald-700 text-white font-bold text-xs py-2 rounded-xl">Sign Up</button>
-          <button type="button" onclick="openAuthModal('login')" class="bg-emerald-100 text-emerald-900 font-bold text-xs py-2 rounded-xl">Login</button>
-          <button type="button" onclick="doLogout()" class="bg-slate-200 text-slate-800 font-bold text-xs py-2 rounded-xl">Logout</button>
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="font-bold text-base">👤 आपका Account & Profile</h2>
+            <p id="authStateTxt" class="text-xs text-slate-500">Guest मोड</p>
+          </div>
+          <label class="cursor-pointer flex flex-col items-center">
+            <img id="profAvatarPreview" src="https://ui-avatars.com/api/?name=User&background=065f46&color=fff" class="w-14 h-14 rounded-full object-cover border-2 border-emerald-600" />
+            <span class="text-[10px] font-bold text-emerald-700 mt-1">📷 Photo बदलें</span>
+            <input id="avatarInput" type="file" accept="image/*" onchange="handleAvatarUpload(event)" class="hidden" />
+          </label>
         </div>
-        <hr>
-        <input id="profName" type="text" class="w-full border border-slate-300 rounded-xl p-2.5 text-xs" placeholder="पूरा नाम" />
-        <input id="profUser" type="text" class="w-full border border-slate-300 rounded-xl p-2.5 text-xs" placeholder="Username (e.g. ramesh_dangari)" />
-        <select id="profWard" class="w-full border border-slate-300 rounded-xl p-2.5 text-xs">
+
+        <div class="grid grid-cols-3 gap-2">
+          <button type="button" onclick="openAuthModal('signup')" class="bg-emerald-700 text-white font-bold text-xs py-2.5 rounded-xl">Sign Up</button>
+          <button type="button" onclick="openAuthModal('login')" class="bg-emerald-100 text-emerald-900 font-bold text-xs py-2.5 rounded-xl">Login</button>
+          <button type="button" onclick="logoutUser()" class="bg-slate-200 text-slate-800 font-bold text-xs py-2.5 rounded-xl">Logout</button>
+        </div>
+
+        <input id="profName" type="text" placeholder="आपका पूरा नाम" class="w-full p-3 rounded-xl border border-slate-200 text-sm" />
+        <input id="profUser" type="text" placeholder="username (उदा. ramesh_dangari)" class="w-full p-3 rounded-xl border border-slate-200 text-sm" />
+        <select id="profWard" class="w-full p-3 rounded-xl border border-slate-200 text-sm">
           <option>Dangari</option>
-<option>Ramsar</option>
-<option>Aambavat</option>
-<option>Laxmansar</option>
-<option>Samelnagar</option>
-<option>Mehreri</option>
-<option>Uttri Bheelo Ki Dhani</option>
-<option>Others</option>
-          
+          <option>Ramsar</option>
+          <option>Aambavat</option>
+          <option>Laxmansar</option>
+          <option>Samelnagar</option>
+          <option>Mehreri</option>
+          <option>Uttri Bheelo Ki Dhani</option>
+          <option>Others</option>
         </select>
-        <button type="button" onclick="saveUserProfile()" class="w-full bg-emerald-700 text-white font-bold text-xs py-2.5 rounded-xl">Profile Save करें</button>
-        <button type="button" onclick="go('admin')" class="text-xs font-bold text-emerald-700 underline block pt-2">🛡️ Admin Desk खोलें</button>
+        <button type="button" onclick="saveProfile()" class="w-full bg-emerald-700 text-white font-bold text-sm py-3 rounded-xl">Profile Save करें</button>
+        <button type="button" onclick="go('admin')" class="w-full text-left text-xs font-bold text-emerald-700 pt-2">🛡️ Admin Desk खोलें</button>
       </div>
     </section>
 
-    <!-- 9. ADMIN PANEL PAGE -->
+    <!-- 8. ADMIN DESK PAGE -->
     <section id="page-admin" class="page space-y-4">
       <div class="surface bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
-        <h2 class="text-base font-bold">🛡️ Admin Desk</h2>
-        <p id="adminStatus" class="text-xs font-bold bg-amber-100 text-amber-800 px-3 py-1 rounded-full inline-block">जाँच हो रही है...</p>
-        <div id="adminTools" class="hidden space-y-4 pt-3 border-t">
+        <h2 class="font-bold text-base">🛡️ Admin Desk (Firebase Verified)</h2>
+        <div id="adminStatusBox" class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900">
+          जाँच हो रही है... केवल Firebase `admins/{uid}: true` वाले Admin ही यहाँ बदलाव कर सकते हैं।
+        </div>
+
+        <div id="adminControls" class="hidden space-y-4">
           <div class="space-y-2">
-            <b class="text-xs">📢 नई पंचायत सूचना</b>
-            <textarea id="admAnn" rows="2" class="w-full border rounded-xl p-2.5 text-xs" placeholder="सूचना लिखें..."></textarea>
-            <button type="button" onclick="pubAnn()" class="w-full bg-emerald-700 text-white font-bold text-xs py-2 rounded-xl">Publish करें</button>
+            <h3 class="font-bold text-xs">📢 नई पंचायत सूचना डालें</h3>
+            <textarea id="admNotice" rows="2" placeholder="सूचना लिखें..." class="w-full p-2.5 rounded-xl border border-slate-200 text-xs"></textarea>
+            <button type="button" onclick="addNotice()" class="bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-xl">सूचना Publish करें</button>
           </div>
+
           <div class="space-y-2">
-            <b class="text-xs">📅 नया Event</b>
-            <input id="admEvTitle" type="text" class="w-full border rounded-xl p-2.5 text-xs" placeholder="Event का नाम" />
-            <input id="admEvDate" type="date" class="w-full border rounded-xl p-2.5 text-xs" />
-            <button type="button" onclick="pubEvent()" class="w-full bg-emerald-700 text-white font-bold text-xs py-2 rounded-xl">Event डालें</button>
+            <h3 class="font-bold text-xs">📅 नया Event जोड़ें</h3>
+            <input id="admEvTitle" type="text" placeholder="Event नाम" class="w-full p-2.5 rounded-xl border border-slate-200 text-xs" />
+            <input id="admEvMeta" type="text" placeholder="स्थान व समय" class="w-full p-2.5 rounded-xl border border-slate-200 text-xs" />
+            <button type="button" onclick="addAdminEvent()" class="bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-xl">Event Publish करें</button>
           </div>
+
           <div class="space-y-2">
-            <b class="text-xs">🗳️ नया Poll</b>
-            <input id="admPollQ" type="text" class="w-full border rounded-xl p-2.5 text-xs" placeholder="नया सवाल" />
-            <textarea id="admPollOpts" rows="3" class="w-full border rounded-xl p-2.5 text-xs" placeholder="हर लाइन में एक विकल्प लिखें"></textarea>
-            <button type="button" onclick="pubPoll()" class="w-full bg-emerald-700 text-white font-bold text-xs py-2 rounded-xl">Poll बदलें</button>
+            <h3 class="font-bold text-xs">🗳️ नया Poll सेट करें</h3>
+            <input id="admPollQ" type="text" placeholder="नया प्रश्न" class="w-full p-2.5 rounded-xl border border-slate-200 text-xs" />
+            <input id="admPollOpts" type="text" placeholder="विकल्प कॉमा से लिखें (उदा. सड़क, पानी, बिजली)" class="w-full p-2.5 rounded-xl border border-slate-200 text-xs" />
+            <button type="button" onclick="setAdminPoll()" class="bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-xl">नया Poll चालू करें</button>
           </div>
         </div>
       </div>
@@ -274,361 +308,752 @@
 
   </main>
 
-  <!-- BOTTOM NAVIGATION -->
-  <nav class="fixed bottom-0 inset-x-0 z-50 surface bg-white/95 backdrop-blur border-t border-slate-200 grid grid-cols-5 py-2 px-1 text-[11px] font-bold text-slate-700">
-    <button type="button" onclick="go('home')" class="flex flex-col items-center">🏠<span>Gaon</span></button>
-    <button type="button" onclick="go('community')" class="flex flex-col items-center">🫂<span>Community</span></button>
-    <button type="button" onclick="go('games')" class="flex flex-col items-center">🎮<span>Games</span></button>
-    <button type="button" onclick="go('rank')" class="flex flex-col items-center">🏆<span>Rank</span></button>
-    <button type="button" onclick="go('profile')" class="flex flex-col items-center">👤<span>Profile</span></button>
-  </nav>
-
   <!-- AUTH MODAL -->
   <div id="authModal" class="modal">
-    <div class="surface bg-white w-full max-w-sm rounded-2xl p-5 space-y-3 shadow-2xl">
+    <div class="surface bg-white w-full max-w-sm rounded-3xl p-5 space-y-3 shadow-2xl">
       <div class="flex justify-between items-center">
-        <h3 id="modalTitle" class="text-base font-bold text-emerald-800">नया Account बनाएँ</h3>
+        <h3 id="authModalTitle" class="font-bold text-base">Login करें</h3>
         <button type="button" onclick="closeAuthModal()" class="text-lg font-bold px-2">✕</button>
       </div>
-      <input id="emailInput" type="email" class="w-full border border-slate-300 rounded-xl p-3 text-xs" placeholder="अपना Email लिखें (e.g. abc@gmail.com)" />
-      <input id="passInput" type="password" class="w-full border border-slate-300 rounded-xl p-3 text-xs" placeholder="Password (कम से कम 6 अक्षर)" />
-      <p id="modalErr" class="text-xs text-rose-600 font-bold"></p>
-      <button type="button" id="modalBtn" onclick="handleAuthSubmit()" class="w-full bg-emerald-700 text-white font-bold text-xs py-3 rounded-xl">Create Account</button>
-      <button type="button" onclick="toggleAuthMode()" class="w-full text-center text-xs text-emerald-700 font-bold py-1">Login / Sign Up बदलें</button>
+      <input id="authEmail" type="email" placeholder="आपका Email" class="w-full p-3 rounded-xl border border-slate-200 text-sm" />
+      <input id="authPass" type="password" placeholder="Password (कम से कम 6 अक्षर)" class="w-full p-3 rounded-xl border border-slate-200 text-sm" />
+      <p id="authErr" class="text-xs text-rose-600 font-semibold hidden"></p>
+      <button type="button" onclick="submitAuth()" id="authSubmitBtn" class="w-full bg-emerald-700 text-white font-bold text-sm py-3 rounded-xl">Login</button>
+      <button type="button" onclick="switchAuthMode()" class="w-full text-xs text-emerald-700 font-bold pt-1">Login / Sign Up बदलें</button>
     </div>
   </div>
 
-  <!-- FIREBASE SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <!-- BOTTOM NAVIGATION -->
+  <nav class="fixed bottom-0 inset-x-0 z-50 surface bg-white border-t border-slate-200 px-2 py-1.5 flex justify-around text-[11px] font-bold text-slate-600">
+    <button type="button" onclick="go('home')" class="flex flex-col items-center py-1 px-2 text-emerald-700"><span>🏠</span><span>Gaon</span></button>
+    <button type="button" onclick="go('community')" class="flex flex-col items-center py-1 px-2"><span>🗣️</span><span>Community</span></button>
+    <button type="button" onclick="go('games')" class="flex flex-col items-center py-1 px-2"><span>🎮</span><span>Games</span></button>
+    <button type="button" onclick="go('rank')" class="flex flex-col items-center py-1 px-2"><span>🏆</span><span>Rank</span></button>
+    <button type="button" onclick="go('profile')" class="flex flex-col items-center py-1 px-2"><span>👤</span><span>Profile</span></button>
+  </nav>
 
-  <script>
+  <!-- FIREBASE SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getDatabase, ref, set, get, push, update, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    // ⚠️ YAHAN APNA ASLI FIREBASE apiKey PASTE KAREIN
     const firebaseConfig = {
-      apiKey: "AIzaSyBhUXrPk0c1JQZ-21TVi40pGtiXjcTta7g",
+      apiKey: "AIzaSyBnUXYPK0c1JQZ-Z1TVi40p0t5Xjctta7g",
       authDomain: "apna-dangari.firebaseapp.com",
       databaseURL: "https://apna-dangari-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "apna-dangari",
       storageBucket: "apna-dangari.firebasestorage.app",
-      messagingSenderId: "755645879753",
-      appId: "1:755645879753:web:c3ec521bd6c3e9f932c418"
+      messagingSenderId: "849059950656",
+      appId: "1:849059950656:web:59301e627392e7aa50b63e"
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
 
-    let user = null, profile = null, authMode = 'signup', activePoll = null;
-    const defaultOpts = ['गाँव की सड़क और नाली', 'पीने के पानी की सुविधा', 'बिजली और Street Lights', 'युवाओं के लिए खेल मैदान'];
+    let currentUser = null;
+    let userProfile = null;
+    let isAdmin = false;
+    let authMode = 'login';
+    let showPollResult = false;
+    let activePoll = { id: 'default_poll', question: 'डांगरी में सबसे पहले किस काम पर ध्यान देना चाहिए?', options: ['गाँव की सड़क और नाली', 'पीने के पानी की सुविधा', 'बिजली और Street Lights', 'युवाओं के लिए खेल मैदान'] };
+    let pollVotesMap = {};
+    let usersMap = {};
+    let activeLoop = null;
+    let activeLudoRoom = null;
 
-    function notify(msg) {
-      const b = document.getElementById('toast');
-      b.textContent = msg;
-      b.classList.remove('hidden');
-      setTimeout(() => b.classList.add('hidden'), 2800);
-    }
+    const todayKey = () => new Date().toISOString().slice(0, 10);
+    const defaultAvatar = (name) => `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'User')}&background=065f46&color=fff`;
 
-    function toggleTheme() { document.documentElement.classList.toggle('dark'); }
-    function copyQuote() { navigator.clipboard?.writeText(document.getElementById('suvichar').textContent); notify('Copy हो गया!'); }
+    window.toast = (msg) => {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.remove('hidden');
+      clearTimeout(window._tt);
+      window._tt = setTimeout(() => t.classList.add('hidden'), 2600);
+    };
 
-    function go(id) {
+    window.go = (id) => {
+      if (activeLoop) { clearInterval(activeLoop); activeLoop = null; }
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById('page-' + id)?.classList.add('active');
-      if (id === 'rank') loadRank();
-      if (id === 'polls') renderPollResults();
-      if (id === 'events') loadEvents();
-      if (id === 'admin') checkAdmin();
-      window.scrollTo(0, 0);
-    }
+      const target = document.getElementById('page-' + id);
+      if (target) target.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (id === 'games') updateSpinQuotaUI();
+    };
 
-    function openAccount() { if (!user) openAuthModal('signup'); else go('profile'); }
-    function openAuthModal(mode) {
+    window.toggleTheme = () => document.documentElement.classList.toggle('dark');
+    window.openAccount = () => currentUser ? go('profile') : openAuthModal('login');
+    window.openAuthModal = (mode) => {
       authMode = mode;
-      document.getElementById('modalTitle').textContent = mode === 'signup' ? 'नया Account बनाएँ' : 'Login करें';
-      document.getElementById('modalBtn').textContent = mode === 'signup' ? 'Create Account' : 'Login';
-      document.getElementById('modalErr').textContent = '';
+      document.getElementById('authModalTitle').textContent = mode === 'signup' ? 'नया Account बनाएँ' : 'Login करें';
+      document.getElementById('authSubmitBtn').textContent = mode === 'signup' ? 'Create Account' : 'Login';
+      document.getElementById('authErr').classList.add('hidden');
       document.getElementById('authModal').classList.add('show');
-    }
-    function closeAuthModal() { document.getElementById('authModal').classList.remove('show'); }
-    function toggleAuthMode() { openAuthModal(authMode === 'signup' ? 'login' : 'signup'); }
+    };
+    window.closeAuthModal = () => document.getElementById('authModal').classList.remove('show');
+    window.switchAuthMode = () => openAuthModal(authMode === 'login' ? 'signup' : 'login');
 
-    async function handleAuthSubmit() {
-      const email = document.getElementById('emailInput').value.trim();
-      const pass = document.getElementById('passInput').value;
-      const err = document.getElementById('modalErr');
-      if (!email || pass.length < 6) { err.textContent = 'सही Email और कम से कम 6 अक्षर का Password डालें।'; return; }
-      try {
-        if (authMode === 'signup') await auth.createUserWithEmailAndPassword(email, pass);
-        else await auth.signInWithEmailAndPassword(email, pass);
-        closeAuthModal();
-        notify('✅ Account खुल गया!');
-        go('profile');
-      } catch (e) { err.textContent = e.message; }
-    }
-
-    async function doLogout() { await auth.signOut(); notify('Logout हो गया'); }
-
-    auth.onAuthStateChanged(async u => {
-      user = u;
-      if (u) {
-        const ref = db.ref('users/' + u.uid);
-        const snap = await ref.once('value');
-        if (!snap.exists()) {
-          await ref.set({ name: 'नया सदस्य', username: 'user_' + u.uid.slice(0, 5), ward: 'Main Market, Dangari', points: 0 });
-        }
-        ref.on('value', s => {
-          profile = s.val() || {};
-          document.getElementById('homeUserName').textContent = profile.name || 'सदस्य';
-          document.getElementById('homeUserSub').textContent = '@' + (profile.username || '') + ' • ' + (profile.ward || '');
-          document.getElementById('authInfo').textContent = '✅ Logged in: ' + u.email;
-          document.getElementById('ptsBadge').textContent = profile.points || 0;
-          document.getElementById('rankPts').textContent = profile.points || 0;
-          document.getElementById('profName').value = profile.name || '';
-          document.getElementById('profUser').value = profile.username || '';
-          document.getElementById('profWard').value = profile.ward || 'Main Market, Dangari';
-        });
+    // Auto-create user record in DB so EVERY user appears in Leaderboard immediately
+    async function ensureUserProfile(user) {
+      const uRef = ref(db, `users/${user.uid}`);
+      const snap = await get(uRef);
+      if (!snap.exists()) {
+        const baseName = (user.email || 'Gramin').split('@')[0].replace(/[^a-zA-Z0-9 ]/g, ' ').trim() || 'Gramin';
+        const autoUser = baseName.toLowerCase().replace(/\s+/g, '_').slice(0, 14) + '_' + Math.floor(10 + Math.random() * 89);
+        const initialData = {
+          name: baseName.charAt(0).toUpperCase() + baseName.slice(1),
+          username: autoUser,
+          ward: 'Dangari',
+          points: 10,
+          avatar: '',
+          email: user.email || '',
+          createdAt: Date.now()
+        };
+        await set(uRef, initialData);
+        userProfile = initialData;
       } else {
-        profile = null;
-        document.getElementById('homeUserName').textContent = 'Guest';
-        document.getElementById('homeUserSub').textContent = 'Account बनाने के लिए दाएँ बटन दबाएँ';
-        document.getElementById('authInfo').textContent = 'Guest मोड';
-        document.getElementById('ptsBadge').textContent = '0';
+        userProfile = snap.val();
       }
+      renderUserUI();
+    }
+
+    window.submitAuth = async () => {
+      const email = document.getElementById('authEmail').value.trim();
+      const pass = document.getElementById('authPass').value;
+      const errEl = document.getElementById('authErr');
+      errEl.classList.add('hidden');
+      try {
+        if (authMode === 'signup') {
+          const cred = await createUserWithEmailAndPassword(auth, email, pass);
+          await ensureUserProfile(cred.user);
+          toast('✅ Account बन गया! +10 Welcome XP मिले');
+        } else {
+          await signInWithEmailAndPassword(auth, email, pass);
+          toast('✅ Login सफल!');
+        }
+        closeAuthModal();
+      } catch (e) {
+        errEl.textContent = e.message;
+        errEl.classList.remove('hidden');
+      }
+    };
+
+    window.logoutUser = async () => {
+      await signOut(auth);
+      toast('Logout हो गए');
+    };
+
+    function renderUserUI() {
+      if (!currentUser) {
+        document.getElementById('authStateTxt').textContent = 'Guest मोड';
+        document.getElementById('hdrBtnTxt').textContent = '👤 Account';
+        document.getElementById('hdrAvatar').classList.add('hidden');
+        document.getElementById('hdrPoints').textContent = '0';
+        document.getElementById('homeName').textContent = 'Guest ग्रामीण';
+        document.getElementById('homeMeta').textContent = 'लॉगिन करें और अपना गाँव चुनें';
+        document.getElementById('homeAvatar').src = defaultAvatar('Guest');
+        document.getElementById('profAvatarPreview').src = defaultAvatar('User');
+        return;
+      }
+      const p = userProfile || { name: currentUser.email.split('@')[0], username: 'user', ward: 'Dangari', points: 0, avatar: '' };
+      const av = p.avatar || defaultAvatar(p.name);
+      document.getElementById('authStateTxt').textContent = '✅ Logged in: ' + currentUser.email;
+      document.getElementById('hdrBtnTxt').textContent = p.name.split(' ')[0];
+      document.getElementById('hdrAvatar').src = av;
+      document.getElementById('hdrAvatar').classList.remove('hidden');
+      document.getElementById('hdrPoints').textContent = p.points || 0;
+      document.getElementById('homeName').textContent = p.name;
+      document.getElementById('homeMeta').textContent = `@${p.username} • ${p.ward}`;
+      document.getElementById('homeAvatar').src = av;
+      document.getElementById('profAvatarPreview').src = av;
+      document.getElementById('profName').value = p.name || '';
+      document.getElementById('profUser').value = p.username || '';
+      document.getElementById('profWard').value = p.ward || 'Dangari';
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      currentUser = user;
+      if (!user) {
+        userProfile = null;
+        isAdmin = false;
+        renderUserUI();
+        updateAdminUI();
+        return;
+      }
+      await ensureUserProfile(user);
+      const aSnap = await get(ref(db, `admins/${user.uid}`));
+      isAdmin = aSnap.exists() && aSnap.val() === true;
+      updateAdminUI();
     });
 
-    async function saveUserProfile() {
-      if (!user) return openAuthModal('signup');
+    // Compress & Save Profile Photo (Base64 under ~35KB for fast Realtime DB)
+    window.handleAvatarUpload = (e) => {
+      if (!currentUser) return openAuthModal('login');
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = async () => {
+          const canvas = document.createElement('canvas');
+          const size = 140;
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext('2d');
+          const minSide = Math.min(img.width, img.height);
+          const sx = (img.width - minSide) / 2;
+          const sy = (img.height - minSide) / 2;
+          ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.72);
+          try {
+            await update(ref(db, `users/${currentUser.uid}`), { avatar: dataUrl, updatedAt: Date.now() });
+            userProfile = { ...(userProfile || {}), avatar: dataUrl };
+            renderUserUI();
+            toast('✅ Profile Photo अपडेट हो गई!');
+          } catch (err) {
+            toast('Error: ' + err.message);
+          }
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    };
+
+    window.saveProfile = async () => {
+      if (!currentUser) return openAuthModal('login');
       const name = document.getElementById('profName').value.trim();
       const username = document.getElementById('profUser').value.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
       const ward = document.getElementById('profWard').value;
-      if (name.length < 2 || username.length < 3) return notify('नाम और Username सही से भरें');
+      if (name.length < 2 || username.length < 3) return toast('सही नाम और username (कम से कम 3 अक्षर) लिखें');
       try {
-        await db.ref('usernames/' + username).set(user.uid);
-        await db.ref('users/' + user.uid).update({ name, username, ward });
-        notify('✅ Profile Save हो गई!');
-      } catch (e) { notify('Error: ' + e.message); }
+        const points = userProfile?.points || 10;
+        const avatar = userProfile?.avatar || '';
+        await update(ref(db, `users/${currentUser.uid}`), {
+          name, username, ward, points, avatar, email: currentUser.email, updatedAt: Date.now()
+        });
+        await set(ref(db, `usernames/${username}`), currentUser.uid);
+        userProfile = { ...(userProfile || {}), name, username, ward, points, avatar };
+        renderUserUI();
+        toast('✅ Profile Save हो गई!');
+      } catch (e) {
+        toast('Error: ' + e.message);
+      }
+    };
+
+    // Anti-Spam XP Reward Function
+    async function addPoints(pts, reason) {
+      if (!currentUser || !pts) return;
+      const pRef = ref(db, `users/${currentUser.uid}/points`);
+      await runTransaction(pRef, (cur) => (cur || 0) + pts);
+      userProfile.points = (userProfile.points || 0) + pts;
+      document.getElementById('hdrPoints').textContent = userProfile.points;
+      if (reason) toast(`+${pts} XP (${reason})`);
     }
 
-    async function addXP(pts) {
-      if (!user) return;
-      const cur = Number(profile?.points || 0);
-      await db.ref('users/' + user.uid).update({ points: cur + pts });
-    }
-
-    // LIVE POLL & ANNOUNCEMENTS
-    db.ref('polls/active').on('value', s => {
-      activePoll = s.val() || { id: 'default', question: 'डांगरी में सबसे पहले किस काम पर ध्यान देना चाहिए?', options: defaultOpts };
-      document.getElementById('homePollQ').textContent = activePoll.question;
-      document.getElementById('homePollOpts').innerHTML = (activePoll.options || defaultOpts).map((o, i) =>
-        `<button type="button" onclick="castVote(${i})" class="w-full text-left p-2.5 rounded-xl border border-slate-200 text-xs font-semibold hover:bg-emerald-50">${o}</button>`
-      ).join('');
+    // LIVE POLL
+    onValue(ref(db, 'polls/active'), (snap) => {
+      if (snap.exists()) activePoll = snap.val();
+      document.getElementById('pollQ').textContent = activePoll.question;
+      renderPoll();
+    });
+    onValue(ref(db, 'pollVotes'), (snap) => {
+      pollVotesMap = snap.val() || {};
+      renderPoll();
     });
 
-    db.ref('announcements').limitToLast(1).on('value', s => {
-      s.forEach(c => { document.getElementById('announcementBox').textContent = c.val().text; });
-    });
-
-    async function castVote(i) {
-      if (!user) return openAuthModal('signup');
-      const pid = activePoll?.id || 'default';
-      try {
-        await db.ref('pollVotes/' + pid + '/' + user.uid).set(i);
-        notify('✅ आपका Vote दर्ज हो गया!');
-        renderPollResults();
-      } catch (e) { notify('आप इस Poll में पहले ही Vote कर चुके हैं'); }
+    function renderPoll() {
+      const box = document.getElementById('pollOpts');
+      const votesForPoll = pollVotesMap[activePoll.id] || {};
+      const counts = activePoll.options.map(() => 0);
+      Object.values(votesForPoll).forEach(idx => { if (counts[idx] !== undefined) counts[idx]++; });
+      const total = counts.reduce((a, b) => a + b, 0);
+      const myVote = currentUser ? votesForPoll[currentUser.uid] : undefined;
+      box.innerHTML = activePoll.options.map((opt, i) => {
+        const pct = total ? Math.round((counts[i] / total) * 100) : 0;
+        const picked = myVote === i;
+        return `<button type="button" onclick="votePoll(${i})" class="w-full text-left p-2.5 rounded-xl border ${picked ? 'border-emerald-600 bg-emerald-50 dark:bg-emerald-950/40' : 'border-slate-200'} text-xs font-semibold">
+          <div class="flex justify-between"><span>${picked ? '✅ ' : ''}${opt}</span><span>${(showPollResult || myVote !== undefined) ? pct + '% (' + counts[i] + ')' : ''}</span></div>
+        </button>`;
+      }).join('');
+      document.getElementById('pollInfo').textContent = `कुल वोट: ${total} • 1 व्यक्ति = 1 वोट`;
     }
 
-    async function renderPollResults() {
-      const pid = activePoll?.id || 'default';
-      const opts = activePoll?.options || defaultOpts;
-      const snap = await db.ref('pollVotes/' + pid).once('value');
-      const votes = Object.values(snap.val() || {});
-      const total = votes.length;
-      document.getElementById('pollResultBox').innerHTML = `<b class="text-sm">${activePoll?.question || ''}</b><p class="text-slate-500">कुल Votes: ${total}</p>` +
-        opts.map((o, i) => {
-          const c = votes.filter(v => v === i).length;
-          const pct = total ? Math.round((c / total) * 100) : 0;
-          return `<div><div class="flex justify-between font-bold"><span>${o}</span><span>${pct}% (${c})</span></div><div class="progress mt-1"><i style="width:${pct}%"></i></div></div>`;
-        }).join('');
-    } 
-     // COMMUNITY
-    async function submitPost() {
-      if (!user) return openAuthModal('signup');
+    window.togglePollRes = () => { showPollResult = !showPollResult; renderPoll(); };
+    window.votePoll = async (idx) => {
+      if (!currentUser) return openAuthModal('login');
+      const vRef = ref(db, `pollVotes/${activePoll.id}/${currentUser.uid}`);
+      const snap = await get(vRef);
+      if (snap.exists()) return toast('आप पहले ही वोट दे चुके हैं');
+      await set(vRef, idx);
+      await addPoints(5, 'Poll Vote');
+    };
+
+    // COMMUNITY FEED (Shows User Avatar, Name, Village & Posts Instantly)
+    window.createPost = async () => {
+      if (!currentUser) return openAuthModal('login');
       const text = document.getElementById('postInput').value.trim();
-      if (text.length < 3) return notify('थोड़ा और लिखें');
-      await db.ref('posts').push({ uid: user.uid, name: profile?.name || 'सदस्य', username: profile?.username || 'member', text, createdAt: Date.now() });
+      if (text.length < 2) return toast('कम से कम 2 अक्षर लिखें');
+      await ensureUserProfile(currentUser);
+      await push(ref(db, 'posts'), {
+        uid: currentUser.uid,
+        name: userProfile.name,
+        username: userProfile.username,
+        ward: userProfile.ward || 'Dangari',
+        text,
+        createdAt: Date.now()
+      });
       document.getElementById('postInput').value = '';
-      notify('✅ Post प्रकाशित हो गई!');
-    }
+      await addPoints(3, 'New Post');
+    };
 
-    db.ref('posts').limitToLast(25).on('value', s => {
-      const arr = [];
-      s.forEach(c => arr.push({ id: c.key, ...c.val() }));
-      arr.reverse();
-      document.getElementById('postCount').textContent = arr.length + ' Posts';
-      document.getElementById('feedBox').innerHTML = arr.map(p =>
-        `<div class="surface bg-white p-3.5 rounded-2xl border border-slate-200 text-xs space-y-2">
-          <div class="flex justify-between"><b>${p.name} <span class="text-slate-400 font-normal">@${p.username}</span></b><button type="button" onclick="repPost('${p.id}')" class="text-rose-600">Report</button></div>
-          <p class="text-sm">${p.text}</p>
-        </div>`
-      ).join('') || '<p class="text-xs text-slate-400 text-center">अभी कोई Post नहीं है</p>';
-    });
-
-    async function repPost(id) {
-      if (!user) return openAuthModal('signup');
-      const r = prompt('Report का कारण लिखें:');
-      if (!r) return;
-      await db.ref('reports').push({ postId: id, uid: user.uid, reason: r, status: 'open' });
-      notify('Report भेज दी गई');
-    }
-
-    // LEADERBOARD
-    function loadRank() {
-      db.ref('users').once('value', s => {
-        const list = [];
-        s.forEach(c => list.push(c.val()));
-        list.sort((a, b) => (b.points || 0) - (a.points || 0));
-        document.getElementById('rankBox').innerHTML = list.map((u, i) =>
-          `<div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800">
-            <span><b>#${i + 1}</b> ${u.name} <span class="text-slate-400">(@${u.username} • ${u.ward})</span></span>
-            <b class="text-amber-700">${u.points || 0} XP</b>
-          </div>`
-        ).join('') || 'कोई सदस्य नहीं';
-      });
-    }
-
-    // EVENTS
-    function loadEvents() {
-      db.ref('events').limitToLast(15).on('value', s => {
-        const arr = [];
-        s.forEach(c => arr.push(c.val()));
-        document.getElementById('eventsBox').innerHTML = arr.reverse().map(e =>
-          `<div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 flex justify-between"><b>${e.title}</b><span class="text-emerald-700 font-bold">${e.date || ''}</span></div>`
-        ).join('') || 'अभी कोई कार्यक्रम नहीं है';
-      });
-    }
-
-    async function suggestEvent() {
-      if (!user) return openAuthModal('signup');
-      const title = document.getElementById('eventIdea').value.trim();
-      if (title.length < 4) return notify('सुझाव लिखें');
-      await db.ref('eventSuggestions').push({ uid: user.uid, title, status: 'pending' });
-      document.getElementById('eventIdea').value = '';
-      notify('✅ सुझाव Admin को भेज दिया गया');
-    }
-
-    // GAMES & MARKED SPIN WHEEL
-    function openGame(type) {
-      const box = document.getElementById('gameBox');
-      if (type === 'spin') {
-        box.innerHTML = `
-          <h3 class="font-bold text-sm text-emerald-700">🎡 Dangari Lucky Spin</h3>
-          <p class="text-[11px] text-slate-500 mt-1">तीर (▼) जहाँ रुकेगा वही XP Points मिलेंगे!</p>
-          <div class="my-4 flex flex-col items-center">
-            <div class="text-rose-600 text-2xl font-bold -mb-2 z-10">▼</div>
-            <div class="w-48 h-48 rounded-full border-4 border-slate-800 overflow-hidden">
-              <svg id="wheelSvg" class="wheel-svg w-full h-full" viewBox="0 0 200 200">
-                <g transform="translate(100,100)">
-                  <path d="M0,0 L0,-100 A100,100 0 0,1 86.6,-50 Z" fill="#64748b"/>
-                  <path d="M0,0 L86.6,-50 A100,100 0 0,1 86.6,50 Z" fill="#10b981"/>
-                  <path d="M0,0 L86.6,50 A100,100 0 0,1 0,100 Z" fill="#f59e0b"/>
-                  <path d="M0,0 L0,100 A100,100 0 0,1 -86.6,50 Z" fill="#475569"/>
-                  <path d="M0,0 L-86.6,50 A100,100 0 0,1 -86.6,-50 Z" fill="#059669"/>
-                  <path d="M0,0 L-86.6,-50 A100,100 0 0,1 0,-100 Z" fill="#e11d48"/>
-                  <text x="32" y="-55" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(30 32,-55)">0 XP</text>
-                  <text x="64" y="0" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(90 64,0)">+1 XP</text>
-                  <text x="32" y="58" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(150 32,58)">+2 XP</text>
-                  <text x="-32" y="58" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(210 -32,58)">0 XP</text>
-                  <text x="-64" y="0" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(270 -64,0)">+1 XP</text>
-                  <text x="-32" y="-55" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(330 -32,-55)">+3 XP</text>
-                </g>
-              </svg>
+    // LEADERBOARD + USERS CACHE (Shows ALL registered users)
+    onValue(ref(db, 'users'), (snap) => {
+      usersMap = snap.val() || {};
+      const list = Object.entries(usersMap)
+        .map(([uid, u]) => ({ uid, ...u }))
+        .sort((a, b) => (b.points || 0) - (a.points || 0));
+      document.getElementById('totalUsersBadge').textContent = `${list.length} सदस्य`;
+      document.getElementById('rankList').innerHTML = list.length ? list.map((u, i) => {
+        const av = u.avatar || defaultAvatar(u.name);
+        const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i + 1}`;
+        return `<div class="p-3 rounded-xl border border-slate-200 flex items-center justify-between gap-2 text-xs">
+          <div class="flex items-center gap-2.5">
+            <span class="font-bold w-6 text-center">${medal}</span>
+            <img src="${av}" class="w-9 h-9 rounded-full object-cover border border-emerald-500" />
+            <div>
+              <div class="font-bold text-sm">${u.name || 'Gramin'}</div>
+              <div class="text-slate-500 text-[11px]">@${u.username || 'user'} • ${u.ward || 'Dangari'}</div>
             </div>
           </div>
-          <button type="button" id="spinBtn" onclick="doSpin()" class="w-full bg-emerald-700 text-white font-bold text-xs py-2.5 rounded-xl">🎡 Wheel घुमाएँ</button>
-          <p id="spinMsg" class="text-xs font-bold text-emerald-700 mt-2"></p>
-        `;
-      } else if (type === 'quiz') {
-        box.innerHTML = `
-          <h3 class="font-bold text-sm mb-2">🧠 सवाल: डांगरी गाँव किस तहसील में आता है?</h3>
-          <div class="space-y-2">
-            <button type="button" onclick="ansQuiz(true)" class="w-full p-2.5 rounded-xl border text-xs font-bold">A. फतेहगढ़ (Fatehgarh)</button>
-            <button type="button" onclick="ansQuiz(false)" class="w-full p-2.5 rounded-xl border text-xs font-bold">B. पोकरण (Pokaran)</button>
+          <span class="font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full">⭐ ${u.points || 0} XP</span>
+        </div>`;
+      }).join('') : '<p class="text-xs text-slate-500">अभी कोई सदस्य नहीं है।</p>';
+      renderPostsList();
+    });
+
+    let cachedPosts = [];
+    onValue(ref(db, 'posts'), (snap) => {
+      cachedPosts = [];
+      snap.forEach(c => { cachedPosts.push({ id: c.key, ...c.val() }); });
+      cachedPosts.reverse();
+      renderPostsList();
+    });
+
+    function renderPostsList() {
+      document.getElementById('postCount').textContent = `${cachedPosts.length} Posts`;
+      document.getElementById('feedList').innerHTML = cachedPosts.length ? cachedPosts.map(p => {
+        const liveUser = usersMap[p.uid] || {};
+        const displayName = liveUser.name || p.name || 'Gramin';
+        const displayWard = liveUser.ward || p.ward || 'Dangari';
+        const av = liveUser.avatar || defaultAvatar(displayName);
+        return `<div class="surface bg-white p-4 rounded-2xl border border-slate-200 space-y-2">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2.5">
+              <img src="${av}" class="w-9 h-9 rounded-full object-cover border border-emerald-500" />
+              <div>
+                <div class="text-xs font-bold">${displayName} <span class="text-slate-400 font-normal">@${liveUser.username || p.username || 'user'}</span></div>
+                <div class="text-[10px] text-emerald-700 font-semibold">📍 ${displayWard}</div>
+              </div>
+            </div>
+            <button type="button" onclick="reportPost('${p.id}')" class="text-[11px] text-rose-600 font-semibold">Report</button>
           </div>
-        `;
-      } else if (type === 'memory') {
-        const icons = ['🌵','🐪','🌞','🏜️','🌵','🐪','🌞','🏜️'].sort(() => Math.random() - 0.5);
-        let open = [], done = [];
-        box.innerHTML = `<h3 class="font-bold text-sm mb-2">🃏 Memory Match</h3><div class="grid grid-cols-4 gap-2 max-w-xs mx-auto">` +
-          icons.map((_, i) => `<button type="button" id="m${i}" onclick="flipM(${i})" class="h-14 rounded-xl bg-emerald-700 text-white text-xl font-bold">?</button>`).join('') + `</div>`;
-        window.flipM = i => {
-          if (done.includes(i) || open.includes(i) || open.length === 2) return;
-          open.push(i); document.getElementById('m' + i).textContent = icons[i];
-          if (open.length === 2) {
-            if (icons[open[0]] === icons[open[1]]) { done.push(...open); open = []; if (done.length === 8) { notify('🎉 जीत गए! +2 XP'); addXP(2); } }
-            else { const p = [...open]; setTimeout(() => { p.forEach(k => document.getElementById('m' + k).textContent = '?'); open = []; }, 600); }
-          }
-        };
-      } else if (type === 'tic') {
-        let b = Array(9).fill(''), t = 'X', over = false;
-        box.innerHTML = `<h3 class="font-bold text-sm mb-2">⭕ Tic Tac Toe (<span id="ttTurn">X</span> की बारी)</h3><div class="grid grid-cols-3 gap-2 max-w-[220px] mx-auto">` +
-          b.map((_, i) => `<button type="button" id="t${i}" onclick="moveT(${i})" class="h-16 rounded-xl bg-slate-100 text-2xl font-bold"></button>`).join('') + `</div>`;
-        window.moveT = i => {
-          if (over || b[i]) return;
-          b[i] = t; document.getElementById('t' + i).textContent = t;
-          const w = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-          if (w.some(x => x.every(k => b[k] === t))) { notify('🎉 ' + t + ' जीत गया!'); over = true; }
-          else { t = t === 'X' ? 'O' : 'X'; document.getElementById('ttTurn').textContent = t; }
-        };
-      } else if (type === 'number') {
-        let n = [1,2,3,4,5,6,7,0,8];
-        const draw = () => {
-          box.innerHTML = `<h3 class="font-bold text-sm mb-2">🔢 Number Puzzle (1 से 8 क्रम में लगाएँ)</h3><div class="grid grid-cols-3 gap-2 max-w-[220px] mx-auto">` +
-            n.map((v, i) => `<button type="button" onclick="mvN(${i})" class="h-16 rounded-xl ${v ? 'bg-emerald-100 text-emerald-900' : 'bg-slate-100'} text-xl font-bold">${v || ''}</button>`).join('') + `</div>`;
-        };
-        window.mvN = i => {
-          const z = n.indexOf(0);
-          if ([z-3, z+3, z-1, z+1].includes(i)) { [n[i], n[z]] = [n[z], n[i]]; draw(); if (n.join(',') === '1,2,3,4,5,6,7,8,0') { notify('🎉 Puzzle पूरा! +3 XP'); addXP(3); } }
-        };
-        draw();
-      }
+          <p class="text-sm leading-relaxed pt-1">${p.text.replace(/</g, '&lt;')}</p>
+        </div>`;
+      }).join('') : '<p class="text-center text-xs text-slate-500 py-6">अभी कोई पोस्ट नहीं है—पहली पोस्ट आप करें!</p>';
     }
 
-    let wheelRot = 0;
-    window.doSpin = function() {
-      if (!user) return openAuthModal('signup');
-      const rewards = [0, 1, 2, 0, 1, 3];
-      const idx = Math.floor(Math.random() * 6);
-      const stop = 360 - (idx * 60 + 30);
-      wheelRot = wheelRot - (wheelRot % 360) + (360 * 5) + stop;
-      document.getElementById('wheelSvg').style.transform = `rotate(${wheelRot}deg)`;
-      document.getElementById('spinBtn').disabled = true;
-      setTimeout(() => {
-        const won = rewards[idx];
-        document.getElementById('spinMsg').textContent = won ? `🎉 तीर +${won} XP पर रुका!` : '😅 0 XP पर रुका!';
-        if (won > 0) addXP(won);
-        document.getElementById('spinBtn').disabled = false;
+    window.reportPost = async (id) => {
+      if (!currentUser) return openAuthModal('login');
+      await push(ref(db, 'reports'), { postId: id, by: currentUser.uid, at: Date.now() });
+      toast('🚩 Report Admin को भेज दी गई है');
+    };
+
+    // ================= PRO GAMES & ANTI-SPAM ENGINE =================
+    function getDailyCount(key) {
+      const raw = JSON.parse(localStorage.getItem('ad_daily_' + key) || '{}');
+      return raw.date === todayKey() ? (raw.count || 0) : 0;
+    }
+    function incDailyCount(key) {
+      const cur = getDailyCount(key) + 1;
+      localStorage.setItem('ad_daily_' + key, JSON.stringify({ date: todayKey(), count: cur }));
+      return cur;
+    }
+    function updateSpinQuotaUI() {
+      const left = Math.max(0, 3 - getDailyCount('spin'));
+      const badge = document.getElementById('spinQuotaBadge');
+      if (badge) badge.textContent = `🎡 ${left}/3 Spins Left`;
+    }
+
+    const quizBank = [
+      { q: 'डांगरी गाँव राजस्थान के किस जिले में स्थित है?', opts: ['जैसलमेर', 'जयपुर', 'उदयपुर', 'कोटा'], a: 0 },
+      { q: 'राजस्थान का राज्य पशु (Wildlife) कौन-सा है?', opts: ['बाघ', 'चिंकारा', 'हाथी', 'भालू'], a: 1 },
+      { q: 'थार मरुस्थल में सबसे अधिक बोई जाने वाली खरीफ फसल कौन-सी है?', opts: ['धान', 'बाजरा', 'गन्ना', 'कपास'], a: 1 },
+      { q: 'जैसलमेर को किस उपनाम से जाना जाता है?', opts: ['नीला शहर', 'गुलाबी शहर', 'स्वर्ण नगरी (Golden City)', 'झीलों की नगरी'], a: 2 },
+      { q: 'राजस्थान का राज्य वृक्ष कौन-सा है?', opts: ['नीम', 'खेजड़ी', 'पीपल', 'बरगद'], a: 1 },
+      { q: 'आपातकालीन एम्बुलेंस सेवा का टोल-फ्री नंबर क्या है?', opts: ['100', '101', '108', '181'], a: 2 },
+      { q: 'भारत में पंचायती राज व्यवस्था की शुरुआत सबसे पहले किस राज्य में हुई?', opts: ['राजस्थान', 'गुजरात', 'महाराष्ट्र', 'पंजाब'], a: 0 },
+      { q: 'राजस्थान का राज्य पक्षी कौन-सा है?', opts: ['मोर', 'गोडावण (Great Indian Bustard)', 'कबूतर', 'तोता'], a: 1 }
+    ];
+
+    let wheelAngle = 0;
+    let spinning = false;
+    let quizIdx = 0;
+    let quizScore = 0;
+    let todaysQuestions = [];
+
+    window.openGame = (type) => {
+      if (activeLoop) { clearInterval(activeLoop); activeLoop = null; }
+      const arena = document.getElementById('gameArena');
+
+      // 1. DAILY LUCKY SPIN (MAX 3 PER DAY)
+      if (type === 'spin') {
+        const used = getDailyCount('spin');
+        const left = Math.max(0, 3 - used);
+        updateSpinQuotaUI();
+        arena.innerHTML = `<div class="text-center space-y-3">
+          <div class="flex justify-between items-center">
+            <h3 class="font-bold text-sm">🎡 Daily Lucky Spin</h3>
+            <span class="text-xs font-bold text-rose-700">आज बचे स्पिन: ${left} / 3</span>
+          </div>
+          <svg id="wheelSvg" class="wheel-svg w-52 h-52 mx-auto" viewBox="0 0 200 200">
+            <circle cx="100" cy="100" r="95" fill="#065f46" stroke="#f59e0b" stroke-width="6"/>
+            <path d="M100,100 L100,5 A95,95 0 0,1 195,100 Z" fill="#10b981"/><text x="135" y="65" fill="#fff" font-size="13" font-weight="bold">+5 XP</text>
+            <path d="M100,100 L195,100 A95,95 0 0,1 100,195 Z" fill="#f59e0b"/><text x="135" y="145" fill="#fff" font-size="13" font-weight="bold">+10 XP</text>
+            <path d="M100,100 L100,195 A95,95 0 0,1 5,100 Z" fill="#0d9488"/><text x="38" y="145" fill="#fff" font-size="13" font-weight="bold">+15 XP</text>
+            <path d="M100,100 L5,100 A95,95 0 0,1 100,5 Z" fill="#059669"/><text x="42" y="65" fill="#fff" font-size="13" font-weight="bold">+20 XP</text>
+            <circle cx="100" cy="100" r="16" fill="#fff"/>
+          </svg>
+          <button type="button" onclick="spinNow()" ${left === 0 ? 'disabled' : ''} class="${left === 0 ? 'bg-slate-400' : 'bg-amber-500 text-slate-950'} font-bold text-xs px-6 py-2.5 rounded-full shadow">
+            ${left === 0 ? 'आज के 3 Spin पूरे हो गए (कल फिर आएं)' : 'Spin घुमाएँ'}
+          </button>
+        </div>`;
+      }
+
+      // 2. 5-QUESTION DAILY QUIZ (NO REPEAT SPAM)
+      if (type === 'quiz') {
+        if (getDailyCount('quiz_done') >= 1) {
+          arena.innerHTML = `<div class="text-center py-10 space-y-2">
+            <div class="text-3xl">✅</div>
+            <h3 class="font-bold text-sm">आज का 5-सवाल Daily Quiz पूरा हो चुका है!</h3>
+            <p class="text-xs text-slate-500">Spam रोकने के लिए Quiz दिन में 1 बार ही खेला जा सकता है। कल नए सवाल मिलेंगे!</p>
+          </div>`;
+          return;
+        }
+        todaysQuestions = [...quizBank].sort(() => 0.5 - Math.random()).slice(0, 5);
+        quizIdx = 0;
+        quizScore = 0;
+        renderQuizStep();
+      }
+
+      // 3. DESERT RACE (THAR JEEP ARCADE)
+      if (type === 'desert') {
+        arena.innerHTML = `<div class="space-y-2 text-center">
+          <div class="flex justify-between items-center text-xs font-bold">
+            <span>🐪 Desert Race (थार सफारी)</span>
+            <span id="raceScore" class="text-amber-700">Score: 0</span>
+          </div>
+          <canvas id="raceCanvas" width="300" height="320" class="mx-auto rounded-2xl border-2 border-amber-400 bg-amber-100"></canvas>
+          <div class="grid grid-cols-2 gap-3 pt-1">
+            <button type="button" onclick="moveCar(-1)" class="bg-slate-800 text-white font-bold py-2.5 rounded-xl text-sm">⬅️ Left</button>
+            <button type="button" onclick="moveCar(1)" class="bg-slate-800 text-white font-bold py-2.5 rounded-xl text-sm">Right ➡️</button>
+          </div>
+        </div>`;
+        startDesertRace();
+      }
+
+      // 4. ONLINE MULTIPLAYER LUDO (WITH ROOM CODE)
+      if (type === 'ludo') {
+        arena.innerHTML = `<div class="space-y-3">
+          <h3 class="font-bold text-sm">🎲 Online Multiplayer Ludo (Friends के साथ)</h3>
+          <p class="text-xs text-slate-500">नया Room बनाएँ और 4-अंकों का Code अपने दोस्त को भेजें—दोनों के मोबाइल पर बोर्ड लाइव चलेगा!</p>
+          <div class="flex gap-2">
+            <button type="button" onclick="createLudoRoom()" class="flex-1 bg-indigo-600 text-white font-bold text-xs py-2.5 rounded-xl">+ नया Room बनाएँ</button>
+          </div>
+          <div class="flex gap-2">
+            <input id="ludoJoinCode" type="text" maxlength="6" placeholder="Room Code (उदा. 4829)" class="flex-1 p-2.5 rounded-xl border border-slate-200 text-xs uppercase" />
+            <button type="button" onclick="joinLudoRoom()" class="bg-emerald-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl">Join करें</button>
+          </div>
+          <div id="ludoBoardArea"></div>
+        </div>`;
+      }
+    };
+
+    window.spinNow = async () => {
+      if (!currentUser) return openAuthModal('login');
+      if (spinning) return;
+      if (getDailyCount('spin') >= 3) return toast('आज के 3 Spin पूरे हो चुके हैं!');
+      spinning = true;
+      incDailyCount('spin');
+      updateSpinQuotaUI();
+      const rewards = [5, 10, 15, 20];
+      const idx = Math.floor(Math.random() * 4);
+      wheelAngle += 1440 + idx * 90 + 45;
+      document.getElementById('wheelSvg').style.transform = `rotate(${wheelAngle}deg)`;
+      setTimeout(async () => {
+        spinning = false;
+        await addPoints(rewards[idx], 'Daily Spin');
+        openGame('spin');
       }, 3300);
     };
 
-    window.ansQuiz = function(ok) {
-      if (!ok) return notify('❌ गलत जवाब! सही उत्तर: फतेहगढ़');
-      notify('✅ सही जवाब! +2 XP मिले');
-      addXP(2);
+    function renderQuizStep() {
+      const arena = document.getElementById('gameArena');
+      if (quizIdx >= todaysQuestions.length) {
+        incDailyCount('quiz_done');
+        const earned = quizScore * 4;
+        if (earned > 0) addPoints(earned, `Quiz ${quizScore}/5 सही`);
+        arena.innerHTML = `<div class="text-center py-8 space-y-2">
+          <div class="text-3xl">🏆</div>
+          <h3 class="font-bold text-base">Quiz पूरा हुआ! स्कोर: ${quizScore} / 5</h3>
+          <p class="text-xs text-emerald-700 font-bold">आपको +${earned} XP मिले!</p>
+        </div>`;
+        return;
+      }
+      const item = todaysQuestions[quizIdx];
+      arena.innerHTML = `<div class="space-y-2.5">
+        <div class="flex justify-between text-xs font-bold text-emerald-700">
+          <span>सवाल ${quizIdx + 1} / 5</span>
+          <span>सही: ${quizScore}</span>
+        </div>
+        <p class="text-sm font-bold">${item.q}</p>
+        ${item.opts.map((o, i) => `<button type="button" onclick="answerQuiz(${i})" class="w-full text-left p-2.5 rounded-xl border border-slate-200 hover:bg-emerald-50 text-xs font-semibold">${o}</button>`).join('')}
+      </div>`;
+    }
+
+    window.answerQuiz = (idx) => {
+      if (!currentUser) return openAuthModal('login');
+      if (idx === todaysQuestions[quizIdx].a) {
+        quizScore++;
+        toast('✅ सही जवाब!');
+      } else {
+        toast('❌ गलत जवाब');
+      }
+      quizIdx++;
+      renderQuizStep();
     };
 
-    // ADMIN FUNCTIONS
-    function checkAdmin() {
-      if (!user) { document.getElementById('adminStatus').textContent = 'पहले Login करें'; return; }
-      db.ref('admins/' + user.uid).once('value', s => {
-        const ok = s.val() === true;
-        document.getElementById('adminStatus').textContent = ok ? '✅ Verified Admin' : '❌ Admin Access नहीं है';
-        document.getElementById('adminTools').classList.toggle('hidden', !ok);
+    // DESERT RACE ENGINE
+    let carLane = 1; // 0, 1, 2
+    window.moveCar = (dir) => { carLane = Math.max(0, Math.min(2, carLane + dir)); };
+
+    function startDesertRace() {
+      const canvas = document.getElementById('raceCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      carLane = 1;
+      let score = 0;
+      let obstacles = [{ lane: 0, y: -40, type: '🌵' }, { lane: 2, y: -190, type: '🐪' }];
+      activeLoop = setInterval(() => {
+        ctx.clearRect(0, 0, 300, 320);
+        // Sand road lanes
+        ctx.fillStyle = '#fde68a';
+        ctx.fillRect(0, 0, 300, 320);
+        ctx.strokeStyle = '#d97706';
+        ctx.setLineDash([12, 12]);
+        ctx.beginPath(); ctx.moveTo(100, 0); ctx.lineTo(100, 320); ctx.moveTo(200, 0); ctx.lineTo(200, 320); ctx.stroke();
+
+        // Player Jeep
+        const px = carLane * 100 + 50;
+        ctx.font = '34px serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('🚙', px, 285);
+
+        // Obstacles
+        obstacles.forEach(ob => {
+          ob.y += 5 + Math.min(5, Math.floor(score / 10));
+          const ox = ob.lane * 100 + 50;
+          ctx.fillText(ob.type, ox, ob.y);
+          if (ob.lane === carLane && ob.y > 245 && ob.y < 300) {
+            clearInterval(activeLoop);
+            activeLoop = null;
+            if (score >= 10 && getDailyCount('desert_xp') < 2) {
+              incDailyCount('desert_xp');
+              addPoints(10, 'Desert Race');
+            }
+            toast(`💥 Race Over! Final Score: ${score}`);
+          }
+          if (ob.y > 330) {
+            ob.y = -30;
+            ob.lane = Math.floor(Math.random() * 3);
+            score++;
+            const scEl = document.getElementById('raceScore');
+            if (scEl) scEl.textContent = 'Score: ' + score;
+          }
+        });
+      }, 35);
+    }
+
+    // ONLINE MULTIPLAYER LUDO (2-Player Quick Race Ludo synced via Firebase)
+    window.createLudoRoom = async () => {
+      if (!currentUser) return openAuthModal('login');
+      const code = String(Math.floor(1000 + Math.random() * 9000));
+      const roomData = {
+        code,
+        p1: { uid: currentUser.uid, name: userProfile?.name || 'Player 1', pos: 0 },
+        p2: null,
+        turn: 'p1',
+        lastDice: 0,
+        winner: ''
+      };
+      await set(ref(db, `ludoRooms/${code}`), roomData);
+      listenLudoRoom(code);
+      toast(`🎲 Room ${code} बन गया! दोस्त को Code भेजें`);
+    };
+
+    window.joinLudoRoom = async () => {
+      if (!currentUser) return openAuthModal('login');
+      const code = document.getElementById('ludoJoinCode').value.trim();
+      if (!code) return toast('Room Code डालें');
+      const rRef = ref(db, `ludoRooms/${code}`);
+      const snap = await get(rRef);
+      if (!snap.exists()) return toast('यह Room Code नहीं मिला');
+      const room = snap.val();
+      if (room.p1?.uid !== currentUser.uid && !room.p2) {
+        await update(rRef, { p2: { uid: currentUser.uid, name: userProfile?.name || 'Player 2', pos: 0 } });
+      }
+      listenLudoRoom(code);
+    };
+
+    function listenLudoRoom(code) {
+      activeLudoRoom = code;
+      onValue(ref(db, `ludoRooms/${code}`), (snap) => {
+        if (!snap.exists() || activeLudoRoom !== code) return;
+        const r = snap.val();
+        const area = document.getElementById('ludoBoardArea');
+        if (!area) return;
+        const myRole = r.p1?.uid === currentUser?.uid ? 'p1' : (r.p2?.uid === currentUser?.uid ? 'p2' : 'spectator');
+        const isMyTurn = !r.winner && r.turn === myRole && r.p2;
+
+        // Build 30-step Ludo Track Grid
+        let cells = '';
+        for (let i = 1; i <= 30; i++) {
+          const hasP1 = r.p1?.pos === i;
+          const hasP2 = r.p2?.pos === i;
+          const safe = [1, 8, 15, 22, 30].includes(i);
+          cells += `<div class="h-9 rounded-lg border ${i === 30 ? 'bg-amber-200 border-amber-500' : safe ? 'bg-emerald-50 border-emerald-300' : 'border-slate-200'} flex items-center justify-center text-[11px] font-bold">
+            ${hasP1 ? '🔴' : ''}${hasP2 ? '🔵' : ''}${!hasP1 && !hasP2 ? (i === 30 ? '👑' : i) : ''}
+          </div>`;
+        }
+
+        area.innerHTML = `<div class="mt-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 space-y-2.5">
+          <div class="flex justify-between items-center text-xs font-bold">
+            <span class="bg-indigo-100 text-indigo-900 px-2.5 py-1 rounded-full">Room: ${r.code}</span>
+            <span>🎲 Dice: ${r.lastDice || '-'}</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="p-2 rounded-xl bg-rose-50 text-rose-900 font-bold">🔴 ${r.p1?.name || 'P1'} (${r.p1?.pos || 0}/30)</div>
+            <div class="p-2 rounded-xl bg-blue-50 text-blue-900 font-bold">🔵 ${r.p2 ? r.p2.name + ' (' + (r.p2.pos || 0) + '/30)' : 'दोस्त का इंतज़ार...'}</div>
+          </div>
+          <div class="grid grid-cols-6 gap-1">${cells}</div>
+          ${r.winner ? `<div class="text-center font-bold text-sm text-emerald-700 py-2">🏆 विजेता: ${r.winner}!</div>` :
+            `<button type="button" onclick="rollLudoDice('${r.code}')" ${isMyTurn ? '' : 'disabled'} class="w-full ${isMyTurn ? 'bg-indigo-600 text-white' : 'bg-slate-300 text-slate-600'} font-bold text-xs py-2.5 rounded-xl">
+              ${!r.p2 ? 'दोस्त को Room Code ' + r.code + ' भेजें...' : isMyTurn ? '🎲 आपकी बारी है — Dice फेंकें!' : 'दोस्त की बारी का इंतज़ार...'}
+            </button>`}
+        </div>`;
       });
     }
-    async function pubAnn() { const t = document.getElementById('admAnn').value.trim(); if (t) { await db.ref('announcements').push({ text: t, by: user.uid, createdAt: Date.now() }); document.getElementById('admAnn').value = ''; notify('✅ सूचना प्रकाशित'); } }
-    async function pubEvent() { const title = document.getElementById('admEvTitle').value.trim(), date = document.getElementById('admEvDate').value; if (title) { await db.ref('events').push({ title, date }); notify('✅ Event जुड़ गया'); } }
-    async function pubPoll() { const q = document.getElementById('admPollQ').value.trim(), o = document.getElementById('admPollOpts').value.split('\n').map(x => x.trim()).filter(Boolean); if (q && o.length > 1) { await db.ref('polls/active').set({ id: 'p_' + Date.now(), question: q, options: o }); notify('✅ नया Poll चालू हो गया'); } }
+
+    window.rollLudoDice = async (code) => {
+      if (!currentUser) return;
+      const rRef = ref(db, `ludoRooms/${code}`);
+      const snap = await get(rRef);
+      if (!snap.exists()) return;
+      const r = snap.val();
+      const role = r.p1?.uid === currentUser.uid ? 'p1' : 'p2';
+      if (r.turn !== role || !r.p2 || r.winner) return;
+
+      const dice = Math.floor(1 + Math.random() * 6);
+      let newPos = (r[role].pos || 0) + dice;
+      if (newPos > 30) newPos = r[role].pos; // exact 30 needed to win
+      const other = role === 'p1' ? 'p2' : 'p1';
+      let otherPos = r[other].pos || 0;
+      const safeSpots = [8, 15, 22, 30];
+      if (newPos > 0 && newPos === otherPos && !safeSpots.includes(newPos)) {
+        otherPos = 0; // Cut opponent's token!
+      }
+      const won = newPos === 30 ? r[role].name : '';
+      await update(rRef, {
+        [`${role}/pos`]: newPos,
+        [`${other}/pos`]: otherPos,
+        lastDice: dice,
+        turn: dice === 6 ? role : other,
+        winner: won
+      });
+      if (won && getDailyCount('ludo_win') < 2) {
+        incDailyCount('ludo_win');
+        await addPoints(15, 'Ludo Win');
+      }
+    };
+
+    // ADMIN DESK
+    function updateAdminUI() {
+      const box = document.getElementById('adminStatusBox');
+      const ctrl = document.getElementById('adminControls');
+      if (isAdmin) {
+        box.className = 'p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 font-bold';
+        box.textContent = '✅ Verified Admin: आप सूचना, Event और Poll पब्लिश कर सकते हैं।';
+        ctrl.classList.remove('hidden');
+      } else {
+        box.className = 'p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900';
+        box.textContent = '🔒 Admin Access नहीं है। केवल Firebase admins/{uid}: true वाले Admin ही यहाँ बदलाव कर सकते हैं।';
+        ctrl.classList.add('hidden');
+      }
+    }
+
+    onValue(ref(db, 'announcements'), (snap) => {
+      const box = document.getElementById('noticeList');
+      const items = [];
+      snap.forEach(c => items.push(c.val()));
+      if (items.length) box.innerHTML = items.reverse().map(n => `<div class="p-2.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200">• ${n.text}</div>`).join('');
+    });
+
+    onValue(ref(db, 'events'), (snap) => {
+      const box = document.getElementById('eventList');
+      const items = [];
+      snap.forEach(c => items.push(c.val()));
+      if (items.length) box.innerHTML = items.reverse().map(e => `<div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200"><div class="font-bold text-emerald-900">${e.title}</div><div class="text-slate-600 mt-1">📍 ${e.meta}</div></div>`).join('');
+    });
+
+    window.addNotice = async () => {
+      const text = document.getElementById('admNotice').value.trim();
+      if (!text) return;
+      await push(ref(db, 'announcements'), { text, at: Date.now() });
+      document.getElementById('admNotice').value = '';
+      toast('✅ सूचना प्रकाशित');
+    };
+    window.addAdminEvent = async () => {
+      const title = document.getElementById('admEvTitle').value.trim();
+      const meta = document.getElementById('admEvMeta').value.trim();
+      if (!title) return;
+      await push(ref(db, 'events'), { title, meta, at: Date.now() });
+      document.getElementById('admEvTitle').value = '';
+      document.getElementById('admEvMeta').value = '';
+      toast('✅ Event प्रकाशित');
+    };
+    window.setAdminPoll = async () => {
+      const q = document.getElementById('admPollQ').value.trim();
+      const opts = document.getElementById('admPollOpts').value.split(',').map(s => s.trim()).filter(Boolean);
+      if (!q || opts.length < 2) return toast('प्रश्न और कम से कम 2 विकल्प लिखें');
+      await set(ref(db, 'polls/active'), { id: 'poll_' + Date.now(), question: q, options: opts });
+      toast('✅ नया Poll लाइव हो गया');
+    };
+    window.suggestEvent = async () => {
+      if (!currentUser) return openAuthModal('login');
+      const title = document.getElementById('evTitle').value.trim();
+      const meta = document.getElementById('evDate').value.trim();
+      if (!title) return toast('कार्यक्रम का नाम लिखें');
+      await push(ref(db, 'eventSuggestions'), { title, meta, by: currentUser.uid, at: Date.now() });
+      document.getElementById('evTitle').value = '';
+      document.getElementById('evDate').value = '';
+      toast('✅ सुझाव Admin को भेज दिया गया');
+    };
+    window.copyQuote = () => {
+      navigator.clipboard?.writeText(document.getElementById('quoteTxt').textContent);
+      toast('📋 मारवाड़ी बात Copy हो गई!');
+    };
   </script>
 </body>
 </html>
