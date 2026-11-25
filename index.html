@@ -230,16 +230,28 @@
       </div>
     </section>
 
-    <!-- 6. LEADERBOARD PAGE -->
-    <section id="page-rank" class="page space-y-4">
-      <div class="surface bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
-        <div class="flex justify-between items-center">
-          <h2 class="font-bold text-base">🏆 Dangari Leaderboard</h2>
-          <span id="totalUsersBadge" class="text-xs text-emerald-700 font-bold">0 सदस्य</span>
-        </div>
-        <div id="rankList" class="space-y-2"></div>
-      </div>
-    </section>
+    <!-- 6. LEADERBOARD PAGE (PRO PODIUM DESIGN) -->
+<section id="page-rank" class="page space-y-4">
+  <!-- Top Village Hub Banner -->
+  <div class="relative overflow-hidden rounded-3xl shadow-md h-32 flex items-end justify-center bg-emerald-900">
+    <img src="banner.jpg" alt="Dangari Village Hub" class="absolute inset-0 w-full h-full object-cover" onerror="this.style.display='none'" />
+    <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent"></div>
+    <h3 class="relative z-10 text-white font-bold text-lg pb-3 tracking-wide drop-shadow">Dangari Village Hub</h3>
+  </div>
+
+  <!-- Header -->
+  <div class="flex justify-between items-center px-1">
+    <h2 class="font-bold text-lg flex items-center gap-1.5">🏆 Dangari Leaderboard</h2>
+    <span id="totalUsersBadge" class="text-xs bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full">0 सदस्य</span>
+  </div>
+
+  <!-- Top 3 Podium Cards -->
+  <div id="podiumBox" class="grid grid-cols-3 gap-2 items-end pt-4"></div>
+
+  <!-- #4 and below List -->
+  <div id="rankList" class="space-y-2.5"></div>
+</section>
+
 
     <!-- 7. PROFILE PAGE -->
     <section id="page-profile" class="page space-y-4">
@@ -669,30 +681,68 @@ window.toggleGameAudio = () => {
       await addPoints(3, 'New Post');
     };
 
-    // LEADERBOARD + USERS CACHE (Shows ALL registered users)
-    onValue(ref(db, 'users'), (snap) => {
-      usersMap = snap.val() || {};
-      const list = Object.entries(usersMap)
-        .map(([uid, u]) => ({ uid, ...u }))
-        .sort((a, b) => (b.points || 0) - (a.points || 0));
-      document.getElementById('totalUsersBadge').textContent = `${list.length} सदस्य`;
-      document.getElementById('rankList').innerHTML = list.length ? list.map((u, i) => {
-        const av = u.avatar || defaultAvatar(u.name);
-        const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i + 1}`;
-        return `<div class="p-3 rounded-xl border border-slate-200 flex items-center justify-between gap-2 text-xs">
-          <div class="flex items-center gap-2.5">
-            <span class="font-bold w-6 text-center">${medal}</span>
-            <img src="${av}" class="w-9 h-9 rounded-full object-cover border border-emerald-500" />
-            <div>
-              <div class="font-bold text-sm">${u.name || 'Gramin'}</div>
-              <div class="text-slate-500 text-[11px]">@${u.username || 'user'} • ${u.ward || 'Dangari'}</div>
-            </div>
-          </div>
-          <span class="font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full">⭐ ${u.points || 0} XP</span>
+    // LEADERBOARD + TOP 3 PODIUM + USERS CACHE
+onValue(ref(db, 'users'), (snap) => {
+  usersMap = snap.val() || {};
+  const list = Object.entries(usersMap)
+    .map(([uid, u]) => ({ uid, ...u }))
+    .sort((a, b) => (b.points || 0) - (a.points || 0));
+
+  document.getElementById('totalUsersBadge').textContent = `${list.length} सदस्य`;
+
+  // Top 3 Podium (Order: 2nd Left, 1st Center Big with Crown, 3rd Right)
+  const podiumBox = document.getElementById('podiumBox');
+  if (podiumBox) {
+    const p1 = list[0];
+    const p2 = list[1];
+    const p3 = list[2];
+
+    const renderPodiumCard = (u, rank) => {
+      if (!u) return `<div></div>`;
+      const av = u.avatar || defaultAvatar(u.name);
+      if (rank === 1) {
+        return `<div class="relative surface bg-gradient-to-b from-amber-50 to-amber-100/70 dark:from-amber-950/60 dark:to-slate-900 border-2 border-amber-400 rounded-2xl p-2.5 pt-5 text-center shadow-md">
+          <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-amber-400 text-amber-950 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full shadow">👑 1st</div>
+          <img src="${av}" class="w-16 h-16 mx-auto rounded-full object-cover border-3 border-amber-400 shadow" />
+          <div class="font-bold text-sm mt-2 truncate">${u.name || 'Admin'}</div>
+          <div class="text-[10px] text-slate-500 truncate">@${u.username || 'user'} • ${u.ward || 'Dangari'}</div>
+          <div class="mt-2 inline-block bg-amber-300/90 text-amber-950 font-bold text-[11px] px-2.5 py-1 rounded-full shadow-sm">⭐ ${u.points || 0} XP</div>
         </div>`;
-      }).join('') : '<p class="text-xs text-slate-500">अभी कोई सदस्य नहीं है।</p>';
-      renderPostsList();
-    });
+      }
+      const isSecond = rank === 2;
+      return `<div class="relative surface bg-gradient-to-b ${isSecond ? 'from-slate-100 to-slate-200/60 border-slate-300' : 'from-orange-50 to-amber-100/50 border-amber-700/30'} dark:from-slate-800 dark:to-slate-900 border-2 rounded-2xl p-2 pt-4 text-center shadow-sm">
+        <div class="absolute -top-3 left-1/2 -translate-x-1/2 ${isSecond ? 'bg-slate-300 text-slate-800' : 'bg-amber-700/80 text-white'} text-[10px] font-bold px-2.5 py-0.5 rounded-full">${isSecond ? '2nd' : '3rd'}</div>
+        <img src="${av}" class="w-12 h-12 mx-auto rounded-full object-cover border-2 ${isSecond ? 'border-slate-400' : 'border-amber-600'}" />
+        <div class="font-bold text-xs mt-1.5 truncate">${u.name || 'User'}</div>
+        <div class="text-[9px] text-slate-500 truncate">${u.ward || 'Dangari'}</div>
+        <div class="mt-1.5 inline-block bg-white/80 dark:bg-slate-800 text-slate-800 dark:text-amber-300 font-bold text-[10px] px-2 py-0.5 rounded-full border border-slate-200">⭐ ${u.points || 0} XP</div>
+      </div>`;
+    };
+
+    podiumBox.innerHTML = renderPodiumCard(p2, 2) + renderPodiumCard(p1, 1) + renderPodiumCard(p3, 3);
+  }
+
+  // Remaining Users (#4 onwards)
+  const rest = list.slice(3);
+  document.getElementById('rankList').innerHTML = rest.map((u, idx) => {
+    const rankNum = idx + 4;
+    const av = u.avatar || defaultAvatar(u.name);
+    return `<div class="surface bg-white p-3 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <span class="font-bold text-xs text-slate-600 w-6 text-center shrink-0">#${rankNum}</span>
+        <img src="${av}" class="w-10 h-10 rounded-full object-cover border border-emerald-600 shrink-0" />
+        <div class="min-w-0">
+          <div class="font-bold text-sm truncate">${u.name || 'Gramin'}</div>
+          <div class="text-slate-500 text-[11px] truncate">@${u.username || 'user'} • ${u.ward || 'Dangari'}</div>
+        </div>
+      </div>
+      <span class="font-bold text-xs text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full shrink-0">⭐ ${u.points || 0} XP</span>
+    </div>`;
+  }).join('');
+
+  renderPostsList();
+});
+
 
     let cachedPosts = [];
     onValue(ref(db, 'posts'), (snap) => {
