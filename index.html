@@ -1691,6 +1691,216 @@ onValue(ref(db, 'users'), (snap) => {
       renderMinesBoard();
       await awardGameCoins(reward, `Thar Mines (${minesState.gems} Gems)`);
     };
+    // --- GAME 3: ROYAL ARCHER (SMOOTH CANVAS ARCHERY) ---
+    let archState = null;
+    function startArcherEngine() {
+      const arena = document.getElementById('gameArena');
+      arena.innerHTML = `<div class="space-y-2.5 text-center">
+        <div class="flex justify-between items-center text-xs font-bold">
+          <span class="bg-amber-100 text-amber-900 px-2.5 py-1 rounded-full">🏹 Royal Archer</span>
+          <span id="archHud" class="text-amber-800">Points: 0 • Arrows: 7</span>
+        </div>
+        <canvas id="archCanvas" width="310" height="260" class="mx-auto rounded-2xl border-2 border-amber-600 shadow-inner bg-sky-900"></canvas>
+        <button type="button" onclick="shootArcherArrow()" class="w-full bg-gradient-to-r from-amber-500 to-red-600 active:scale-95 text-white font-extrabold text-sm py-3 rounded-2xl shadow-md">
+          🏹 TEER CHHODO (SHOOT!)
+        </button>
+        <p class="text-[10px] text-slate-500">Bullseye (Red Center) = +25 Pts • हर 50 Pts पर <b>+8 Coins</b></p>
+      </div>`;
+
+      const canvas = document.getElementById('archCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      archState = {
+        targetX: 155, dir: 3.2, arrows: 7, pts: 0,
+        flying: false, arrowY: 225, hitMsg: '', hitTimer: 0, milestone: 50
+      };
+
+      activeLoop = setInterval(() => {
+        if (!archState) return;
+        ctx.clearRect(0, 0, 310, 260);
+
+        // Desert Sunset Sky & Dunes Background
+        const grad = ctx.createLinearGradient(0, 0, 0, 260);
+        grad.addColorStop(0, '#1e1b4b');
+        grad.addColorStop(0.6, '#b45309');
+        grad.addColorStop(1, '#f59e0b');
+        ctx.fillStyle = grad; ctx.fillRect(0, 0, 310, 260);
+
+        // Moving Target Board
+        archState.targetX += archState.dir;
+        if (archState.targetX > 265 || archState.targetX < 45) archState.dir *= -1;
+        const tx = archState.targetX, ty = 52;
+
+        const rings = [
+          { r: 34, c: '#ffffff' },
+          { r: 25, c: '#0284c7' },
+          { r: 16, c: '#facc15' },
+          { r: 8,  c: '#dc2626' }
+        ];
+        rings.forEach(rg => {
+          ctx.beginPath(); ctx.arc(tx, ty, rg.r, 0, Math.PI * 2);
+          ctx.fillStyle = rg.c; ctx.fill();
+        });
+
+        // Bow at Bottom Center
+        ctx.strokeStyle = '#fef3c7'; ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.arc(155, 245, 34, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke();
+
+        // Arrow Flight
+        if (archState.flying) {
+          archState.arrowY -= 14;
+          if (archState.arrowY <= ty + 10) {
+            archState.flying = false;
+            const dist = Math.abs(155 - tx);
+            if (dist <= 9) { archState.pts += 25; archState.hitMsg = '🎯 BULLSEYE! +25'; }
+            else if (dist <= 20) { archState.pts += 15; archState.hitMsg = '🔥 GREAT HIT! +15'; }
+            else if (dist <= 34) { archState.pts += 8; archState.hitMsg = '👍 HIT! +8'; }
+            else { archState.hitMsg = '💨 MISS!'; }
+
+            archState.hitTimer = 25;
+            archState.arrowY = 225;
+            archState.dir = (archState.dir > 0 ? 1 : -1) * (3.2 + Math.min(4.5, archState.pts / 35));
+            updateArcherHud();
+
+            if (archState.pts >= archState.milestone) {
+              archState.milestone += 50;
+              awardGameCoins(8, `Archer ${archState.pts} Pts`);
+            }
+
+            if (archState.arrows <= 0) {
+              clearInterval(activeLoop); activeLoop = null;
+              document.getElementById('gameArena').innerHTML = `<div class="text-center py-8 space-y-3">
+                <div class="text-4xl">🏹</div>
+                <h3 class="font-extrabold text-base">Round Over! Total Score: ${archState.pts} Points</h3>
+                <p class="text-xs text-slate-500">फिर से तीरंदाज़ी खेलें और Coins बढ़ाएँ!</p>
+                <button type="button" onclick="openProGame('archer')" class="bg-amber-600 text-white font-bold text-xs px-6 py-2.5 rounded-full shadow">🔄 Play Again</button>
+              </div>`;
+            }
+          }
+        }
+
+        // Draw Arrow
+        const ay = archState.flying ? archState.arrowY : 225;
+        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(155, ay); ctx.lineTo(155, ay - 32); ctx.stroke();
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath(); ctx.moveTo(155, ay - 38); ctx.lineTo(150, ay - 28); ctx.lineTo(160, ay - 28); ctx.fill();
+
+        if (archState.hitTimer > 0) {
+          archState.hitTimer--;
+          ctx.fillStyle = 'rgba(0,0,0,0.7)'; ctx.fillRect(65, 115, 180, 34);
+          ctx.fillStyle = '#fde047'; ctx.font = 'bold 15px sans-serif'; ctx.textAlign = 'center';
+          ctx.fillText(archState.hitMsg, 155, 137);
+        }
+      }, 28);
+    }
+
+    function updateArcherHud() {
+      const el = document.getElementById('archHud');
+      if (el && archState) el.textContent = `Points: ${archState.pts} • Arrows: ${archState.arrows}`;
+    }
+
+    window.shootArcherArrow = () => {
+      if (!currentUser) return openAuthModal('login');
+      if (!archState || archState.flying || archState.arrows <= 0) return;
+      archState.arrows--;
+      archState.flying = true;
+      updateArcherHud();
+    };
+
+    // --- GAME 4: KBC MEGA QUIZ (25+ QUESTIONS + 15s TIMER + 50:50 LIFELINE) ---
+    let kbcState = null;
+    function startKbcMegaQuiz() {
+      const qs = [...megaQuizBank].sort(() => 0.5 - Math.random()).slice(0, 5);
+      kbcState = { qs, idx: 0, score: 0, timer: 15, used5050: false, hiddenOpts: [] };
+      renderKbcQuestion();
+    }
+
+    function renderKbcQuestion() {
+      if (activeLoop) { clearInterval(activeLoop); activeLoop = null; }
+      const arena = document.getElementById('gameArena');
+      if (!kbcState) return;
+
+      if (kbcState.idx >= kbcState.qs.length) {
+        const wonCoins = kbcState.score * 4;
+        if (wonCoins > 0) awardGameCoins(wonCoins, `KBC Quiz ${kbcState.score}/5`);
+        arena.innerHTML = `<div class="rounded-2xl bg-gradient-to-b from-indigo-950 to-purple-900 text-white p-6 text-center space-y-3">
+          <div class="text-4xl">🏆</div>
+          <h3 class="font-extrabold text-base">KBC Round Complete! (${kbcState.score} / 5 सही)</h3>
+          <p class="text-xs text-amber-300 font-bold">इनाम: +${wonCoins} Coins (Unlimited Rounds!)</p>
+          <button type="button" onclick="openProGame('kbc')" class="bg-amber-400 text-slate-950 font-extrabold text-xs px-6 py-2.5 rounded-full shadow">🔄 नया KBC राउंड खेलें</button>
+        </div>`;
+        return;
+      }
+
+      kbcState.timer = 15;
+      kbcState.hiddenOpts = [];
+      drawKbcUI();
+
+      activeLoop = setInterval(() => {
+        kbcState.timer--;
+        const tEl = document.getElementById('kbcTimerTxt');
+        if (tEl) tEl.textContent = `⏱️ ${kbcState.timer}s`;
+        if (kbcState.timer <= 0) {
+          clearInterval(activeLoop); activeLoop = null;
+          toast('⏰ समय समाप्त! अगला सवाल');
+          kbcState.idx++;
+          renderKbcQuestion();
+        }
+      }, 1000);
+    }
+
+    function drawKbcUI() {
+      const arena = document.getElementById('gameArena');
+      const item = kbcState.qs[kbcState.idx];
+      const labels = ['A', 'B', 'C', 'D'];
+      arena.innerHTML = `<div class="rounded-2xl bg-gradient-to-b from-indigo-950 via-purple-950 to-slate-900 text-white p-4 space-y-3">
+        <div class="flex justify-between items-center text-xs font-bold">
+          <span class="bg-purple-800/80 px-2.5 py-1 rounded-full">सवाल ${kbcState.idx + 1}/5</span>
+          <span id="kbcTimerTxt" class="bg-amber-400 text-slate-950 px-3 py-1 rounded-full font-extrabold">⏱️ ${kbcState.timer}s</span>
+          <button type="button" onclick="useKbc5050()" ${kbcState.used5050 ? 'disabled' : ''} class="${kbcState.used5050 ? 'bg-slate-700 text-slate-400' : 'bg-emerald-500 text-slate-950'} px-2.5 py-1 rounded-full font-extrabold">
+            ${kbcState.used5050 ? '50:50 Used' : '💡 50:50'}
+          </button>
+        </div>
+
+        <div class="p-3 rounded-xl bg-white/10 border border-amber-400/40 text-sm font-bold leading-snug">
+          ${item.q}
+        </div>
+
+        <div class="space-y-2">
+          ${item.opts.map((opt, i) => {
+            if (kbcState.hiddenOpts.includes(i)) return '';
+            return `<button type="button" onclick="answerKbc(${i})" class="w-full text-left p-2.5 rounded-xl bg-indigo-900/80 hover:bg-amber-500 hover:text-slate-950 border border-indigo-500/50 text-xs font-bold flex items-center gap-2 transition">
+              <span class="w-6 h-6 rounded-full bg-amber-400 text-slate-950 font-extrabold flex items-center justify-center shrink-0">${labels[i]}</span>
+              <span>${opt}</span>
+            </button>`;
+          }).join('')}
+        </div>
+      </div>`;
+    }
+
+    window.useKbc5050 = () => {
+      if (!kbcState || kbcState.used5050) return;
+      kbcState.used5050 = true;
+      const item = kbcState.qs[kbcState.idx];
+      const wrongIndices = [0, 1, 2, 3].filter(i => i !== item.a).sort(() => 0.5 - Math.random());
+      kbcState.hiddenOpts = wrongIndices.slice(0, 2);
+      drawKbcUI();
+    };
+
+    window.answerKbc = (choice) => {
+      if (!currentUser) return openAuthModal('login');
+      if (activeLoop) { clearInterval(activeLoop); activeLoop = null; }
+      const item = kbcState.qs[kbcState.idx];
+      if (choice === item.a) {
+        kbcState.score++;
+        toast('✅ बिल्कुल सही जवाब!');
+      } else {
+        toast(`❌ गलत! सही उत्तर: ${item.opts[item.a]}`);
+      }
+      kbcState.idx++;
+      renderKbcQuestion();
+    };
 
 
     // ADMIN DESK
