@@ -516,6 +516,44 @@
     </div>
   </div>
 
+    <!-- REFER & EARN MODAL (UNIQUE CODE + REDEEM) -->
+  <div id="referModal" class="modal">
+    <div class="surface bg-white w-full max-w-sm rounded-3xl p-4 space-y-3 shadow-2xl">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-base">🤝 Refer & Earn (+100 🪙)</h3>
+        <button type="button" onclick="closeModal('referModal')" class="font-bold text-base px-2">✕</button>
+      </div>
+
+      <!-- User's Own Unique Code -->
+      <div class="p-3.5 rounded-2xl bg-gradient-to-r from-amber-50 to-emerald-50 border border-amber-300 text-center space-y-2">
+        <p class="text-[11px] font-bold text-slate-600 uppercase">आपका Unique Refer Code</p>
+        <div id="myReferCodeTxt" class="text-2xl font-extrabold tracking-widest text-emerald-900 select-all">DNG-XXXX</div>
+        <div class="flex gap-2 justify-center pt-1">
+          <button type="button" onclick="copyReferCode()" class="bg-slate-900 text-white text-xs font-bold px-3.5 py-2 rounded-xl">📋 Copy Code</button>
+          <button type="button" onclick="shareReferWhatsApp()" class="bg-emerald-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl">📲 WhatsApp Share</button>
+        </div>
+      </div>
+
+      <!-- Enter Friend's Refer Code -->
+      <div id="applyReferBox" class="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+        <p class="text-xs font-bold text-slate-800">🎁 दोस्त का Refer Code डालें (+25 🪙 Welcome Bonus):</p>
+        <div class="flex gap-2">
+          <input id="friendReferInput" type="text" maxlength="10" placeholder="उदा. DNG-4821" class="flex-1 p-2.5 rounded-xl border border-slate-200 text-xs uppercase font-bold" />
+          <button type="button" onclick="applyFriendReferCode()" class="bg-amber-400 text-slate-950 font-bold text-xs px-4 py-2.5 rounded-xl">Apply</button>
+        </div>
+      </div>
+
+      <div class="text-[11px] text-slate-500 bg-amber-50/70 p-2.5 rounded-xl border border-amber-200">
+        <b>🛡️ Anti-Spam Rule:</b> जब आपका दोस्त आपके कोड से जुड़ेगा और गेम्स खेलकर <b>50 Coins</b> कमा लेगा, तो आपके वॉलेट में तुरंत <b>+100 Coins (₹1)</b> जुड़ जाएँगे!
+      </div>
+
+      <div class="flex justify-between text-xs font-bold pt-1 border-t border-slate-100">
+        <span>कुल सफल रेफरल: <span id="myReferCount" class="text-emerald-700">0</span></span>
+        <span>कमाई: <span id="myReferEarned" class="text-amber-700">0</span> 🪙</span>
+      </div>
+    </div>
+  </div>
+
     <!-- WITHDRAW POCKET MONEY MODAL -->
   <div id="withdrawModal" class="modal">
     <div class="surface bg-white w-full max-w-sm rounded-3xl p-4 space-y-3 shadow-2xl max-h-[88vh] overflow-y-auto">
