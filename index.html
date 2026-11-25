@@ -79,83 +79,108 @@
   <!-- MAIN CONTAINER -->
   <main class="max-w-lg mx-auto px-3 pt-3 space-y-4">
 
-    <!-- 1. HOME PAGE -->
-    <section id="page-home" class="page active space-y-4">
-      <!-- Hero Banner with banner.jpg & Gradient Overlay -->
-      <div class="relative overflow-hidden rounded-3xl shadow-md text-white min-h-[195px] flex items-center bg-emerald-950">
-        <img src="banner.jpg" alt="Apna Dangari" class="absolute inset-0 w-full h-full object-cover object-right" onerror="this.style.display='none'" />
-        <div class="absolute inset-0" style="background: linear-gradient(90deg, #064e3b 0%, rgba(6,78,59,0.95) 45%, rgba(6,78,59,0.35) 75%, rgba(6,78,59,0.05) 100%);"></div>
-        <div class="relative z-10 p-5 max-w-[88%]">
-          <p class="text-xs text-emerald-200 font-semibold">राम-राम सा 🙏</p>
-          <h2 class="text-xl font-bold mt-1">Apna Dangari Portal</h2>
-          <p class="text-xs text-emerald-50 mt-1 leading-relaxed">गाँव से जुड़ें, खेलें, सीखें और मिलकर आगे बढ़ें।</p>
-          <div class="flex flex-wrap gap-2 mt-4">
-            <button type="button" onclick="openAccount()" class="bg-white text-emerald-950 font-bold text-xs px-4 py-2.5 rounded-full shadow">👤 Account / Login</button>
-            <button type="button" onclick="go('games')" class="bg-emerald-800/90 text-white border border-emerald-400/40 font-bold text-xs px-4 py-2.5 rounded-full shadow">🎮 Games & Spin</button>
+        <!-- 1. HOME PAGE (INSTAGRAM / SOCIAL FEED STYLE) -->
+    <section id="page-home" class="page active space-y-3.5">
+
+      <!-- Panoramic Village Cover + Overlapping Stories Row -->
+      <div class="relative -mx-3 -mt-3">
+        <div class="h-36 w-full overflow-hidden bg-emerald-950 relative">
+          <img src="banner.jpg" alt="Apna Dangari" class="w-full h-full object-cover" onerror="this.style.display='none'" />
+          <div class="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/60"></div>
+        </div>
+
+        <!-- Horizontal Stories & Village Highlights -->
+        <div class="px-3 -mt-8 relative z-10 flex gap-3 overflow-x-auto no-scrollbar pb-1 text-center">
+          <button type="button" onclick="document.getElementById('homePostInput').focus()" class="shrink-0 flex flex-col items-center w-16">
+            <div class="w-14 h-14 rounded-full surface bg-white border-2 border-slate-200 shadow-md flex items-center justify-center text-2xl font-bold text-slate-700">+</div>
+            <span class="text-[11px] font-semibold mt-1 truncate w-full">Create Post</span>
+          </button>
+
+          <button type="button" onclick="openAccount()" class="shrink-0 flex flex-col items-center w-16">
+            <div class="relative p-0.5 rounded-full bg-gradient-to-tr from-amber-400 via-rose-500 to-purple-600 shadow-md">
+              <img id="homeAvatar" src="https://ui-avatars.com/api/?name=You&background=065f46&color=fff" class="w-[52px] h-[52px] rounded-full object-cover border-2 border-white" />
+              <span class="absolute bottom-0 right-0 w-4 h-4 bg-blue-600 text-white text-xs font-bold rounded-full border-2 border-white flex items-center justify-center">+</span>
+            </div>
+            <span id="homeName" class="text-[11px] font-semibold mt-1 truncate w-full">Your Story</span>
+          </button>
+
+          <button type="button" onclick="openModal('noticeModal')" class="shrink-0 flex flex-col items-center w-16">
+            <div class="p-0.5 rounded-full bg-gradient-to-tr from-emerald-500 to-amber-400 shadow-md">
+              <div class="w-[52px] h-[52px] rounded-full bg-amber-50 border-2 border-white flex items-center justify-center text-xl">📢</div>
+            </div>
+            <span class="text-[11px] font-semibold mt-1 truncate w-full">Village News</span>
+          </button>
+
+          <button type="button" onclick="openModal('pollModal')" class="shrink-0 flex flex-col items-center w-16">
+            <div class="p-0.5 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-400 shadow-md">
+              <div class="w-[52px] h-[52px] rounded-full bg-emerald-50 border-2 border-white flex items-center justify-center text-xl">🗳️</div>
+            </div>
+            <span class="text-[11px] font-semibold mt-1 truncate w-full">Live Poll</span>
+          </button>
+
+          <button type="button" onclick="go('mandi')" class="shrink-0 flex flex-col items-center w-16">
+            <div class="p-0.5 rounded-full bg-gradient-to-tr from-lime-500 to-emerald-600 shadow-md">
+              <div class="w-[52px] h-[52px] rounded-full bg-lime-50 border-2 border-white flex items-center justify-center text-xl">🌾</div>
+            </div>
+            <span class="text-[11px] font-semibold mt-1 truncate w-full">Mandi Bhav</span>
+          </button>
+
+          <button type="button" onclick="openModal('helplineModal')" class="shrink-0 flex flex-col items-center w-16">
+            <div class="p-0.5 rounded-full bg-gradient-to-tr from-rose-500 to-amber-500 shadow-md">
+              <div class="w-[52px] h-[52px] rounded-full bg-rose-50 border-2 border-white flex items-center justify-center text-xl">🚨</div>
+            </div>
+            <span class="text-[11px] font-semibold mt-1 truncate w-full">Helpline</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Create Post Composer Card -->
+      <div class="surface bg-white p-3.5 rounded-3xl border border-slate-200 shadow-sm space-y-2.5">
+        <div class="flex items-center gap-2.5">
+          <div class="relative shrink-0">
+            <img id="composerAvatar" src="https://ui-avatars.com/api/?name=User&background=065f46&color=fff" class="w-10 h-10 rounded-full object-cover border border-emerald-600" />
+            <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full"></span>
           </div>
+          <input id="homePostInput" type="text" maxlength="500" placeholder="Aap kya share karna chahte ho?" class="flex-1 bg-slate-100 dark:bg-slate-800 px-4 py-2.5 rounded-full text-xs outline-none" />
         </div>
-      </div>
 
-      <!-- User Status Card -->
-      <div class="surface bg-white p-4 rounded-2xl border border-slate-200 flex items-center justify-between gap-3">
-        <div class="flex items-center gap-3">
-          <img id="homeAvatar" src="https://ui-avatars.com/api/?name=Guest&background=065f46&color=fff" class="w-11 h-11 rounded-full object-cover border-2 border-emerald-600" />
-          <div>
-            <p class="text-[11px] text-slate-500">स्वागत है</p>
-            <p id="homeName" class="font-bold text-base leading-tight">Guest ग्रामीण</p>
-            <p id="homeMeta" class="text-xs text-emerald-700 font-medium">लॉगिन करें और अपना गाँव चुनें</p>
+        <!-- Optional Attachment Preview -->
+        <div id="attachPreviewBox" class="hidden p-2 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between text-xs">
+          <span id="attachPreviewLabel" class="font-semibold text-emerald-900 truncate">📎 Attachment ready</span>
+          <button type="button" onclick="clearPostAttachment()" class="text-rose-600 font-bold px-2">✕</button>
+        </div>
+
+        <div class="flex items-center justify-between pt-1 border-t border-slate-100 dark:border-slate-800">
+          <div class="flex items-center gap-3 text-xs font-semibold text-slate-600 dark:text-slate-300">
+            <label class="cursor-pointer flex items-center gap-1 hover:text-emerald-700">
+              <span>🖼️</span><span>Image</span>
+              <input type="file" accept="image/*" onchange="attachPostImage(event)" class="hidden" />
+            </label>
+            <button type="button" onclick="attachPostNote()" class="flex items-center gap-1 hover:text-emerald-700">
+              <span>📄</span><span>Note</span>
+            </button>
+            <button type="button" onclick="openModal('pollModal')" class="flex items-center gap-1 hover:text-emerald-700">
+              <span>📊</span><span>Poll</span>
+            </button>
           </div>
-        </div>
-        <button type="button" onclick="go('profile')" class="bg-emerald-50 text-emerald-800 font-bold text-xs px-3 py-2 rounded-xl shrink-0">Profile →</button>
-      </div>
-
-      <!-- Quick Menu -->
-      <div class="grid grid-cols-4 gap-2 text-center">
-        <button type="button" onclick="go('community')" class="surface bg-white p-3 rounded-2xl border border-slate-200"><div class="text-xl">🗣️</div><div class="text-[11px] font-bold mt-1">Community</div></button>
-        <button type="button" onclick="go('games')" class="surface bg-white p-3 rounded-2xl border border-slate-200"><div class="text-xl">🎮</div><div class="text-[11px] font-bold mt-1">Pro Games</div></button>
-        <button type="button" onclick="go('events')" class="surface bg-white p-3 rounded-2xl border border-slate-200"><div class="text-xl">📅</div><div class="text-[11px] font-bold mt-1">Events</div></button>
-        <button type="button" onclick="go('mandi')" class="surface bg-white p-3 rounded-2xl border border-slate-200"><div class="text-xl">🌾</div><div class="text-[11px] font-bold mt-1">Mandi Bhav</div></button>
-      </div>
-
-      <!-- Live Poll -->
-      <div class="surface bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
-        <div class="flex items-center justify-between">
-          <span class="bg-emerald-100 text-emerald-900 text-xs font-bold px-2.5 py-1 rounded-full">🗳️ गाँव की आवाज़ (Live Poll)</span>
-          <button type="button" onclick="togglePollRes()" id="pollResBtn" class="text-xs font-bold text-emerald-700">रिजल्ट देखें →</button>
-        </div>
-        <h3 id="pollQ" class="font-bold text-sm">डांगरी में सबसे पहले किस काम पर ध्यान देना चाहिए?</h3>
-        <div id="pollOpts" class="space-y-2"></div>
-        <p id="pollInfo" class="text-[11px] text-slate-500">वोट करने के लिए Login ज़रूरी है • 1 व्यक्ति = 1 वोट</p>
-      </div>
-
-      <!-- Verified Announcements -->
-      <div class="surface bg-white p-4 rounded-2xl border-l-4 border-emerald-600 border border-slate-200 space-y-2">
-        <h3 class="font-bold text-sm text-emerald-800 dark:text-emerald-400">📢 ग्राम पंचायत सूचना</h3>
-        <div id="noticeList" class="space-y-2 text-xs text-slate-600 dark:text-slate-300">
-          <p>ग्राम सभा, सरकारी योजनाओं और पंचायत से जुड़ी सत्यापित सूचनाएँ यहाँ प्रकाशित होंगी।</p>
+          <button type="button" onclick="createSocialPost()" class="bg-emerald-800 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-full shadow flex items-center gap-1">
+            <span>➤</span><span>Post</span>
+          </button>
         </div>
       </div>
 
-      <!-- Marwari Quote -->
-      <div class="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 p-4 rounded-2xl">
-        <div class="flex justify-between items-center mb-1">
-          <span class="text-xs font-bold text-amber-800 dark:text-amber-300">✍️ आज री मारवाड़ी बात</span>
-          <button type="button" onclick="copyQuote()" class="text-xs font-bold text-amber-900 underline">Copy करें</button>
-        </div>
-        <p id="quoteTxt" class="text-sm font-semibold text-amber-950 dark:text-amber-100">“जठे एकता है, वठे गाँव री तरक्की है।”</p>
+      <!-- Feed Filter Pills -->
+      <div class="flex gap-2 overflow-x-auto no-scrollbar text-xs font-bold">
+        <button type="button" onclick="setFeedFilter('for_you', this)" class="feed-tab shrink-0 bg-emerald-800 text-white px-3.5 py-2 rounded-full shadow-sm">🔥 For You</button>
+        <button type="button" onclick="setFeedFilter('top', this)" class="feed-tab shrink-0 surface bg-white border border-slate-200 text-slate-700 px-3.5 py-2 rounded-full">🏆 Top Posts</button>
+        <button type="button" onclick="setFeedFilter('notes', this)" class="feed-tab shrink-0 surface bg-white border border-slate-200 text-slate-700 px-3.5 py-2 rounded-full">📄 Study Notes</button>
+        <button type="button" onclick="setFeedFilter('village', this)" class="feed-tab shrink-0 surface bg-white border border-slate-200 text-slate-700 px-3.5 py-2 rounded-full">🌿 Village Life</button>
       </div>
 
-      <!-- Emergency Helpline -->
-      <div class="surface bg-white p-4 rounded-2xl border border-slate-200 space-y-2">
-        <h3 class="font-bold text-sm">🚨 Emergency Helpline</h3>
-        <div class="grid grid-cols-2 gap-2 text-xs font-bold">
-          <a href="tel:112" class="bg-rose-50 text-rose-800 p-2.5 rounded-xl">🚓 Police 112</a>
-          <a href="tel:108" class="bg-emerald-50 text-emerald-800 p-2.5 rounded-xl">🚑 Ambulance 108</a>
-          <a href="tel:101" class="bg-amber-50 text-amber-800 p-2.5 rounded-xl">🚒 Fire 101</a>
-          <a href="tel:181" class="bg-blue-50 text-blue-800 p-2.5 rounded-xl">👩 Women 181</a>
-        </div>
-      </div>
+      <!-- Social Feed Posts Container -->
+      <div id="homeFeedList" class="space-y-3.5"></div>
     </section>
+
 
     <!-- 2. COMMUNITY PAGE -->
     <section id="page-community" class="page space-y-4">
