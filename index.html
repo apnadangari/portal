@@ -195,89 +195,98 @@
       <div id="feedList" class="space-y-3"></div>
     </section>
 
-        <!-- 3. PRO EARNING GAMES & WALLET HUB -->
+           <!-- 3. PRO EARNING GAMES & WALLET HUB -->
     <section id="page-games" class="page space-y-4">
 
-      <!-- Live Pocket Money Wallet Card -->
-      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-900 via-emerald-800 to-teal-900 text-white p-4 shadow-lg">
+      <!-- Live Pocket Money Wallet Card (UNLIMITED MODE) -->
+      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-900 text-white p-4 shadow-lg">
         <div class="flex justify-between items-start">
           <div>
             <p class="text-[11px] text-emerald-200 font-semibold uppercase tracking-wider">💰 Apna Dangari Pocket Wallet</p>
             <div class="flex items-baseline gap-2 mt-1">
               <span class="text-3xl font-extrabold">₹<span id="walletRupees">0.00</span></span>
-              <span class="text-xs bg-amber-400/20 text-amber-200 border border-amber-300/30 px-2 py-0.5 rounded-full font-bold">🪙 <span id="walletCoins">0</span> Coins</span>
+              <span class="text-xs bg-amber-400/20 text-amber-200 border border-amber-300/30 px-2.5 py-0.5 rounded-full font-bold">🪙 <span id="walletCoins">0</span> Coins</span>
             </div>
-            <p class="text-[11px] text-emerald-100/90 mt-1">100 Coins = ₹1.00 • Min Withdraw: ₹20</p>
+            <p class="text-[11px] text-emerald-100/90 mt-1">100 Coins = ₹1.00 • Min Withdraw: ₹20 • ♾️ Unlimited Play</p>
           </div>
           <button type="button" onclick="openModal('withdrawModal')" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs px-3.5 py-2.5 rounded-2xl shadow-md shrink-0">
             🏦 Withdraw ₹
           </button>
         </div>
 
-        <!-- Daily Anti-Spam Cap Bar -->
-        <div class="mt-3 pt-3 border-t border-white/15 space-y-1.5">
-          <div class="flex justify-between text-[11px]">
-            <span class="text-emerald-100">आज की कमाई (Daily Limit: 150 Coins)</span>
-            <span id="dailyEarnTxt" class="font-bold text-amber-300">0 / 150 Coins</span>
-          </div>
-          <div class="w-full h-2 bg-black/30 rounded-full overflow-hidden">
-            <div id="dailyEarnBar" class="h-full bg-amber-400 rounded-full transition-all" style="width: 0%"></div>
-          </div>
+        <!-- Live Speed Tier & 60s Active Stay Bonus Bar -->
+        <div class="mt-3 pt-3 border-t border-white/15 flex items-center justify-between gap-2 text-[11px]">
+          <span id="earnTierBadge" class="bg-white/15 px-2.5 py-1 rounded-full font-bold text-amber-300">⚡ Tier 1: Super Boost</span>
+          <button type="button" onclick="claimActiveStayBonus()" id="stayBonusBtn" class="bg-emerald-500/30 border border-emerald-300/40 text-white font-bold px-2.5 py-1 rounded-full">
+            ⏱️ Stay Bonus: 60s
+          </button>
         </div>
       </div>
 
-      <!-- Daily Check-in + Sound Control -->
-      <div class="surface bg-white p-3.5 rounded-2xl border border-slate-200 flex items-center justify-between gap-2">
-        <div class="flex items-center gap-2.5">
-          <span class="text-2xl">🎁</span>
+      <!-- Daily Streak + Refer & Earn Strip -->
+      <div class="grid grid-cols-2 gap-2.5">
+        <div class="surface bg-white p-3 rounded-2xl border border-slate-200 flex flex-col justify-between gap-2">
+          <div class="flex items-center justify-between">
+            <span class="text-lg">🔥</span>
+            <span id="streakBadge" class="text-[10px] font-bold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">Day 1 Streak</span>
+          </div>
           <div>
-            <div class="font-bold text-xs">Daily Check-in Bonus</div>
-            <div class="text-[11px] text-slate-500">रोज़ लॉगिन करके +15 Coins पाएँ</div>
+            <div class="font-bold text-xs">Daily Check-in</div>
+            <div class="text-[10px] text-slate-500">लगातार आने पर ज़्यादा इनाम</div>
           </div>
+          <button type="button" onclick="claimDailyCheckin()" id="checkinBtn" class="w-full bg-emerald-700 text-white font-bold text-xs py-2 rounded-xl shadow-sm">Claim Bonus 🪙</button>
         </div>
-        <div class="flex items-center gap-1.5">
-          <button type="button" onclick="toggleGameAudio()" id="audioToggleBtn" class="text-[11px] bg-slate-100 text-slate-800 font-bold px-2.5 py-2 rounded-xl">🔊</button>
-          <button type="button" onclick="claimDailyCheckin()" id="checkinBtn" class="bg-emerald-700 text-white font-bold text-xs px-3.5 py-2 rounded-xl shadow-sm">Claim +15</button>
+
+        <div class="surface bg-white p-3 rounded-2xl border border-slate-200 flex flex-col justify-between gap-2">
+          <div class="flex items-center justify-between">
+            <span class="text-lg">🤝</span>
+            <span class="text-[10px] font-bold bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded-full">+100 🪙 / रेफर</span>
+          </div>
+          <div>
+            <div class="font-bold text-xs">Refer & Earn</div>
+            <div class="text-[10px] text-slate-500">कोड शेयर करें या कोड डालें</div>
+          </div>
+          <button type="button" onclick="openModal('referModal')" class="w-full bg-amber-400 text-slate-950 font-bold text-xs py-2 rounded-xl shadow-sm">Refer Code ↗</button>
         </div>
       </div>
 
-      <!-- 4 Earning Games Grid -->
+      <!-- 4 Pro Smartphone-Style Games Grid -->
       <div class="surface bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
         <div class="flex justify-between items-center">
-          <h2 class="font-bold text-sm">🎮 खेलें और Coins कमाएँ (Anti-Spam)</h2>
-          <span id="spinQuotaBadge" class="text-[11px] bg-amber-100 text-amber-900 font-bold px-2.5 py-1 rounded-full">🎡 3/3 Spins</span>
+          <h2 class="font-bold text-sm">🎮 Pro Gaming Zone (No Limit)</h2>
+          <button type="button" onclick="toggleGameAudio()" id="audioToggleBtn" class="text-[11px] bg-slate-100 text-slate-800 font-bold px-2.5 py-1 rounded-full">🔊 Sound</button>
         </div>
 
-        <div class="grid grid-cols-2 gap-2.5 text-xs font-bold">
-          <button type="button" onclick="openGame('spin')" class="bg-rose-50 border border-rose-200 text-rose-950 p-3 rounded-2xl text-left">
-            <div class="flex justify-between items-center"><span class="text-xl">🎡</span><span class="text-[10px] bg-rose-200/80 px-2 py-0.5 rounded-full">Up to 25 🪙</span></div>
-            <div class="mt-1.5">Daily Lucky Spin</div>
-            <div class="text-[10px] font-normal text-rose-700">दिन में सिर्फ 3 बार</div>
+        <div class="grid grid-cols-2 gap-2.5 text-xs font-bold text-white">
+          <button type="button" onclick="openProGame('cricket')" class="bg-gradient-to-br from-emerald-700 to-green-900 p-3.5 rounded-2xl text-left shadow-sm">
+            <div class="flex justify-between items-center"><span class="text-2xl">🏏</span><span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full">6s & 4s</span></div>
+            <div class="mt-2 text-sm">Dangari Cricket</div>
+            <div class="text-[10px] font-normal text-emerald-100">टाइमिंग से छक्के मारें</div>
           </button>
 
-          <button type="button" onclick="openGame('quiz')" class="bg-emerald-50 border border-emerald-200 text-emerald-950 p-3 rounded-2xl text-left">
-            <div class="flex justify-between items-center"><span class="text-xl">🧠</span><span class="text-[10px] bg-emerald-200/80 px-2 py-0.5 rounded-full">+50 🪙</span></div>
-            <div class="mt-1.5">5-Q GK Quiz</div>
-            <div class="text-[10px] font-normal text-emerald-700">10 Coins / सही जवाब</div>
+          <button type="button" onclick="openProGame('mines')" class="bg-gradient-to-br from-slate-800 to-indigo-950 p-3.5 rounded-2xl text-left shadow-sm">
+            <div class="flex justify-between items-center"><span class="text-2xl">💎</span><span class="text-[10px] bg-amber-400/20 text-amber-300 px-2 py-0.5 rounded-full">2x–5x</span></div>
+            <div class="mt-2 text-sm">Thar Mines</div>
+            <div class="text-[10px] font-normal text-slate-300">हीरे खोजें, बम से बचें</div>
           </button>
 
-          <button type="button" onclick="openGame('desert')" class="bg-amber-50 border border-amber-200 text-amber-950 p-3 rounded-2xl text-left">
-            <div class="flex justify-between items-center"><span class="text-xl">🐪</span><span class="text-[10px] bg-amber-200/80 px-2 py-0.5 rounded-full">+20 🪙</span></div>
-            <div class="mt-1.5">Desert Race</div>
-            <div class="text-[10px] font-normal text-amber-700">15+ Score पर इनाम</div>
+          <button type="button" onclick="openProGame('archer')" class="bg-gradient-to-br from-amber-600 to-orange-800 p-3.5 rounded-2xl text-left shadow-sm">
+            <div class="flex justify-between items-center"><span class="text-2xl">🏹</span><span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full">Bullseye</span></div>
+            <div class="mt-2 text-sm">Royal Archer</div>
+            <div class="text-[10px] font-normal text-amber-100">सटीक निशाना लगाएँ</div>
           </button>
 
-          <button type="button" onclick="openGame('ludo')" class="bg-indigo-50 border border-indigo-200 text-indigo-950 p-3 rounded-2xl text-left">
-            <div class="flex justify-between items-center"><span class="text-xl">🎲</span><span class="text-[10px] bg-indigo-200/80 px-2 py-0.5 rounded-full">+30 🪙</span></div>
-            <div class="mt-1.5">Multiplayer Ludo</div>
-            <div class="text-[10px] font-normal text-indigo-700">दोस्त को हराकर जीतें</div>
+          <button type="button" onclick="openProGame('kbc')" class="bg-gradient-to-br from-purple-800 to-indigo-900 p-3.5 rounded-2xl text-left shadow-sm">
+            <div class="flex justify-between items-center"><span class="text-2xl">🧠</span><span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full">50:50</span></div>
+            <div class="mt-2 text-sm">KBC Mega Quiz</div>
+            <div class="text-[10px] font-normal text-purple-200">25+ गाँव व राजस्थान GK</div>
           </button>
         </div>
       </div>
 
-      <!-- Active Game Arena -->
-      <div id="gameArena" class="surface bg-white p-4 rounded-2xl border border-slate-200 min-h-[240px]">
-        <p class="text-center text-xs text-slate-500 py-14">ऊपर से कोई भी Game चुनें और Coins कमाना शुरू करें</p>
+      <!-- Active Pro Game Arena -->
+      <div id="gameArena" class="surface bg-white p-3.5 rounded-3xl border border-slate-200 min-h-[260px]">
+        <p class="text-center text-xs text-slate-500 py-16">ऊपर से कोई भी Pro Game चुनें और असली Coins कमाना शुरू करें</p>
       </div>
     </section>
 
