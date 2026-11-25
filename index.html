@@ -18,26 +18,38 @@
     .modal.show{display:flex}
     .wheel-svg{transition:transform 3.2s cubic-bezier(0.15,0.75,0.15,1)}
     canvas{touch-action:none}
+    .no-scrollbar::-webkit-scrollbar{display:none}.no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
+
   </style>
 </head>
 <body>
 
-  <!-- TOP HEADER -->
-  <header class="sticky top-0 z-50 surface bg-white/95 backdrop-blur border-b border-emerald-100 px-4 py-2.5 flex items-center justify-between">
-    <div onclick="go('home')" class="flex items-center gap-2 cursor-pointer">
-      <span class="text-2xl">🌾</span>
-      <div>
-        <h1 class="text-base font-bold text-emerald-800 dark:text-emerald-400 leading-tight">Apna Dangari</h1>
-        <span class="text-[11px] text-slate-500">हमारा गाँव • हमारी पहचान</span>
+   <!-- TOP COVER BANNER + HEADER (SOCIAL HUB STYLE) -->
+  <header class="sticky top-0 z-50 surface bg-white/95 backdrop-blur border-b border-emerald-100">
+    <div class="max-w-lg mx-auto px-3 py-2 flex items-center justify-between gap-2">
+      <div onclick="go('home')" class="flex items-center gap-2 cursor-pointer min-w-0">
+        <img src="banner.jpg" onerror="this.src='https://ui-avatars.com/api/?name=AD&background=065f46&color=fff'" class="w-10 h-10 rounded-full object-cover border-2 border-emerald-700 shrink-0" />
+        <div class="min-w-0">
+          <div class="flex items-center gap-1">
+            <h1 class="text-base font-extrabold text-slate-900 dark:text-white leading-tight truncate">Apna Dangari</h1>
+            <span class="text-emerald-600 text-xs">✔️</span>
+          </div>
+          <p class="text-[10px] text-slate-500 truncate">हमारा गाँव • हमारी पहचान • 📍 Dangari, Jaisalmer</p>
+        </div>
       </div>
-    </div>
-    <div class="flex items-center gap-2">
-      <button type="button" onclick="go('rank')" class="bg-amber-100 text-amber-900 font-bold text-xs px-2.5 py-1.5 rounded-full">⭐ <span id="hdrPoints">0</span> XP</button>
-      <button type="button" onclick="toggleTheme()" class="w-8 h-8 rounded-full surface bg-emerald-50 text-sm">🌙</button>
-      <button type="button" onclick="openAccount()" id="hdrUserBtn" class="bg-emerald-700 text-white text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5">
-        <img id="hdrAvatar" src="" class="w-4 h-4 rounded-full object-cover hidden" />
-        <span id="hdrBtnTxt">👤 Account</span>
-      </button>
+
+      <div class="flex items-center gap-1.5 shrink-0">
+        <button type="button" onclick="openModal('noticeModal')" class="relative w-8 h-8 rounded-full surface bg-slate-100 flex items-center justify-center text-sm">
+          🔔
+          <span class="absolute -top-0.5 -right-0.5 bg-rose-600 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">2</span>
+        </button>
+        <button type="button" onclick="go('rank')" class="bg-amber-100 border border-amber-300 text-amber-900 font-bold text-xs px-2.5 py-1 rounded-full">⭐ <span id="hdrPoints">0</span> XP</button>
+        <button type="button" onclick="toggleTheme()" class="w-7 h-7 rounded-full surface bg-emerald-50 text-xs">🌙</button>
+        <button type="button" onclick="openAccount()" class="relative">
+          <img id="hdrAvatar" src="https://ui-avatars.com/api/?name=Guest&background=065f46&color=fff" class="w-8 h-8 rounded-full object-cover border-2 border-emerald-600" />
+          <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full"></span>
+        </button>
+      </div>
     </div>
   </header>
 
