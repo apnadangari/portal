@@ -779,6 +779,8 @@ window.toggleGameAudio = () => {
     document.getElementById('profDisplaySub').textContent = `@${p.username} • ${p.ward}`;
     document.getElementById('profStatXP').textContent = p.points || 0;
     document.getElementById('profStatLoc').textContent = p.ward || 'Dangari';
+    updateWalletUI();
+
   }
 }
 
@@ -1176,21 +1178,174 @@ onValue(ref(db, 'users'), (snap) => {
       toast('🚩 Report Admin को भेज दी गई है');
     };
 
-    // ================= PRO GAMES & ANTI-SPAM ENGINE =================
-    function getDailyCount(key) {
-      const raw = JSON.parse(localStorage.getItem('ad_daily_' + key) || '{}');
-      return raw.date === todayKey() ? (raw.count || 0) : 0;
+       // ================= SERVER-SIDE ANTI-SPAM WALLET & GAMES ENGINE =================
+    const DAILY_COIN_CAP = 150; // 1 दिन में अधिकतम 150 Coins (₹1.50)
+
+    function getServerDaily() {
+      const stats = userProfile?.dailyStats || {};
+      return stats.date === todayKey()
+        ? stats
+        : { date: todayKey(), earned: 0, spin: 0, quiz: 0, desert: 0, ludo: 0, checkin: 0 };
     }
-    function incDailyCount(key) {
-      const cur = getDailyCount(key) + 1;
-      localStorage.setItem('ad_daily_' + key, JSON.stringify({ date: todayKey(), count: cur }));
-      return cur;
+
+    function updateWalletUI() {
+      const coins = userProfile?.coins || 0;
+      const rupees = (coins / 100).toFixed(2);
+      const d = getServerDaily();
+      const earned = d.earned || 0;
+      const pct = Math.min(100, Math.round((earned / DAILY_COIN_CAP) * 100));
+
+      if (document.getElementById('walletCoins')) document.getElementById('walletCoins').textContent = coins;
+      if (document.getElementById('walletRupees')) document.getElementById('walletRupees').textContent = rupees;
+      if (document.getElementById('modalWalletCoins')) document.getElementById('modalWalletCoins').textContent = coins;
+      if (document.getElementById('modalWalletRupees')) document.getElementById('modalWalletRupees').textContent = rupees;
+      if (document.getElementById('dailyEarnTxt')) document.getElementById('dailyEarnTxt').textContent = `${earned} / ${DAILY_COIN_CAP} Coins`;
+      if (document.getElementById('dailyEarnBar')) document.getElementById('dailyEarnBar').style.width = `${pct}%`;
+
+      const leftSpins = Math.max(0, 3 - (d.spin || 0));
+      if (document.getElementById('spinQuotaBadge')) document.getElementById('spinQuotaBadge').textContent = `🎡 ${leftSpins}/3 Spins`;
+
+      const chkBtn = document.getElementById('checkinBtn');
+      if (chkBtn) {
+        if (d.checkin >= 1) {
+          chkBtn.textContent = '✅ Claimed';
+          chkBtn.disabled = true;
+          chkBtn.className = 'bg-slate-300 text-slate-600 font-bold text-xs px-3.5 py-2 rounded-xl';
+        } else {
+          chkBtn.textContent = 'Claim +15';
+          chkBtn.disabled = false;
+          chkBtn.className = 'bg-emerald-700 text-white font-bold text-xs px-3.5 py-2 rounded-xl shadow-sm';
+        }
+      }
     }
-    function updateSpinQuotaUI() {
-      const left = Math.max(0, 3 - getDailyCount('spin'));
-      const badge = document.getElementById('spinQuotaBadge');
-      if (badge) badge.textContent = `🎡 ${left}/3 Spins Left`;
+
+    // Securely award Coins + XP with Server-Side Daily Cap & Action Counter
+    async function awardGameCoins(coinsToAdd, actionKey, reason) {
+      if (!currentUser || coinsToAdd <= 0) return;
+      const d = getServerDaily();
+      const remaining = Math.max(0, DAILY_COIN_CAP - (d.earned || 0));
+      const actualCoins = Math.min(coinsToAdd, remaining);
+
+      const newStats = {
+        date: todayKey(),
+        earned: (d.earned || 0) + actualCoins,
+        spin: (d.spin || 0) + (actionKey === 'spin' ? 1 : 0),
+        quiz: (d.quiz || 0) + (actionKey === 'quiz' ? 1 : 0),
+        desert: (d.desert || 0) + (actionKey === 'desert' ? 1 : 0),
+        ludo: (d.ludo || 0) + (actionKey === 'ludo' ? 1 : 0),
+        checkin: (d.checkin || 0) + (actionKey === 'checkin' ? 1 : 0)
+      };
+
+      const newCoins = (userProfile?.coins || 0) + actualCoins;
+      const newPoints = (userProfile?.points || 0) + Math.max(2, Math.round(actualCoins / 2));
+
+      await update(ref(db, `users/${currentUser.uid}`), {
+        coins: newCoins,
+        points: newPoints,
+        dailyStats: newStats
+      });
+
+      userProfile.coins = newCoins;
+      userProfile.points = newPoints;
+      userProfile.dailyStats = newStats;
+      document.getElementById('hdrPoints').textContent = newPoints;
+      updateWalletUI();
+
+      if (actualCoins > 0) toast(`🪙 +${actualCoins} Coins (${reason})!`);
+      else toast('⚠️ आज की 150 Coins की सीमा पूरी हो गई है!');
     }
+
+    window.claimDailyCheckin = async () => {
+      if (!currentUser) return openAuthModal('login');
+      const d = getServerDaily();
+      if (d.checkin >= 1) return toast('आप आज का Check-in Bonus पहले ही ले चुके हैं!');
+      await awardGameCoins(15, 'checkin', 'Daily Check-in');
+    };
+
+    // UPI / BANK WITHDRAWAL REQUEST
+    window.submitWithdrawRequest = async () => {
+      if (!currentUser) return openAuthModal('login');
+      const upi = document.getElementById('wdUpi').value.trim();
+      const method = document.getElementById('wdMethod').value;
+      const reqCoins = parseInt(document.getElementById('wdAmount').value, 10);
+      const curCoins = userProfile?.coins || 0;
+
+      if (upi.length < 5) return toast('सही UPI ID या Bank Account नंबर लिखें');
+      if (curCoins < reqCoins) return toast(`पर्याप्त Coins नहीं हैं! आपको ${reqCoins} Coins चाहिए`);
+
+      const rupees = reqCoins / 100;
+      const remainingCoins = curCoins - reqCoins;
+
+      await update(ref(db, `users/${currentUser.uid}`), { coins: remainingCoins });
+      userProfile.coins = remainingCoins;
+      updateWalletUI();
+
+      await push(ref(db, 'withdrawRequests'), {
+        uid: currentUser.uid,
+        name: userProfile.name || 'Gramin',
+        username: userProfile.username || 'user',
+        method,
+        upi,
+        coins: reqCoins,
+        rupees,
+        status: 'pending',
+        createdAt: Date.now()
+      });
+
+      document.getElementById('wdUpi').value = '';
+      toast(`✅ ₹${rupees} की Withdraw Request भेज दी गई है!`);
+    };
+
+    // Live Listener for User & Admin Withdraw Requests
+    onValue(ref(db, 'withdrawRequests'), (snap) => {
+      const all = [];
+      snap.forEach(c => all.push({ id: c.key, ...c.val() }));
+      all.reverse();
+
+      // User's own history
+      const myBox = document.getElementById('myWithdrawList');
+      if (myBox && currentUser) {
+        const mine = all.filter(r => r.uid === currentUser.uid);
+        myBox.innerHTML = mine.length ? mine.map(r => {
+          const badge = r.status === 'paid' ? 'bg-emerald-100 text-emerald-800' : r.status === 'rejected' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800';
+          return `<div class="p-2.5 rounded-xl border border-slate-200 flex justify-between items-center">
+            <div><div class="font-bold">₹${r.rupees} (${r.upi})</div><div class="text-[10px] text-slate-400">${r.method}</div></div>
+            <span class="${badge} text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">${r.status}</span>
+          </div>`;
+        }).join('') : '<p class="text-[11px] text-slate-400">अभी कोई रिक्वेस्ट नहीं है।</p>';
+      }
+
+      // Admin Desk Payout Manager
+      const admBox = document.getElementById('adminWithdrawList');
+      if (admBox) {
+        admBox.innerHTML = all.length ? all.map(r => `
+          <div class="p-2.5 rounded-xl bg-white border border-amber-200 space-y-1.5">
+            <div class="flex justify-between font-bold">
+              <span>${r.name} (@${r.username})</span>
+              <span class="text-emerald-800">₹${r.rupees} (${r.coins} 🪙)</span>
+            </div>
+            <div class="text-[11px] text-slate-600 select-all">💳 ${r.method}: <b>${r.upi}</b></div>
+            <div class="flex justify-between items-center pt-1">
+              <span class="text-[10px] font-bold uppercase ${r.status === 'paid' ? 'text-emerald-700' : r.status === 'rejected' ? 'text-rose-600' : 'text-amber-700'}">Status: ${r.status}</span>
+              ${r.status === 'pending' ? `<div class="flex gap-1.5">
+                <button type="button" onclick="processWithdraw('${r.id}', '${r.uid}', ${r.coins}, 'paid')" class="bg-emerald-700 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg">✅ Paid</button>
+                <button type="button" onclick="processWithdraw('${r.id}', '${r.uid}', ${r.coins}, 'rejected')" class="bg-rose-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg">✕ Reject</button>
+              </div>` : ''}
+            </div>
+          </div>
+        `).join('') : '<p class="text-slate-500">कोई रिक्वेस्ट नहीं है।</p>';
+      }
+    });
+
+    window.processWithdraw = async (reqId, uid, coins, newStatus) => {
+      if (!isAdmin) return;
+      await update(ref(db, `withdrawRequests/${reqId}`), { status: newStatus, processedAt: Date.now() });
+      if (newStatus === 'rejected') {
+        // Refund coins back to user
+        await runTransaction(ref(db, `users/${uid}/coins`), (c) => (c || 0) + coins);
+      }
+      toast(newStatus === 'paid' ? '✅ Paid मार्क कर दिया गया' : '❌ Reject व Coins Refund किए गए');
+    };
 
     const quizBank = [
       { q: 'डांगरी गाँव राजस्थान के किस जिले में स्थित है?', opts: ['जैसलमेर', 'जयपुर', 'उदयपुर', 'कोटा'], a: 0 },
@@ -1203,23 +1358,18 @@ onValue(ref(db, 'users'), (snap) => {
       { q: 'राजस्थान का राज्य पक्षी कौन-सा है?', opts: ['मोर', 'गोडावण (Great Indian Bustard)', 'कबूतर', 'तोता'], a: 1 }
     ];
 
-    let wheelAngle = 0;
-    let spinning = false;
-    let quizIdx = 0;
-    let quizScore = 0;
-    let todaysQuestions = [];
+    let wheelAngle = 0, spinning = false, quizIdx = 0, quizScore = 0, todaysQuestions = [];
 
     window.openGame = (type) => {
-    startGameMusic(type);
-  
+      if (typeof startGameMusic === 'function') startGameMusic(type);
       if (activeLoop) { clearInterval(activeLoop); activeLoop = null; }
       const arena = document.getElementById('gameArena');
+      const d = getServerDaily();
 
-      // 1. DAILY LUCKY SPIN (MAX 3 PER DAY)
+      // 1. DAILY LUCKY SPIN (SERVER LOCKED: MAX 3/DAY)
       if (type === 'spin') {
-        const used = getDailyCount('spin');
-        const left = Math.max(0, 3 - used);
-        updateSpinQuotaUI();
+        const left = Math.max(0, 3 - (d.spin || 0));
+        updateWalletUI();
         arena.innerHTML = `<div class="text-center space-y-3">
           <div class="flex justify-between items-center">
             <h3 class="font-bold text-sm">🎡 Daily Lucky Spin</h3>
@@ -1227,42 +1377,41 @@ onValue(ref(db, 'users'), (snap) => {
           </div>
           <svg id="wheelSvg" class="wheel-svg w-52 h-52 mx-auto" viewBox="0 0 200 200">
             <circle cx="100" cy="100" r="95" fill="#065f46" stroke="#f59e0b" stroke-width="6"/>
-            <path d="M100,100 L100,5 A95,95 0 0,1 195,100 Z" fill="#10b981"/><text x="135" y="65" fill="#fff" font-size="13" font-weight="bold">+5 XP</text>
-            <path d="M100,100 L195,100 A95,95 0 0,1 100,195 Z" fill="#f59e0b"/><text x="135" y="145" fill="#fff" font-size="13" font-weight="bold">+10 XP</text>
-            <path d="M100,100 L100,195 A95,95 0 0,1 5,100 Z" fill="#0d9488"/><text x="38" y="145" fill="#fff" font-size="13" font-weight="bold">+15 XP</text>
-            <path d="M100,100 L5,100 A95,95 0 0,1 100,5 Z" fill="#059669"/><text x="42" y="65" fill="#fff" font-size="13" font-weight="bold">+20 XP</text>
+            <path d="M100,100 L100,5 A95,95 0 0,1 195,100 Z" fill="#10b981"/><text x="132" y="65" fill="#fff" font-size="13" font-weight="bold">5 🪙</text>
+            <path d="M100,100 L195,100 A95,95 0 0,1 100,195 Z" fill="#f59e0b"/><text x="132" y="145" fill="#fff" font-size="13" font-weight="bold">10 🪙</text>
+            <path d="M100,100 L100,195 A95,95 0 0,1 5,100 Z" fill="#0d9488"/><text x="38" y="145" fill="#fff" font-size="13" font-weight="bold">15 🪙</text>
+            <path d="M100,100 L5,100 A95,95 0 0,1 100,5 Z" fill="#059669"/><text x="42" y="65" fill="#fff" font-size="13" font-weight="bold">25 🪙</text>
             <circle cx="100" cy="100" r="16" fill="#fff"/>
           </svg>
           <button type="button" onclick="spinNow()" ${left === 0 ? 'disabled' : ''} class="${left === 0 ? 'bg-slate-400' : 'bg-amber-500 text-slate-950'} font-bold text-xs px-6 py-2.5 rounded-full shadow">
-            ${left === 0 ? 'आज के 3 Spin पूरे हो गए (कल फिर आएं)' : 'Spin घुमाएँ'}
+            ${left === 0 ? 'आज के 3 Spin पूरे हो गए (कल फिर आएं)' : 'Spin घुमाएँ 🎡'}
           </button>
         </div>`;
       }
 
-      // 2. 5-QUESTION DAILY QUIZ (NO REPEAT SPAM)
+      // 2. 5-QUESTION DAILY QUIZ (SERVER LOCKED: 1/DAY)
       if (type === 'quiz') {
-        if (getDailyCount('quiz_done') >= 1) {
+        if ((d.quiz || 0) >= 1) {
           arena.innerHTML = `<div class="text-center py-10 space-y-2">
             <div class="text-3xl">✅</div>
             <h3 class="font-bold text-sm">आज का 5-सवाल Daily Quiz पूरा हो चुका है!</h3>
-            <p class="text-xs text-slate-500">Spam रोकने के लिए Quiz दिन में 1 बार ही खेला जा सकता है। कल नए सवाल मिलेंगे!</p>
+            <p class="text-xs text-slate-500">Anti-Spam सुरक्षा के तहत Quiz दिन में 1 बार ही खेला जा सकता है। कल नए सवाल मिलेंगे!</p>
           </div>`;
           return;
         }
         todaysQuestions = [...quizBank].sort(() => 0.5 - Math.random()).slice(0, 5);
-        quizIdx = 0;
-        quizScore = 0;
+        quizIdx = 0; quizScore = 0;
         renderQuizStep();
       }
 
-      // 3. DESERT RACE (THAR JEEP ARCADE)
+      // 3. DESERT RACE (15+ SCORE = +20 COINS, MAX 2/DAY)
       if (type === 'desert') {
         arena.innerHTML = `<div class="space-y-2 text-center">
           <div class="flex justify-between items-center text-xs font-bold">
-            <span>🐪 Desert Race (थार सफारी)</span>
+            <span>🐪 Desert Race (15+ Score = +20 🪙)</span>
             <span id="raceScore" class="text-amber-700">Score: 0</span>
           </div>
-          <canvas id="raceCanvas" width="300" height="320" class="mx-auto rounded-2xl border-2 border-amber-400 bg-amber-100"></canvas>
+          <canvas id="raceCanvas" width="300" height="300" class="mx-auto rounded-2xl border-2 border-amber-400 bg-amber-100"></canvas>
           <div class="grid grid-cols-2 gap-3 pt-1">
             <button type="button" onclick="moveCar(-1)" class="bg-slate-800 text-white font-bold py-2.5 rounded-xl text-sm">⬅️ Left</button>
             <button type="button" onclick="moveCar(1)" class="bg-slate-800 text-white font-bold py-2.5 rounded-xl text-sm">Right ➡️</button>
@@ -1271,14 +1420,12 @@ onValue(ref(db, 'users'), (snap) => {
         startDesertRace();
       }
 
-      // 4. ONLINE MULTIPLAYER LUDO (WITH ROOM CODE)
+      // 4. ONLINE MULTIPLAYER LUDO (WIN = +30 COINS, MAX 2/DAY)
       if (type === 'ludo') {
         arena.innerHTML = `<div class="space-y-3">
-          <h3 class="font-bold text-sm">🎲 Online Multiplayer Ludo (Friends के साथ)</h3>
+          <h3 class="font-bold text-sm">🎲 Online Multiplayer Ludo (+30 🪙 Win)</h3>
           <p class="text-xs text-slate-500">नया Room बनाएँ और 4-अंकों का Code अपने दोस्त को भेजें—दोनों के मोबाइल पर बोर्ड लाइव चलेगा!</p>
-          <div class="flex gap-2">
-            <button type="button" onclick="createLudoRoom()" class="flex-1 bg-indigo-600 text-white font-bold text-xs py-2.5 rounded-xl">+ नया Room बनाएँ</button>
-          </div>
+          <button type="button" onclick="createLudoRoom()" class="w-full bg-indigo-600 text-white font-bold text-xs py-2.5 rounded-xl">+ नया Room बनाएँ</button>
           <div class="flex gap-2">
             <input id="ludoJoinCode" type="text" maxlength="6" placeholder="Room Code (उदा. 4829)" class="flex-1 p-2.5 rounded-xl border border-slate-200 text-xs uppercase" />
             <button type="button" onclick="joinLudoRoom()" class="bg-emerald-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl">Join करें</button>
@@ -1291,17 +1438,15 @@ onValue(ref(db, 'users'), (snap) => {
     window.spinNow = async () => {
       if (!currentUser) return openAuthModal('login');
       if (spinning) return;
-      if (getDailyCount('spin') >= 3) return toast('आज के 3 Spin पूरे हो चुके हैं!');
+      if ((getServerDaily().spin || 0) >= 3) return toast('आज के 3 Spin पूरे हो चुके हैं!');
       spinning = true;
-      incDailyCount('spin');
-      updateSpinQuotaUI();
-      const rewards = [5, 10, 15, 20];
+      const rewards = [5, 10, 15, 25];
       const idx = Math.floor(Math.random() * 4);
       wheelAngle += 1440 + idx * 90 + 45;
       document.getElementById('wheelSvg').style.transform = `rotate(${wheelAngle}deg)`;
       setTimeout(async () => {
         spinning = false;
-        await addPoints(rewards[idx], 'Daily Spin');
+        await awardGameCoins(rewards[idx], 'spin', 'Daily Spin');
         openGame('spin');
       }, 3300);
     };
@@ -1309,13 +1454,12 @@ onValue(ref(db, 'users'), (snap) => {
     function renderQuizStep() {
       const arena = document.getElementById('gameArena');
       if (quizIdx >= todaysQuestions.length) {
-        incDailyCount('quiz_done');
-        const earned = quizScore * 4;
-        if (earned > 0) addPoints(earned, `Quiz ${quizScore}/5 सही`);
+        const earned = quizScore * 10;
+        awardGameCoins(earned, 'quiz', `Quiz ${quizScore}/5 सही`);
         arena.innerHTML = `<div class="text-center py-8 space-y-2">
           <div class="text-3xl">🏆</div>
           <h3 class="font-bold text-base">Quiz पूरा हुआ! स्कोर: ${quizScore} / 5</h3>
-          <p class="text-xs text-emerald-700 font-bold">आपको +${earned} XP मिले!</p>
+          <p class="text-xs text-emerald-700 font-bold">आपको +${earned} Coins (₹${(earned / 100).toFixed(2)}) मिले!</p>
         </div>`;
         return;
       }
@@ -1332,18 +1476,13 @@ onValue(ref(db, 'users'), (snap) => {
 
     window.answerQuiz = (idx) => {
       if (!currentUser) return openAuthModal('login');
-      if (idx === todaysQuestions[quizIdx].a) {
-        quizScore++;
-        toast('✅ सही जवाब!');
-      } else {
-        toast('❌ गलत जवाब');
-      }
+      if (idx === todaysQuestions[quizIdx].a) { quizScore++; toast('✅ सही जवाब!'); }
+      else toast('❌ गलत जवाब');
       quizIdx++;
       renderQuizStep();
     };
 
-    // DESERT RACE ENGINE
-    let carLane = 1; // 0, 1, 2
+    let carLane = 1;
     window.moveCar = (dir) => { carLane = Math.max(0, Math.min(2, carLane + dir)); };
 
     function startDesertRace() {
@@ -1352,40 +1491,29 @@ onValue(ref(db, 'users'), (snap) => {
       const ctx = canvas.getContext('2d');
       carLane = 1;
       let score = 0;
-      let obstacles = [{ lane: 0, y: -40, type: '🌵' }, { lane: 2, y: -190, type: '🐪' }];
+      let obstacles = [{ lane: 0, y: -40, type: '🌵' }, { lane: 2, y: -180, type: '🐪' }];
       activeLoop = setInterval(() => {
-        ctx.clearRect(0, 0, 300, 320);
-        // Sand road lanes
-        ctx.fillStyle = '#fde68a';
-        ctx.fillRect(0, 0, 300, 320);
-        ctx.strokeStyle = '#d97706';
-        ctx.setLineDash([12, 12]);
-        ctx.beginPath(); ctx.moveTo(100, 0); ctx.lineTo(100, 320); ctx.moveTo(200, 0); ctx.lineTo(200, 320); ctx.stroke();
+        ctx.clearRect(0, 0, 300, 300);
+        ctx.fillStyle = '#fde68a'; ctx.fillRect(0, 0, 300, 300);
+        ctx.strokeStyle = '#d97706'; ctx.setLineDash([12, 12]);
+        ctx.beginPath(); ctx.moveTo(100, 0); ctx.lineTo(100, 300); ctx.moveTo(200, 0); ctx.lineTo(200, 300); ctx.stroke();
 
-        // Player Jeep
-        const px = carLane * 100 + 50;
-        ctx.font = '34px serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('🚙', px, 285);
+        ctx.font = '32px serif'; ctx.textAlign = 'center';
+        ctx.fillText('🚙', carLane * 100 + 50, 268);
 
-        // Obstacles
         obstacles.forEach(ob => {
           ob.y += 5 + Math.min(5, Math.floor(score / 10));
-          const ox = ob.lane * 100 + 50;
-          ctx.fillText(ob.type, ox, ob.y);
-          if (ob.lane === carLane && ob.y > 245 && ob.y < 300) {
-            clearInterval(activeLoop);
-            activeLoop = null;
-            if (score >= 10 && getDailyCount('desert_xp') < 2) {
-              incDailyCount('desert_xp');
-              addPoints(10, 'Desert Race');
+          ctx.fillText(ob.type, ob.lane * 100 + 50, ob.y);
+          if (ob.lane === carLane && ob.y > 230 && ob.y < 285) {
+            clearInterval(activeLoop); activeLoop = null;
+            if (score >= 15 && (getServerDaily().desert || 0) < 2) {
+              awardGameCoins(20, 'desert', 'Desert Race 15+');
+            } else {
+              toast(`💥 Race Over! Score: ${score} (15+ Score पर 20 Coins)`);
             }
-            toast(`💥 Race Over! Final Score: ${score}`);
           }
-          if (ob.y > 330) {
-            ob.y = -30;
-            ob.lane = Math.floor(Math.random() * 3);
-            score++;
+          if (ob.y > 310) {
+            ob.y = -30; ob.lane = Math.floor(Math.random() * 3); score++;
             const scEl = document.getElementById('raceScore');
             if (scEl) scEl.textContent = 'Score: ' + score;
           }
@@ -1393,19 +1521,13 @@ onValue(ref(db, 'users'), (snap) => {
       }, 35);
     }
 
-    // ONLINE MULTIPLAYER LUDO (2-Player Quick Race Ludo synced via Firebase)
     window.createLudoRoom = async () => {
       if (!currentUser) return openAuthModal('login');
       const code = String(Math.floor(1000 + Math.random() * 9000));
-      const roomData = {
-        code,
-        p1: { uid: currentUser.uid, name: userProfile?.name || 'Player 1', pos: 0 },
-        p2: null,
-        turn: 'p1',
-        lastDice: 0,
-        winner: ''
-      };
-      await set(ref(db, `ludoRooms/${code}`), roomData);
+      await set(ref(db, `ludoRooms/${code}`), {
+        code, p1: { uid: currentUser.uid, name: userProfile?.name || 'Player 1', pos: 0 },
+        p2: null, turn: 'p1', lastDice: 0, winner: ''
+      });
       listenLudoRoom(code);
       toast(`🎲 Room ${code} बन गया! दोस्त को Code भेजें`);
     };
@@ -1434,11 +1556,9 @@ onValue(ref(db, 'users'), (snap) => {
         const myRole = r.p1?.uid === currentUser?.uid ? 'p1' : (r.p2?.uid === currentUser?.uid ? 'p2' : 'spectator');
         const isMyTurn = !r.winner && r.turn === myRole && r.p2;
 
-        // Build 30-step Ludo Track Grid
         let cells = '';
         for (let i = 1; i <= 30; i++) {
-          const hasP1 = r.p1?.pos === i;
-          const hasP2 = r.p2?.pos === i;
+          const hasP1 = r.p1?.pos === i, hasP2 = r.p2?.pos === i;
           const safe = [1, 8, 15, 22, 30].includes(i);
           cells += `<div class="h-9 rounded-lg border ${i === 30 ? 'bg-amber-200 border-amber-500' : safe ? 'bg-emerald-50 border-emerald-300' : 'border-slate-200'} flex items-center justify-center text-[11px] font-bold">
             ${hasP1 ? '🔴' : ''}${hasP2 ? '🔵' : ''}${!hasP1 && !hasP2 ? (i === 30 ? '👑' : i) : ''}
@@ -1474,24 +1594,18 @@ onValue(ref(db, 'users'), (snap) => {
 
       const dice = Math.floor(1 + Math.random() * 6);
       let newPos = (r[role].pos || 0) + dice;
-      if (newPos > 30) newPos = r[role].pos; // exact 30 needed to win
+      if (newPos > 30) newPos = r[role].pos;
       const other = role === 'p1' ? 'p2' : 'p1';
       let otherPos = r[other].pos || 0;
-      const safeSpots = [8, 15, 22, 30];
-      if (newPos > 0 && newPos === otherPos && !safeSpots.includes(newPos)) {
-        otherPos = 0; // Cut opponent's token!
-      }
+      if (newPos > 0 && newPos === otherPos && ![8, 15, 22, 30].includes(newPos)) otherPos = 0;
+
       const won = newPos === 30 ? r[role].name : '';
       await update(rRef, {
-        [`${role}/pos`]: newPos,
-        [`${other}/pos`]: otherPos,
-        lastDice: dice,
-        turn: dice === 6 ? role : other,
-        winner: won
+        [`${role}/pos`]: newPos, [`${other}/pos`]: otherPos,
+        lastDice: dice, turn: dice === 6 ? role : other, winner: won
       });
-      if (won && getDailyCount('ludo_win') < 2) {
-        incDailyCount('ludo_win');
-        await addPoints(15, 'Ludo Win');
+      if (won && (getServerDaily().ludo || 0) < 2) {
+        await awardGameCoins(30, 'ludo', 'Ludo Win');
       }
     };
 
