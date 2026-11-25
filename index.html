@@ -1225,14 +1225,36 @@ onValue(ref(db, 'users'), (snap) => {
       toast('🚩 Report Admin को भेज दी गई है');
     };
 
-       // ================= SERVER-SIDE ANTI-SPAM WALLET & GAMES ENGINE =================
-    const DAILY_COIN_CAP = 150; // 1 दिन में अधिकतम 150 Coins (₹1.50)
+           // ================= ZERO-LOSS UNLIMITED EARNING + REFER + STREAK ENGINE =================
+    let staySecondsLeft = 60;
 
     function getServerDaily() {
       const stats = userProfile?.dailyStats || {};
       return stats.date === todayKey()
         ? stats
-        : { date: todayKey(), earned: 0, spin: 0, quiz: 0, desert: 0, ludo: 0, checkin: 0 };
+        : { date: todayKey(), earned: 0, checkin: 0 };
+    }
+
+    // Ensure every user gets a permanent Unique Refer Code (e.g., DNG-4821)
+    async function ensureUserReferCode() {
+      if (!currentUser || !userProfile) return;
+      if (!userProfile.referCode) {
+        const code = 'DNG-' + String(Math.floor(1000 + Math.random() * 9000));
+        await update(ref(db, `users/${currentUser.uid}`), { referCode: code });
+        await set(ref(db, `referCodes/${code}`), currentUser.uid);
+        userProfile.referCode = code;
+      }
+      if (document.getElementById('myReferCodeTxt')) {
+        document.getElementById('myReferCodeTxt').textContent = userProfile.referCode;
+      }
+      if (document.getElementById('myReferCount')) {
+        document.getElementById('myReferCount').textContent = userProfile.referCount || 0;
+        document.getElementById('myReferEarned').textContent = (userProfile.referCount || 0) * 100;
+      }
+      const applyBox = document.getElementById('applyReferBox');
+      if (applyBox && userProfile.referredBy) {
+        applyBox.innerHTML = `<p class="text-xs font-bold text-emerald-800">✅ आपने कोड <b>${userProfile.referredBy}</b> लागू किया है! (${userProfile.referUnlocked ? 'Bonus Unlocked 🎉' : '50 Coins कमाते ही आपके दोस्त को +100 🪙 मिलेंगे'})</p>`;
+      }
     }
 
     function updateWalletUI() {
@@ -1240,47 +1262,56 @@ onValue(ref(db, 'users'), (snap) => {
       const rupees = (coins / 100).toFixed(2);
       const d = getServerDaily();
       const earned = d.earned || 0;
-      const pct = Math.min(100, Math.round((earned / DAILY_COIN_CAP) * 100));
 
       if (document.getElementById('walletCoins')) document.getElementById('walletCoins').textContent = coins;
       if (document.getElementById('walletRupees')) document.getElementById('walletRupees').textContent = rupees;
       if (document.getElementById('modalWalletCoins')) document.getElementById('modalWalletCoins').textContent = coins;
       if (document.getElementById('modalWalletRupees')) document.getElementById('modalWalletRupees').textContent = rupees;
-      if (document.getElementById('dailyEarnTxt')) document.getElementById('dailyEarnTxt').textContent = `${earned} / ${DAILY_COIN_CAP} Coins`;
-      if (document.getElementById('dailyEarnBar')) document.getElementById('dailyEarnBar').style.width = `${pct}%`;
 
-      const leftSpins = Math.max(0, 3 - (d.spin || 0));
-      if (document.getElementById('spinQuotaBadge')) document.getElementById('spinQuotaBadge').textContent = `🎡 ${leftSpins}/3 Spins`;
+      // Progressive Zero-Loss Tier Badge (Never stops!)
+      const tierBadge = document.getElementById('earnTierBadge');
+      if (tierBadge) {
+        if (earned < 80) tierBadge.textContent = '⚡ Tier 1: Super Boost (Full Rewards)';
+        else if (earned < 200) tierBadge.textContent = '🔥 Tier 2: Pro Grind (50% Boost)';
+        else tierBadge.textContent = '♾️ Tier 3: Unlimited Mode Active';
+      }
+
+      const streak = userProfile?.streak || 1;
+      if (document.getElementById('streakBadge')) document.getElementById('streakBadge').textContent = `Day ${streak} Streak`;
 
       const chkBtn = document.getElementById('checkinBtn');
       if (chkBtn) {
         if (d.checkin >= 1) {
-          chkBtn.textContent = '✅ Claimed';
+          chkBtn.textContent = '✅ Claimed Today';
           chkBtn.disabled = true;
-          chkBtn.className = 'bg-slate-300 text-slate-600 font-bold text-xs px-3.5 py-2 rounded-xl';
+          chkBtn.className = 'w-full bg-slate-300 text-slate-600 font-bold text-xs py-2 rounded-xl';
         } else {
-          chkBtn.textContent = 'Claim +15';
+          const bonus = Math.min(35, 10 + streak * 3);
+          chkBtn.textContent = `Claim +${bonus} 🪙`;
           chkBtn.disabled = false;
-          chkBtn.className = 'bg-emerald-700 text-white font-bold text-xs px-3.5 py-2 rounded-xl shadow-sm';
+          chkBtn.className = 'w-full bg-emerald-700 text-white font-bold text-xs py-2 rounded-xl shadow-sm';
         }
       }
+      ensureUserReferCode();
     }
 
-    // Securely award Coins + XP with Server-Side Daily Cap & Action Counter
-    async function awardGameCoins(coinsToAdd, actionKey, reason) {
-      if (!currentUser || coinsToAdd <= 0) return;
+    // Progressive Zero-Loss Reward Calculator (Unlimited Play, Zero Loss!)
+    async function awardGameCoins(baseCoins, reason, isFixedBonus = false) {
+      if (!currentUser || baseCoins <= 0) return;
       const d = getServerDaily();
-      const remaining = Math.max(0, DAILY_COIN_CAP - (d.earned || 0));
-      const actualCoins = Math.min(coinsToAdd, remaining);
+      const earnedToday = d.earned || 0;
+
+      let actualCoins = baseCoins;
+      if (!isFixedBonus) {
+        if (earnedToday < 80) actualCoins = baseCoins;
+        else if (earnedToday < 200) actualCoins = Math.max(2, Math.ceil(baseCoins * 0.5));
+        else actualCoins = Math.max(1, Math.ceil(baseCoins * 0.25)); // Unlimited Tier 3
+      }
 
       const newStats = {
         date: todayKey(),
-        earned: (d.earned || 0) + actualCoins,
-        spin: (d.spin || 0) + (actionKey === 'spin' ? 1 : 0),
-        quiz: (d.quiz || 0) + (actionKey === 'quiz' ? 1 : 0),
-        desert: (d.desert || 0) + (actionKey === 'desert' ? 1 : 0),
-        ludo: (d.ludo || 0) + (actionKey === 'ludo' ? 1 : 0),
-        checkin: (d.checkin || 0) + (actionKey === 'checkin' ? 1 : 0)
+        earned: earnedToday + actualCoins,
+        checkin: (d.checkin || 0) + (reason === 'Daily Check-in' ? 1 : 0)
       };
 
       const newCoins = (userProfile?.coins || 0) + actualCoins;
@@ -1297,51 +1328,96 @@ onValue(ref(db, 'users'), (snap) => {
       userProfile.dailyStats = newStats;
       document.getElementById('hdrPoints').textContent = newPoints;
       updateWalletUI();
+      toast(`🪙 +${actualCoins} Coins (${reason})!`);
 
-      if (actualCoins > 0) toast(`🪙 +${actualCoins} Coins (${reason})!`);
-      else toast('⚠️ आज की 150 Coins की सीमा पूरी हो गई है!');
+      // Check if this user was referred and just crossed 50 Coins -> Unlock +100 Coins for Inviter!
+      if (userProfile.referredBy && !userProfile.referUnlocked && newCoins >= 50) {
+        await update(ref(db, `users/${currentUser.uid}`), { referUnlocked: true });
+        userProfile.referUnlocked = true;
+        const inviterSnap = await get(ref(db, `referCodes/${userProfile.referredBy}`));
+        if (inviterSnap.exists()) {
+          const inviterUid = inviterSnap.val();
+          const invUserSnap = await get(ref(db, `users/${inviterUid}`));
+          if (invUserSnap.exists()) {
+            const invData = invUserSnap.val();
+            if ((invData.referCount || 0) < 20) {
+              await update(ref(db, `users/${inviterUid}`), {
+                coins: (invData.coins || 0) + 100,
+                referCount: (invData.referCount || 0) + 1
+              });
+            }
+          }
+        }
+      }
     }
+
+    // 60-Second Active Stay Bonus Loop (Keeps users engaged on site!)
+    setInterval(() => {
+      if (document.hidden || !currentUser) return;
+      const btn = document.getElementById('stayBonusBtn');
+      if (!btn) return;
+      if (staySecondsLeft > 0) {
+        staySecondsLeft--;
+        btn.textContent = staySecondsLeft > 0 ? `⏱️ Stay Bonus: ${staySecondsLeft}s` : '🎁 Claim +2 🪙!';
+        if (staySecondsLeft === 0) btn.className = 'bg-amber-400 text-slate-950 font-extrabold px-3 py-1 rounded-full animate-pulse';
+      }
+    }, 1000);
+
+    window.claimActiveStayBonus = async () => {
+      if (!currentUser) return openAuthModal('login');
+      if (staySecondsLeft > 0) return toast(`${staySecondsLeft} सेकंड और रुकें—फिर +2 Coins Claim करें!`);
+      staySecondsLeft = 60;
+      const btn = document.getElementById('stayBonusBtn');
+      if (btn) btn.className = 'bg-emerald-500/30 border border-emerald-300/40 text-white font-bold px-2.5 py-1 rounded-full';
+      await awardGameCoins(2, '60s Active Stay', true);
+    };
 
     window.claimDailyCheckin = async () => {
       if (!currentUser) return openAuthModal('login');
       const d = getServerDaily();
-      if (d.checkin >= 1) return toast('आप आज का Check-in Bonus पहले ही ले चुके हैं!');
-      await awardGameCoins(15, 'checkin', 'Daily Check-in');
+      if (d.checkin >= 1) return toast('आप आज का Check-in Bonus ले चुके हैं!');
+      const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+      const nextStreak = userProfile?.lastCheckinDate === yesterday ? (userProfile?.streak || 1) + 1 : 1;
+      const bonus = Math.min(35, 10 + nextStreak * 3);
+      await update(ref(db, `users/${currentUser.uid}`), { streak: nextStreak, lastCheckinDate: todayKey() });
+      userProfile.streak = nextStreak;
+      userProfile.lastCheckinDate = todayKey();
+      await awardGameCoins(bonus, 'Daily Check-in', true);
     };
 
-    // UPI / BANK WITHDRAWAL REQUEST
-    window.submitWithdrawRequest = async () => {
+    // Refer Code Copy, WhatsApp Share & Redeem
+    window.copyReferCode = () => {
       if (!currentUser) return openAuthModal('login');
-      const upi = document.getElementById('wdUpi').value.trim();
-      const method = document.getElementById('wdMethod').value;
-      const reqCoins = parseInt(document.getElementById('wdAmount').value, 10);
-      const curCoins = userProfile?.coins || 0;
-
-      if (upi.length < 5) return toast('सही UPI ID या Bank Account नंबर लिखें');
-      if (curCoins < reqCoins) return toast(`पर्याप्त Coins नहीं हैं! आपको ${reqCoins} Coins चाहिए`);
-
-      const rupees = reqCoins / 100;
-      const remainingCoins = curCoins - reqCoins;
-
-      await update(ref(db, `users/${currentUser.uid}`), { coins: remainingCoins });
-      userProfile.coins = remainingCoins;
-      updateWalletUI();
-
-      await push(ref(db, 'withdrawRequests'), {
-        uid: currentUser.uid,
-        name: userProfile.name || 'Gramin',
-        username: userProfile.username || 'user',
-        method,
-        upi,
-        coins: reqCoins,
-        rupees,
-        status: 'pending',
-        createdAt: Date.now()
-      });
-
-      document.getElementById('wdUpi').value = '';
-      toast(`✅ ₹${rupees} की Withdraw Request भेज दी गई है!`);
+      navigator.clipboard?.writeText(userProfile?.referCode || '');
+      toast('📋 Refer Code Copy हो गया!');
     };
+
+    window.shareReferWhatsApp = () => {
+      if (!currentUser) return openAuthModal('login');
+      const code = userProfile?.referCode || '';
+      const msg = `🌾 *Apna Dangari* पोर्टल पर गेम्स और क्विज़ खेलकर रोज़ Pocket Money कमाएँ और सीधे UPI में निकालें!\n\nमेरा Refer Code डालें: *${code}* (तुरंत +25 Coins बोनस पाएँ)\n👉 https://apnadangari.github.io/portal/`;
+      window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+    };
+
+    window.applyFriendReferCode = async () => {
+      if (!currentUser) return openAuthModal('login');
+      if (userProfile?.referredBy) return toast('आप पहले ही एक Refer Code इस्तेमाल कर चुके हैं!');
+      const code = document.getElementById('friendReferInput').value.trim().toUpperCase();
+      if (!code || code === userProfile?.referCode) return toast('सही दोस्त का Refer Code डालें!');
+      const snap = await get(ref(db, `referCodes/${code}`));
+      if (!snap.exists()) return toast('यह Refer Code मान्य नहीं है');
+
+      await update(ref(db, `users/${currentUser.uid}`), {
+        referredBy: code,
+        referUnlocked: false,
+        coins: (userProfile?.coins || 0) + 25
+      });
+      userProfile.referredBy = code;
+      userProfile.coins = (userProfile?.coins || 0) + 25;
+      updateWalletUI();
+      toast('🎉 Refer Code लागू! आपको +25 Coins Welcome Bonus मिला!');
+    };
+
 
     // Live Listener for User & Admin Withdraw Requests
     onValue(ref(db, 'withdrawRequests'), (snap) => {
