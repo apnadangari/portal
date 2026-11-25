@@ -425,6 +425,13 @@
         </div>
 
         <div id="adminControls" class="hidden space-y-4">
+                    <div class="space-y-2 p-3 rounded-2xl bg-amber-50/70 border border-amber-200">
+            <h3 class="font-bold text-xs text-amber-950">💸 UPI / Bank Withdraw Requests</h3>
+            <div id="adminWithdrawList" class="space-y-2 text-xs">
+              <p class="text-slate-500">कोई पेंडिंग रिक्वेस्ट नहीं है।</p>
+            </div>
+          </div>
+
           <div class="space-y-2">
             <h3 class="font-bold text-xs">📢 नई पंचायत सूचना डालें</h3>
             <textarea id="admNotice" rows="2" placeholder="सूचना लिखें..." class="w-full p-2.5 rounded-xl border border-slate-200 text-xs"></textarea>
@@ -496,6 +503,45 @@
         <a href="tel:108" class="bg-emerald-50 text-emerald-800 p-3 rounded-xl">🚑 Ambulance 108</a>
         <a href="tel:101" class="bg-amber-50 text-amber-800 p-3 rounded-xl">🚒 Fire 101</a>
         <a href="tel:181" class="bg-blue-50 text-blue-800 p-3 rounded-xl">👩 Women 181</a>
+      </div>
+    </div>
+  </div>
+
+    <!-- WITHDRAW POCKET MONEY MODAL -->
+  <div id="withdrawModal" class="modal">
+    <div class="surface bg-white w-full max-w-sm rounded-3xl p-4 space-y-3 shadow-2xl max-h-[88vh] overflow-y-auto">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-base">🏦 Pocket Money Withdraw</h3>
+        <button type="button" onclick="closeModal('withdrawModal')" class="font-bold text-base px-2">✕</button>
+      </div>
+
+      <div class="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 flex justify-between items-center text-xs">
+        <span class="font-semibold text-emerald-900">उपलब्ध बैलेंस:</span>
+        <span class="font-extrabold text-emerald-800 text-sm">₹<span id="modalWalletRupees">0.00</span> (<span id="modalWalletCoins">0</span> 🪙)</span>
+      </div>
+
+      <select id="wdMethod" class="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-semibold">
+        <option value="UPI (PhonePe / GPay / Paytm)">UPI (PhonePe / GPay / Paytm)</option>
+        <option value="Bank Account (A/C + IFSC)">Bank Account (A/C + IFSC)</option>
+      </select>
+
+      <input id="wdUpi" type="text" placeholder="अपना UPI ID (जैसे 9876543210@ybl) या A/C + IFSC लिखें" class="w-full p-2.5 rounded-xl border border-slate-200 text-xs" />
+
+      <select id="wdAmount" class="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-bold">
+        <option value="2000">₹20 (2,000 Coins)</option>
+        <option value="5000">₹50 (5,000 Coins)</option>
+        <option value="10000">₹100 (10,000 Coins)</option>
+      </select>
+
+      <button type="button" onclick="submitWithdrawRequest()" class="w-full bg-emerald-800 text-white font-bold text-xs py-3 rounded-xl shadow">Withdraw Request भेजें ↗</button>
+      <p class="text-[10px] text-slate-500 text-center">Admin जाँच के बाद 24 घंटे के अंदर आपके UPI/Bank में पैसे भेज दिए जाएँगे।</p>
+
+      <hr class="border-slate-200">
+      <div class="space-y-2">
+        <h4 class="font-bold text-xs">📜 आपकी Withdraw History</h4>
+        <div id="myWithdrawList" class="space-y-1.5 text-xs text-slate-600">
+          <p class="text-[11px] text-slate-400">अभी कोई रिक्वेस्ट नहीं है।</p>
+        </div>
       </div>
     </div>
   </div>
