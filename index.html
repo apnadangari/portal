@@ -675,6 +675,8 @@ window.toggleGameAudio = () => {
   document.getElementById('homeName').textContent = p.name;
   document.getElementById('homeMeta').textContent = `@${p.username} • ${p.ward}`;
   document.getElementById('homeAvatar').src = av;
+     if (document.getElementById('composerAvatar')) document.getElementById('composerAvatar').src = av;
+
   document.getElementById('profAvatarPreview').src = av;
   document.getElementById('profName').value = p.name || '';
   document.getElementById('profUser').value = p.username || '';
@@ -899,27 +901,180 @@ onValue(ref(db, 'users'), (snap) => {
       renderPostsList();
     });
 
+       // ================= SOCIAL FEED (PHOTO, NOTE, LIKES & FILTERS) =================
+    let postAttachment = null;
+    let currentFeedFilter = 'for_you';
+
+    window.openModal = (id) => document.getElementById(id)?.classList.add('show');
+    window.closeModal = (id) => document.getElementById(id)?.classList.remove('show');
+
+    window.clearPostAttachment = () => {
+      postAttachment = null;
+      document.getElementById('attachPreviewBox')?.classList.add('hidden');
+    };
+
+    window.attachPostImage = (e) => {
+      if (!currentUser) return openAuthModal('login');
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const maxW = 540;
+          const scale = Math.min(1, maxW / img.width);
+          canvas.width = img.width * scale;
+          canvas.height = img.height * scale;
+          canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.68);
+          postAttachment = { type: 'image', data: dataUrl, title: file.name };
+          document.getElementById('attachPreviewLabel').textContent = '🖼️ Photo जुड़ी: ' + file.name;
+          document.getElementById('attachPreviewBox').classList.remove('hidden');
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    };
+
+    window.attachPostNote = () => {
+      if (!currentUser) return openAuthModal('login');
+      const title = prompt('Study Note या PDF का शीर्षक लिखें (उदा. 12th Physics Formulae):');
+      if (!title) return;
+      const link = prompt('Google Drive / PDF लिंक पेस्ट करें (या खाली छोड़ें):') || '#';
+      postAttachment = { type: 'note', data: link, title: title.trim() };
+      document.getElementById('attachPreviewLabel').textContent = '📄 Note जुड़ा: ' + title.trim();
+      document.getElementById('attachPreviewBox').classList.remove('hidden');
+    };
+
+    window.createSocialPost = async () => {
+      if (!currentUser) return openAuthModal('login');
+      const inp = document.getElementById('homePostInput');
+      const text = inp.value.trim();
+      if (text.length < 2 && !postAttachment) return toast('कुछ लिखें या फोटो/नोट जोड़ें');
+      await ensureUserProfile(currentUser);
+      await push(ref(db, 'posts'), {
+        uid: currentUser.uid,
+        name: userProfile.name,
+        username: userProfile.username,
+        ward: userProfile.ward || 'Dangari',
+        text,
+        attachment: postAttachment || null,
+        likes: {},
+        createdAt: Date.now()
+      });
+      inp.value = '';
+      clearPostAttachment();
+      await addPoints(3, 'New Social Post');
+    };
+
+    window.toggleLikePost = async (postId) => {
+      if (!currentUser) return openAuthModal('login');
+      const likeRef = ref(db, `posts/${postId}/likes/${currentUser.uid}`);
+      const snap = await get(likeRef);
+      if (snap.exists()) await set(likeRef, null);
+      else await set(likeRef, true);
+    };
+
+    window.sharePostText = (name, text) => {
+      const msg = `${name} (Apna Dangari): "${text}" — https://apnadangari.github.io/portal/`;
+      if (navigator.share) navigator.share({ text: msg }).catch(() => {});
+      else {
+        navigator.clipboard?.writeText(msg);
+        toast('📋 पोस्ट लिंक Copy हो गया!');
+      }
+    };
+
+    window.setFeedFilter = (filter, btn) => {
+      currentFeedFilter = filter;
+      document.querySelectorAll('.feed-tab').forEach(b => {
+        b.className = 'feed-tab shrink-0 surface bg-white border border-slate-200 text-slate-700 px-3.5 py-2 rounded-full';
+      });
+      if (btn) btn.className = 'feed-tab shrink-0 bg-emerald-800 text-white px-3.5 py-2 rounded-full shadow-sm';
+      renderPostsList();
+    };
+
+    function timeAgo(ts) {
+      if (!ts) return 'अभी';
+      const mins = Math.floor((Date.now() - ts) / 60000);
+      if (mins < 1) return 'अभी';
+      if (mins < 60) return `${mins}m ago`;
+      const hrs = Math.floor(mins / 60);
+      if (hrs < 24) return `${hrs}h ago`;
+      return `${Math.floor(hrs / 24)}d ago`;
+    }
+
     function renderPostsList() {
-      document.getElementById('postCount').textContent = `${cachedPosts.length} Posts`;
-      document.getElementById('feedList').innerHTML = cachedPosts.length ? cachedPosts.map(p => {
+      let list = [...cachedPosts];
+      if (currentFeedFilter === 'top') {
+        list.sort((a, b) => Object.keys(b.likes || {}).length - Object.keys(a.likes || {}).length);
+      } else if (currentFeedFilter === 'notes') {
+        list = list.filter(p => p.attachment?.type === 'note');
+      } else if (currentFeedFilter === 'village') {
+        list = list.filter(p => p.attachment?.type === 'image' || (p.text || '').includes('#'));
+      }
+
+      const html = list.length ? list.map(p => {
         const liveUser = usersMap[p.uid] || {};
         const displayName = liveUser.name || p.name || 'Gramin';
         const displayWard = liveUser.ward || p.ward || 'Dangari';
         const av = liveUser.avatar || defaultAvatar(displayName);
-        return `<div class="surface bg-white p-4 rounded-2xl border border-slate-200 space-y-2">
-          <div class="flex justify-between items-center">
-            <div class="flex items-center gap-2.5">
-              <img src="${av}" class="w-9 h-9 rounded-full object-cover border border-emerald-500" />
-              <div>
-                <div class="text-xs font-bold">${displayName} <span class="text-slate-400 font-normal">@${liveUser.username || p.username || 'user'}</span></div>
-                <div class="text-[10px] text-emerald-700 font-semibold">📍 ${displayWard}</div>
+        const likesObj = p.likes || {};
+        const likeCount = Object.keys(likesObj).length;
+        const isLiked = currentUser && likesObj[currentUser.uid];
+        const safeText = (p.text || '').replace(/</g, '&lt;').replace(/(#\w+)/g, '<span class="text-blue-600 font-semibold">$1</span>');
+
+        let attachHTML = '';
+        if (p.attachment?.type === 'image' && p.attachment.data) {
+          attachHTML = `<img src="${p.attachment.data}" class="w-full max-h-64 object-cover rounded-2xl border border-slate-100 mt-2" />`;
+        } else if (p.attachment?.type === 'note') {
+          attachHTML = `<div class="mt-2 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 font-extrabold text-[11px] flex items-center justify-center shrink-0">PDF</div>
+              <div class="min-w-0">
+                <div class="font-bold text-xs truncate">${(p.attachment.title || 'Study Note').replace(/</g, '&lt;')}</div>
+                <div class="text-[10px] text-slate-500">Village Study Note</div>
               </div>
             </div>
-            <button type="button" onclick="reportPost('${p.id}')" class="text-[11px] text-rose-600 font-semibold">Report</button>
+            <a href="${p.attachment.data || '#'}" target="_blank" class="bg-emerald-700 text-white text-[11px] font-bold px-3 py-1.5 rounded-full shrink-0">⬇ Open</a>
+          </div>`;
+        }
+
+        return `<article class="surface bg-white p-4 rounded-3xl border border-slate-200 shadow-sm space-y-2">
+          <div class="flex justify-between items-start">
+            <div class="flex items-center gap-2.5">
+              <img src="${av}" class="w-10 h-10 rounded-full object-cover border-2 border-emerald-600" />
+              <div>
+                <div class="text-sm font-bold flex items-center gap-1">${displayName} <span class="text-blue-500 text-xs">✔️</span></div>
+                <div class="text-[11px] text-slate-500">📍 ${displayWard} • ${timeAgo(p.createdAt)}</div>
+              </div>
+            </div>
+            <button type="button" onclick="reportPost('${p.id}')" class="text-slate-400 font-bold text-sm px-1">•••</button>
           </div>
-          <p class="text-sm leading-relaxed pt-1">${p.text.replace(/</g, '&lt;')}</p>
-        </div>`;
-      }).join('') : '<p class="text-center text-xs text-slate-500 py-6">अभी कोई पोस्ट नहीं है—पहली पोस्ट आप करें!</p>';
+          ${safeText ? `<p class="text-xs leading-relaxed pt-0.5">${safeText}</p>` : ''}
+          ${attachHTML}
+          <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800 text-xs font-semibold text-slate-600">
+            <div class="flex items-center gap-5">
+              <button type="button" onclick="toggleLikePost('${p.id}')" class="flex items-center gap-1 ${isLiked ? 'text-rose-600 font-bold' : ''}">
+                <span>${isLiked ? '❤️' : '🤍'}</span><span>${likeCount}</span>
+              </button>
+              <button type="button" onclick="go('community')" class="flex items-center gap-1">
+                <span>💬</span><span>Reply</span>
+              </button>
+              <button type="button" onclick="sharePostText('${displayName.replace(/'/g, '')}', '${(p.text || '').replace(/'/g, '').slice(0, 60)}')" class="flex items-center gap-1">
+                <span>↗️</span><span>Share</span>
+              </button>
+            </div>
+            <span>🔖</span>
+          </div>
+        </article>`;
+      }).join('') : '<p class="text-center text-xs text-slate-500 py-8">अभी इस फ़िल्टर में कोई पोस्ट नहीं है—पहली पोस्ट आप करें!</p>';
+
+      const homeFeed = document.getElementById('homeFeedList');
+      const commFeed = document.getElementById('feedList');
+      if (homeFeed) homeFeed.innerHTML = html;
+      if (commFeed) commFeed.innerHTML = html;
+      if (document.getElementById('postCount')) document.getElementById('postCount').textContent = `${cachedPosts.length} Posts`;
     }
 
     window.reportPost = async (id) => {
