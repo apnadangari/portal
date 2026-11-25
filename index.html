@@ -182,18 +182,63 @@
     </section>
 
 
-    <!-- 2. COMMUNITY PAGE -->
-    <section id="page-community" class="page space-y-4">
-      <div class="surface bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
-        <div class="flex justify-between items-center">
-          <h2 class="font-bold text-base">🗣️ Dangari Community</h2>
-          <span id="postCount" class="text-xs bg-emerald-100 text-emerald-900 font-bold px-2.5 py-1 rounded-full">0 Posts</span>
+        <!-- 2. WHATSAPP-STYLE VILLAGE SEVA & BAZAAR GROUP -->
+    <section id="page-community" class="page space-y-2.5">
+      <div class="rounded-3xl overflow-hidden border border-emerald-200 shadow-sm flex flex-col" style="height: 74vh; background-color: #efeae2; background-image: radial-gradient(#d6cfc2 1px, transparent 1px); background-size: 16px 16px;">
+
+        <!-- WhatsApp Style Green Group Header -->
+        <div class="bg-[#075e54] text-white px-3.5 py-2.5 flex items-center justify-between shadow">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <img src="banner.jpg" onerror="this.src='https://ui-avatars.com/api/?name=DG&background=128c7e&color=fff'" class="w-10 h-10 rounded-full object-cover border border-emerald-300 shrink-0" />
+            <div class="min-w-0">
+              <div class="font-bold text-sm flex items-center gap-1 truncate">
+                <span>अपना डांगरी — सेवा & बाज़ार</span>
+                <span class="text-emerald-300 text-xs">✔️</span>
+              </div>
+              <div id="waGroupSubtitle" class="text-[10px] text-emerald-100 truncate">🔒 Verified Gaon Group • Tap to filter</div>
+            </div>
+          </div>
+          <a href="tel:112" class="bg-emerald-700/80 hover:bg-emerald-600 text-white text-xs font-bold px-2.5 py-1.5 rounded-full shrink-0">📞 112</a>
         </div>
-        <textarea id="postInput" rows="3" maxlength="500" placeholder="अपने गाँव की बात, सुझाव या अच्छी खबर लिखें..." class="w-full p-3 rounded-xl border border-slate-200 text-sm outline-none"></textarea>
-        <button type="button" onclick="createPost()" class="w-full bg-emerald-700 text-white font-bold text-sm py-2.5 rounded-xl">Post करें ↗</button>
+
+        <!-- Category Filter Pills (All / Bazaar / Mandi / Blood) -->
+        <div class="bg-[#f0f2f5] px-2.5 py-1.5 flex gap-1.5 overflow-x-auto no-scrollbar border-b border-slate-200 text-[11px] font-bold">
+          <button type="button" onclick="setWaFilter('all', this)" class="wa-tab shrink-0 bg-[#075e54] text-white px-3 py-1 rounded-full">💬 सभी मैसेज</button>
+          <button type="button" onclick="setWaFilter('bazaar', this)" class="wa-tab shrink-0 bg-white text-slate-700 border border-slate-200 px-3 py-1 rounded-full">🏪 बाज़ार / काम</button>
+          <button type="button" onclick="setWaFilter('mandi', this)" class="wa-tab shrink-0 bg-white text-slate-700 border border-slate-200 px-3 py-1 rounded-full">🌾 मंडी भाव</button>
+          <button type="button" onclick="setWaFilter('blood', this)" class="wa-tab shrink-0 bg-white text-slate-700 border border-slate-200 px-3 py-1 rounded-full">🩸 Blood / मदद</button>
+        </div>
+
+        <!-- WhatsApp Chat Stream Area -->
+        <div id="waChatFeed" class="flex-1 overflow-y-auto p-3 space-y-2.5">
+          <!-- End-to-End Village Security Notice Banner -->
+          <div class="mx-auto max-w-[92%] bg-[#fef3c7] border border-amber-200 text-amber-950 text-[10px] text-center px-3 py-1.5 rounded-xl shadow-sm">
+            🔒 <b>Gaon Verified Group:</b> यहाँ सिर्फ लॉगिन किए हुए डांगरी व आसपास के सदस्य ही बाज़ार, मंडी भाव और ब्लड ग्रुप की जानकारी साझा कर सकते हैं।
+          </div>
+          <div id="waMessagesList" class="space-y-2.5"></div>
+        </div>
+
+        <!-- WhatsApp Bottom Composer Bar -->
+        <div class="bg-[#f0f2f5] p-2 border-t border-slate-200 space-y-1.5">
+          <div class="flex items-center gap-1.5 text-[10px] font-bold">
+            <span class="text-slate-500 pl-1">श्रेणी:</span>
+            <select id="waCategorySelect" class="bg-white border border-slate-300 rounded-full px-2.5 py-1 text-slate-800 outline-none">
+              <option value="bazaar">🏪 बाज़ार / सामान / मिस्त्री</option>
+              <option value="mandi">🌾 आज का मंडी भाव</option>
+              <option value="blood">🩸 Blood Group / इमरजेंसी मदद</option>
+            </select>
+            <input id="waPhoneInput" type="tel" maxlength="10" placeholder="📞 Call नंबर (Optional)" class="flex-1 bg-white border border-slate-300 rounded-full px-2.5 py-1 text-slate-800 outline-none" />
+          </div>
+
+          <div class="flex items-center gap-1.5">
+            <input id="waMsgInput" type="text" maxlength="350" placeholder="यहाँ बाज़ार, मंडी भाव या मदद का मैसेज लिखें..." class="flex-1 bg-white px-3.5 py-2.5 rounded-full text-xs text-slate-900 border border-slate-200 outline-none" />
+            <button type="button" onclick="sendWaGroupMsg()" class="w-10 h-10 rounded-full bg-[#00a884] hover:bg-[#008f6f] text-white font-bold text-base flex items-center justify-center shadow shrink-0">➤</button>
+          </div>
+        </div>
+
       </div>
-      <div id="feedList" class="space-y-3"></div>
     </section>
+
 
            <!-- 3. PRO EARNING GAMES & WALLET HUB -->
     <section id="page-games" class="page space-y-4">
@@ -611,7 +656,7 @@
   <!-- BOTTOM NAVIGATION -->
   <nav class="fixed bottom-0 inset-x-0 z-50 surface bg-white border-t border-slate-200 px-2 py-1.5 flex justify-around text-[11px] font-bold text-slate-600">
     <button type="button" onclick="go('home')" class="flex flex-col items-center py-1 px-2 text-emerald-700"><span>🏠</span><span>Gaon</span></button>
-    <button type="button" onclick="go('community')" class="flex flex-col items-center py-1 px-2"><span>🗣️</span><span>Community</span></button>
+    <button type="button" onclick="go('seva group')" class="flex flex-col items-center py-1 px-2"><span>🗣️</span><span>Community</span></button>
     <button type="button" onclick="go('games')" class="flex flex-col items-center py-1 px-2"><span>🎮</span><span>Games</span></button>
     <button type="button" onclick="go('rank')" class="flex flex-col items-center py-1 px-2"><span>🏆</span><span>Rank</span></button>
     <button type="button" onclick="go('profile')" class="flex flex-col items-center py-1 px-2"><span>👤</span><span>Profile</span></button>
