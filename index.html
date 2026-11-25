@@ -655,7 +655,8 @@
   <!-- BOTTOM NAVIGATION -->
   <nav class="fixed bottom-0 inset-x-0 z-50 surface bg-white border-t border-slate-200 px-2 py-1.5 flex justify-around text-[11px] font-bold text-slate-600">
     <button type="button" onclick="go('home')" class="flex flex-col items-center py-1 px-2 text-emerald-700"><span>🏠</span><span>Gaon</span></button>
-    <button type="button" onclick="go('seva group')" class="flex flex-col items-center py-1 px-2"><span>🗣️</span><span>Community</span></button>
+        <button type="button" onclick="go('community')" class="flex flex-col items-center py-1 px-2"><span>💬</span><span>Seva Group</span></button>
+
     <button type="button" onclick="go('games')" class="flex flex-col items-center py-1 px-2"><span>🎮</span><span>Games</span></button>
     <button type="button" onclick="go('rank')" class="flex flex-col items-center py-1 px-2"><span>🏆</span><span>Rank</span></button>
     <button type="button" onclick="go('profile')" class="flex flex-col items-center py-1 px-2"><span>👤</span><span>Profile</span></button>
@@ -758,15 +759,16 @@ window.toggleGameAudio = () => {
       window._tt = setTimeout(() => t.classList.add('hidden'), 2600);
     };
 
-    window.go = (id) => {
+      window.go = (id) => {
       stopGameMusic();
       if (activeLoop) { clearInterval(activeLoop); activeLoop = null; }
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       const target = document.getElementById('page-' + id);
       if (target) target.classList.add('active');
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      if (id === 'games') updateSpinQuotaUI();
+      if (id === 'games') updateWalletUI();
     };
+
 
     window.toggleTheme = () => document.documentElement.classList.toggle('dark');
     window.openAccount = () => currentUser ? go('profile') : openAuthModal('login');
@@ -830,50 +832,41 @@ window.toggleGameAudio = () => {
       toast('Logout हो गए');
     };
 
-   function renderUserUI() {
-  if (!currentUser) {
-    document.getElementById('authStateTxt').textContent = 'Guest मोड';
-    document.getElementById('hdrBtnTxt').textContent = '👤 Account';
-    document.getElementById('hdrAvatar').classList.add('hidden');
-    document.getElementById('hdrPoints').textContent = '0';
-    document.getElementById('homeName').textContent = 'Guest ग्रामीण';
-    document.getElementById('homeMeta').textContent = 'लॉगिन करें और अपना गाँव चुनें';
-    document.getElementById('homeAvatar').src = defaultAvatar('Guest');
-    document.getElementById('profAvatarPreview').src = defaultAvatar('User');
-    if (document.getElementById('profDisplayName')) {
-      document.getElementById('profDisplayName').textContent = 'Guest ग्रामीण';
-      document.getElementById('profDisplaySub').textContent = '@guest • Dangari';
-      document.getElementById('profStatXP').textContent = '0';
-      document.getElementById('profStatRank').textContent = 'Rank #-';
-      document.getElementById('profStatLoc').textContent = 'Dangari';
+       function renderUserUI() {
+      const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+      if (!currentUser) {
+        setTxt('authStateTxt', 'Guest मोड');
+        setTxt('hdrPoints', '0');
+        setTxt('homeName', 'Your Story');
+        if (document.getElementById('hdrAvatar')) document.getElementById('hdrAvatar').src = defaultAvatar('Guest');
+        if (document.getElementById('homeAvatar')) document.getElementById('homeAvatar').src = defaultAvatar('You');
+        if (document.getElementById('profAvatarPreview')) document.getElementById('profAvatarPreview').src = defaultAvatar('User');
+        setTxt('profDisplayName', 'Guest ग्रामीण');
+        setTxt('profDisplaySub', '@guest • Dangari');
+        setTxt('profStatXP', '0');
+        setTxt('profStatRank', 'Rank #-');
+        setTxt('profStatLoc', 'Dangari');
+        return;
+      }
+      const p = userProfile || { name: currentUser.email.split('@')[0], username: 'user', ward: 'Dangari', points: 0, avatar: '' };
+      const av = p.avatar || defaultAvatar(p.name);
+      setTxt('authStateTxt', '✅ Logged in: ' + currentUser.email);
+      if (document.getElementById('hdrAvatar')) document.getElementById('hdrAvatar').src = av;
+      setTxt('hdrPoints', p.points || 0);
+      setTxt('homeName', p.name.split(' ')[0]);
+      if (document.getElementById('homeAvatar')) document.getElementById('homeAvatar').src = av;
+      if (document.getElementById('composerAvatar')) document.getElementById('composerAvatar').src = av;
+      if (document.getElementById('profAvatarPreview')) document.getElementById('profAvatarPreview').src = av;
+      if (document.getElementById('profName')) document.getElementById('profName').value = p.name || '';
+      if (document.getElementById('profUser')) document.getElementById('profUser').value = p.username || '';
+      if (document.getElementById('profWard')) document.getElementById('profWard').value = p.ward || 'Dangari';
+      setTxt('profDisplayName', p.name);
+      setTxt('profDisplaySub', `@${p.username} • ${p.ward}`);
+      setTxt('profStatXP', p.points || 0);
+      setTxt('profStatLoc', p.ward || 'Dangari');
+      updateWalletUI();
     }
-    return;
-  }
-  const p = userProfile || { name: currentUser.email.split('@')[0], username: 'user', ward: 'Dangari', points: 0, avatar: '' };
-  const av = p.avatar || defaultAvatar(p.name);
-  document.getElementById('authStateTxt').textContent = '✅ Logged in: ' + currentUser.email;
-  document.getElementById('hdrBtnTxt').textContent = p.name.split(' ')[0];
-  document.getElementById('hdrAvatar').src = av;
-  document.getElementById('hdrAvatar').classList.remove('hidden');
-  document.getElementById('hdrPoints').textContent = p.points || 0;
-  document.getElementById('homeName').textContent = p.name;
-  document.getElementById('homeMeta').textContent = `@${p.username} • ${p.ward}`;
-  document.getElementById('homeAvatar').src = av;
-     if (document.getElementById('composerAvatar')) document.getElementById('composerAvatar').src = av;
 
-  document.getElementById('profAvatarPreview').src = av;
-  document.getElementById('profName').value = p.name || '';
-  document.getElementById('profUser').value = p.username || '';
-  document.getElementById('profWard').value = p.ward || 'Dangari';
-  if (document.getElementById('profDisplayName')) {
-    document.getElementById('profDisplayName').textContent = p.name;
-    document.getElementById('profDisplaySub').textContent = `@${p.username} • ${p.ward}`;
-    document.getElementById('profStatXP').textContent = p.points || 0;
-    document.getElementById('profStatLoc').textContent = p.ward || 'Dangari';
-    updateWalletUI();
-
-  }
-}
 
 
     onAuthStateChanged(auth, async (user) => {
@@ -1598,6 +1591,35 @@ onValue(ref(db, 'users'), (snap) => {
         `).join('') : '<p class="text-slate-500">कोई रिक्वेस्ट नहीं है।</p>';
       }
     });
+
+        window.submitWithdrawRequest = async () => {
+      if (!currentUser) return openAuthModal('login');
+      const method = document.getElementById('wdMethod').value;
+      const upi = document.getElementById('wdUpi').value.trim();
+      const reqCoins = Number(document.getElementById('wdAmount').value);
+      const curCoins = userProfile?.coins || 0;
+
+      if (upi.length < 5) return toast('सही UPI ID या Bank विवरण लिखें');
+      if (curCoins < reqCoins) return toast(`कम से कम ${reqCoins} Coins चाहिए!`);
+
+      await update(ref(db, `users/${currentUser.uid}`), { coins: curCoins - reqCoins });
+      userProfile.coins = curCoins - reqCoins;
+      updateWalletUI();
+
+      await push(ref(db, 'withdrawRequests'), {
+        uid: currentUser.uid,
+        name: userProfile.name || 'Gramin',
+        username: userProfile.username || 'user',
+        method,
+        upi,
+        coins: reqCoins,
+        rupees: (reqCoins / 100).toFixed(2),
+        status: 'pending',
+        createdAt: Date.now()
+      });
+      document.getElementById('wdUpi').value = '';
+      toast('✅ Withdraw Request भेज दी गई!');
+    };
 
     window.processWithdraw = async (reqId, uid, coins, newStatus) => {
       if (!isAdmin) return;
