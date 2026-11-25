@@ -162,7 +162,11 @@
       <div class="surface bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
         <div class="flex justify-between items-center">
           <h2 class="font-bold text-base">🎮 Pro Games & Daily Spin</h2>
-          <span id="spinQuotaBadge" class="text-[11px] bg-amber-100 text-amber-900 font-bold px-2.5 py-1 rounded-full">🎡 3/3 Spins Left</span>
+          <div class="flex items-center gap-1.5">
+  <button type="button" onclick="toggleGameAudio()" id="audioToggleBtn" class="text-[11px] bg-emerald-100 text-emerald-900 font-bold px-2.5 py-1 rounded-full">🔊 Music ON</button>
+  <span id="spinQuotaBadge" class="text-[11px] bg-amber-100 text-amber-900 font-bold px-2.5 py-1 rounded-full">🎡 3/3 Spins Left</span>
+</div>
+
         </div>
         <div class="grid grid-cols-2 gap-2.5 text-xs font-bold">
           <button type="button" onclick="openGame('spin')" class="bg-rose-50 border border-rose-200 text-rose-900 p-3 rounded-2xl text-left">
@@ -364,6 +368,60 @@
     let activeLoop = null;
     let activeLudoRoom = null;
 
+    // ================= 4 GAMES ALAG-ALAG SLOW BACKGROUND MUSIC =================
+let audioCtx = null;
+let bgmTimer = null;
+let isMusicOn = true;
+let currentMusicType = null;
+
+const gameTracks = {
+  spin:   { notes: [261.6, 329.6, 392.0, 523.3, 392.0, 329.6], tempo: 650, wave: 'sine' },
+  quiz:   { notes: [220.0, 261.6, 329.6, 293.7, 261.6, 246.9], tempo: 900, wave: 'sine' },
+  desert: { notes: [196.0, 220.0, 261.6, 293.7, 261.6, 220.0], tempo: 750, wave: 'triangle' },
+  ludo:   { notes: [293.7, 349.2, 440.0, 392.0, 349.2, 329.6], tempo: 800, wave: 'sine' }
+};
+
+function stopGameMusic() {
+  if (bgmTimer) { clearInterval(bgmTimer); bgmTimer = null; }
+}
+
+function startGameMusic(type) {
+  currentMusicType = type;
+  stopGameMusic();
+  if (!isMusicOn || !gameTracks[type]) return;
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+
+  const track = gameTracks[type];
+  let step = 0;
+  const playNote = () => {
+    if (!isMusicOn) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = track.wave;
+    osc.frequency.setValueAtTime(track.notes[step % track.notes.length], audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.035, audioCtx.currentTime + 0.15); // बहुत धीमी और सुकून भरी आवाज़
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + (track.tempo / 1000) * 0.9);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + (track.tempo / 1000));
+    step++;
+  };
+  playNote();
+  bgmTimer = setInterval(playNote, track.tempo);
+}
+
+window.toggleGameAudio = () => {
+  isMusicOn = !isMusicOn;
+  const btn = document.getElementById('audioToggleBtn');
+  if (btn) btn.textContent = isMusicOn ? '🔊 Music ON' : '🔇 Music OFF';
+  if (isMusicOn && currentMusicType) startGameMusic(currentMusicType);
+  else stopGameMusic();
+};
+    
+
     const todayKey = () => new Date().toISOString().slice(0, 10);
     const defaultAvatar = (name) => `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'User')}&background=065f46&color=fff`;
 
@@ -376,6 +434,7 @@
     };
 
     window.go = (id) => {
+      stopGameMusic();
       if (activeLoop) { clearInterval(activeLoop); activeLoop = null; }
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       const target = document.getElementById('page-' + id);
@@ -705,6 +764,8 @@
     let todaysQuestions = [];
 
     window.openGame = (type) => {
+    startGameMusic(type);
+  
       if (activeLoop) { clearInterval(activeLoop); activeLoop = null; }
       const arena = document.getElementById('gameArena');
 
