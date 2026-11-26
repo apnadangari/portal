@@ -2022,7 +2022,7 @@ onValue(ref(db, 'users'), (snap) => {
         </div>
         <div class="grid grid-cols-5 gap-1.5">${cells}</div>
         ${minesState.over
-          ? `<button type="button" onclick="startMinesGame()" class="w-full bg-indigo-700 text-white font-bold text-xs py-3 rounded-xl">🔄 नया बोर्ड खेलें</button>`
+         ? `<button type="button" onclick="openProGame('mines')" class="w-full bg-indigo-700 text-white font-bold text-xs py-3 rounded-xl">🔄 नया बोर्ड खेलें</button>`
           : `<button type="button" onclick="cashoutMines()" ${minesState.gems === 0 ? 'disabled' : ''} class="w-full ${minesState.gems > 0 ? 'bg-emerald-700 text-white shadow' : 'bg-slate-300 text-slate-500'} font-bold text-xs py-3 rounded-xl">
               ${minesState.gems > 0 ? `💰 Cash Out (+${reward} Coins सुरक्षित करें)` : 'कम से कम 1 हीरा (💎) खोलें'}
             </button>`}
