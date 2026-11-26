@@ -1192,6 +1192,191 @@ window.toggleGameAudio = () => {
       document.getElementById('postInput').value = '';
       await addPoints(3, 'New Post');
     };
+    // ================= VIRAL VIP LEADERBOARD CARD GENERATOR =================
+    let latestRankCardDataUrl = '';
+    let latestRankCardText = '';
+
+    window.openRankCardModal = async () => {
+      if (!currentUser) return openAuthModal('login');
+      await ensureUserProfile(currentUser);
+
+      // Calculate user's exact live rank
+      const sorted = Object.entries(usersMap)
+        .map(([uid, u]) => ({ uid, ...u }))
+        .sort((a, b) => (b.points || 0) - (a.points || 0));
+      const myRankIdx = sorted.findIndex(u => u.uid === currentUser.uid);
+      const rankNum = myRankIdx !== -1 ? myRankIdx + 1 : sorted.length + 1;
+
+      const name = userProfile.name || 'Gramin';
+      const username = userProfile.username || 'dangari_user';
+      const ward = userProfile.ward || 'Dangari';
+      const xp = userProfile.points || 0;
+      const avatarSrc = userProfile.avatar || defaultAvatar(name);
+
+      const canvas = document.createElement('canvas');
+      canvas.width = 720;
+      canvas.height = 1040;
+      const ctx = canvas.getContext('2d');
+
+      // 1. Royal Dark Emerald & Gold Gradient Background
+      const bg = ctx.createLinearGradient(0, 0, 720, 1040);
+      bg.addColorStop(0, '#022c22');
+      bg.addColorStop(0.5, '#064e3b');
+      bg.addColorStop(1, '#021c16');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, 720, 1040);
+
+      // Decorative Golden Glow Circles
+      ctx.fillStyle = 'rgba(251, 191, 36, 0.08)';
+      ctx.beginPath(); ctx.arc(360, 320, 260, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(620, 120, 140, 0, Math.PI * 2); ctx.fill();
+
+      // 2. Luxury Double Golden Border Frame
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 6;
+      ctx.strokeRect(24, 24, 672, 992);
+      ctx.strokeStyle = 'rgba(253, 224, 71, 0.35)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(38, 38, 644, 964);
+
+      // 3. Top Header Branding
+      ctx.fillStyle = '#fde047';
+      ctx.font = 'bold 28px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🌾 APNA DANGARI • VERIFIED PORTAL ✔️', 360, 95);
+
+      ctx.fillStyle = '#a7f3d0';
+      ctx.font = '600 20px sans-serif';
+      ctx.fillText('हमारा गाँव • हमारी पहचान • Jaisalmer', 360, 130);
+
+      // 4. Rank Crown & Title Pill
+      const titleBadge = rankNum === 1 ? '👑 VILLAGE CHAMPION • RANK #1' : rankNum <= 3 ? `🏆 TOP PODIUM • RANK #${rankNum}` : `⭐ DANGARI STAR • RANK #${rankNum}`;
+      ctx.fillStyle = '#fbbf24';
+      ctx.beginPath();
+      ctx.roundRect(140, 165, 440, 52, 26);
+      ctx.fill();
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 24px sans-serif';
+      ctx.fillText(titleBadge, 360, 199);
+
+      // 5. Load & Draw Circular User DP with Golden Ring
+      const drawRestOfCard = (imgObj) => {
+        // Outer Golden Ring
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(360, 375, 118, 0, Math.PI * 2);
+        ctx.fillStyle = '#fbbf24';
+        ctx.fill();
+
+        // Clip Circle for Avatar
+        ctx.beginPath();
+        ctx.arc(360, 375, 108, 0, Math.PI * 2);
+        ctx.clip();
+        if (imgObj) {
+          ctx.drawImage(imgObj, 252, 267, 216, 216);
+        } else {
+          ctx.fillStyle = '#065f46';
+          ctx.fillRect(252, 267, 216, 216);
+        }
+        ctx.restore();
+
+        // 6. User Name, @Username & Village Pill
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 44px sans-serif';
+        ctx.fillText(name.slice(0, 22), 360, 550);
+
+        ctx.fillStyle = '#fde047';
+        ctx.font = 'bold 25px sans-serif';
+        ctx.fillText(`@${username}  •  📍 ${ward}`, 360, 592);
+
+        // 7. Glassmorphism Stats Box (Rank | XP | Status)
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.strokeStyle = 'rgba(251, 191, 36, 0.5)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(65, 635, 590, 155, 28);
+        ctx.fill();
+        ctx.stroke();
+
+        // Left Stat: Rank
+        ctx.fillStyle = '#a7f3d0';
+        ctx.font = 'bold 20px sans-serif';
+        ctx.fillText('LIVE RANK', 210, 682);
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = 'bold 54px sans-serif';
+        ctx.fillText(`#${rankNum}`, 210, 750);
+
+        // Divider Line
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+        ctx.beginPath(); ctx.moveTo(360, 660); ctx.lineTo(360, 765); ctx.stroke();
+
+        // Right Stat: XP
+        ctx.fillStyle = '#a7f3d0';
+        ctx.font = 'bold 20px sans-serif';
+        ctx.fillText('TOTAL SCORE', 510, 682);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 50px sans-serif';
+        ctx.fillText(`${xp} XP`, 510, 750);
+
+        // 8. Motivational Tagline
+        ctx.fillStyle = '#d1fae5';
+        ctx.font = 'italic 22px sans-serif';
+        ctx.fillText('“अपना गाँव, अपनी डिजिटल पहचान — आज ही जुड़ें!”', 360, 845);
+
+        // 9. Bottom Website URL Banner (Prominent for Viral Sharing)
+        ctx.fillStyle = '#fbbf24';
+        ctx.beginPath();
+        ctx.roundRect(65, 885, 590, 86, 22);
+        ctx.fill();
+
+        ctx.fillStyle = '#022c22';
+        ctx.font = 'bold 20px sans-serif';
+        ctx.fillText('🌐 अपना रैंक चेक करें और जुड़ें:', 360, 918);
+        ctx.font = 'bold 26px sans-serif';
+        ctx.fillText('https://apnadangari.github.io/portal/', 360, 954);
+
+        latestRankCardDataUrl = canvas.toDataURL('image/png');
+        latestRankCardText = `🏆 *Apna Dangari Leaderboard* पर मेरी लाइव रैंक *#${rankNum}* (${xp} XP) है!\n\nआप भी अपनी रैंक देखें और गाँव के पोर्टल से जुड़ें 👇\n👉 https://apnadangari.github.io/portal/`;
+
+        document.getElementById('rankCardPreviewImg').src = latestRankCardDataUrl;
+        openModal('rankCardModal');
+      };
+
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => drawRestOfCard(img);
+      img.onerror = () => drawRestOfCard(null);
+      img.src = avatarSrc;
+    };
+
+    window.shareRankCardNow = async () => {
+      try {
+        const res = await fetch(latestRankCardDataUrl);
+        const blob = await res.blob();
+        const file = new File([blob], 'apna-dangari-rank.png', { type: 'image/png' });
+
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: 'Apna Dangari Rank Card',
+            text: latestRankCardText
+          });
+          return;
+        }
+      } catch (e) {}
+
+      // Fallback to WhatsApp Text + Link Share if browser doesn't support file share
+      window.open(`https://wa.me/?text=${encodeURIComponent(latestRankCardText)}`, '_blank');
+    };
+
+    window.downloadRankCard = () => {
+      if (!latestRankCardDataUrl) return;
+      const a = document.createElement('a');
+      a.href = latestRankCardDataUrl;
+      a.download = `Dangari-Rank-${userProfile?.username || 'Card'}.png`;
+      a.click();
+      toast('✅ HD Rank Card डाउनलोड हो गया! अब Status लगाएँ');
+    };
 
     // LEADERBOARD + TOP 3 PODIUM + USERS CACHE
 onValue(ref(db, 'users'), (snap) => {
