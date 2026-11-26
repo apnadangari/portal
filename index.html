@@ -409,6 +409,16 @@
     <h2 class="font-bold text-lg flex items-center gap-1.5">🏆 Dangari Leaderboard</h2>
     <span id="totalUsersBadge" class="text-xs bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full">0 सदस्य</span>
   </div>
+  <!-- Header + Viral Rank Card Share Button -->
+  <div class="flex justify-between items-center px-1 gap-2">
+    <div>
+      <h2 class="font-bold text-lg flex items-center gap-1.5">🏆 Dangari Leaderboard</h2>
+      <span id="totalUsersBadge" class="text-[11px] text-emerald-700 font-bold">0 सदस्य</span>
+    </div>
+    <button type="button" onclick="openRankCardModal()" class="bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:brightness-105 text-slate-950 font-extrabold text-xs px-3.5 py-2.5 rounded-2xl shadow-md flex items-center gap-1.5 shrink-0">
+      <span>🪪</span><span>Share My Card</span>
+    </button>
+  </div>
 
   <!-- Top 3 Podium Cards -->
   <div id="podiumBox" class="grid grid-cols-3 gap-2 items-end pt-4"></div>
@@ -686,7 +696,31 @@
     </div>
   </div>
 
-  
+    <!-- VIRAL VIP RANK CARD SHARE MODAL -->
+  <div id="rankCardModal" class="modal">
+    <div class="surface bg-white w-full max-w-sm rounded-3xl p-4 space-y-3 shadow-2xl text-center">
+      <div class="flex justify-between items-center">
+        <span class="bg-amber-100 text-amber-950 text-xs font-extrabold px-3 py-1 rounded-full">👑 VIP Village Rank Card</span>
+        <button type="button" onclick="closeModal('rankCardModal')" class="font-bold text-base px-2">✕</button>
+      </div>
+
+      <!-- Generated HD Status Card Image Preview -->
+      <div class="rounded-2xl overflow-hidden border-2 border-amber-400 shadow-lg bg-emerald-950">
+        <img id="rankCardPreviewImg" src="" alt="My Rank Card" class="w-full max-h-[56vh] object-contain mx-auto" />
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 pt-1">
+        <button type="button" onclick="shareRankCardNow()" class="bg-[#00a884] hover:bg-[#008f6f] text-white font-extrabold text-xs py-3 rounded-2xl shadow flex items-center justify-center gap-1.5">
+          <span>📲</span><span>Share Status / WA</span>
+        </button>
+        <button type="button" onclick="downloadRankCard()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-3 rounded-2xl shadow flex items-center justify-center gap-1.5">
+          <span>⬇️</span><span>Download HD</span>
+        </button>
+      </div>
+      <p class="text-[10px] text-slate-500">कार्ड के साथ आपकी वेबसाइट का लिंक भी अपने-आप शेयर होगा!</p>
+    </div>
+  </div>
+
   <!-- AUTH MODAL -->
   <div id="authModal" class="modal">
     <div class="surface bg-white w-full max-w-sm rounded-3xl p-5 space-y-3 shadow-2xl">
