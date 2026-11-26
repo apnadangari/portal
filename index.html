@@ -2225,11 +2225,11 @@ onValue(ref(db, 'users'), (snap) => {
       renderKbcQuestion();
     };
 
-
-    // ADMIN DESK
+    // ================= ADMIN DESK (LIVE NOTICE, EVENTS & POLLS) =================
     function updateAdminUI() {
       const box = document.getElementById('adminStatusBox');
       const ctrl = document.getElementById('adminControls');
+      if (!box || !ctrl) return;
       if (isAdmin) {
         box.className = 'p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 font-bold';
         box.textContent = '✅ Verified Admin: आप सूचना, Event और Poll पब्लिश कर सकते हैं।';
@@ -2241,80 +2241,104 @@ onValue(ref(db, 'users'), (snap) => {
       }
     }
 
-     onValue(ref(db, 'announcements'), (snap) => {
-   const box = document.getElementById('noticeList');
-   const items = [];
-   snap.forEach(c => items.push(c.val()));
-   items.reverse();
-   if (document.getElementById('noticeBadge')) document.getElementById('noticeBadge').textContent = items.length;
-   if (items.length) {
-     box.innerHTML = items.map(n => `<div class="p-2.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200">📢 ${n.text}</div>`).join('');
-     const bar = document.getElementById('homeLiveNoticeBar');
-     const txt = document.getElementById('homeLatestNoticeTxt');
-     if (bar && txt) {
-       txt.textContent = items[0].text;
-       bar.classList.remove('hidden');
-     }
-   }
- });
+    onValue(ref(db, 'announcements'), (snap) => {
+      const box = document.getElementById('noticeList');
+      const items = [];
+      snap.forEach(c => items.push({ id: c.key, ...c.val() }));
+      items.reverse();
 
- window.addNotice = async () => {
-   const text = document.getElementById('admNotice').value.trim();
-   if (!text) return toast('पहले सूचना लिखें');
-   try {
-     await push(ref(db, 'announcements'), { text, at: Date.now() });
-     document.getElementById('admNotice').value = '';
-     toast('✅ सूचना Home Page पर Live हो गई!');
-   } catch (e) {
-     toast('Error: ' + e.message);
-   }
- };
+      const badge = document.getElementById('noticeBadge');
+      if (badge) badge.textContent = items.length;
 
- window.addAdminEvent = async () => {
-   const title = document.getElementById('admEvTitle').value.trim();
-   const meta = document.getElementById('admEvMeta').value.trim();
-   if (!title) return toast('पहले Event का नाम लिखें');
-   try {
-     await push(ref(db, 'events'), { title, meta, at: Date.now() });
-     document.getElementById('admEvTitle').value = '';
-     document.getElementById('admEvMeta').value = '';
-     toast('✅ Event Events पेज पर Live हो गया!');
-   } catch (e) {
-     toast('Error: ' + e.message);
-   }
- };
-
+      if (items.length) {
+        if (box) {
+          box.innerHTML = items.map(n => `
+            <div class="p-2.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 flex justify-between items-start gap-2">
+              <span>📢 ${n.text}</span>
+              ${isAdmin ? `<button type="button" onclick="deleteNotice('${n.id}')" class="text-rose-600 font-bold text-[10px] shrink-0">🗑️</button>` : ''}
+            </div>`).join('');
+        }
+        const bar = document.getElementById('homeLiveNoticeBar');
+        const txt = document.getElementById('homeLatestNoticeTxt');
+        if (bar && txt) {
+          txt.textContent = items[0].text;
+          bar.classList.remove('hidden');
+        }
+      }
+    });
 
     onValue(ref(db, 'events'), (snap) => {
       const box = document.getElementById('eventList');
       const items = [];
-      snap.forEach(c => items.push(c.val()));
-      if (items.length) box.innerHTML = items.reverse().map(e => `<div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200"><div class="font-bold text-emerald-900">${e.title}</div><div class="text-slate-600 mt-1">📍 ${e.meta}</div></div>`).join('');
+      snap.forEach(c => items.push({ id: c.key, ...c.val() }));
+      items.reverse();
+      if (items.length && box) {
+        box.innerHTML = items.map(e => `
+          <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 flex justify-between items-start gap-2">
+            <div>
+              <div class="font-bold text-emerald-900">${e.title}</div>
+              <div class="text-slate-600 mt-1">📍 ${e.meta || 'Dangari'}</div>
+            </div>
+            ${isAdmin ? `<button type="button" onclick="deleteEvent('${e.id}')" class="text-rose-600 font-bold text-xs shrink-0">🗑️</button>` : ''}
+          </div>`).join('');
+      }
     });
 
     window.addNotice = async () => {
+      if (!isAdmin) return toast('🔒 केवल Admin ही सूचना डाल सकते हैं');
       const text = document.getElementById('admNotice').value.trim();
-      if (!text) return;
-      await push(ref(db, 'announcements'), { text, at: Date.now() });
-      document.getElementById('admNotice').value = '';
-      toast('✅ सूचना प्रकाशित');
+      if (!text) return toast('पहले सूचना लिखें');
+      try {
+        await push(ref(db, 'announcements'), { text, at: Date.now() });
+        document.getElementById('admNotice').value = '';
+        toast('✅ सूचना Home Page और Bell पर Live हो गई!');
+      } catch (e) {
+        toast('Firebase Error: ' + e.message);
+      }
     };
+
+    window.deleteNotice = async (id) => {
+      if (!isAdmin) return;
+      await set(ref(db, `announcements/${id}`), null);
+      toast('🗑️ सूचना हटा दी गई');
+    };
+
     window.addAdminEvent = async () => {
+      if (!isAdmin) return toast('🔒 केवल Admin ही Event डाल सकते हैं');
       const title = document.getElementById('admEvTitle').value.trim();
       const meta = document.getElementById('admEvMeta').value.trim();
-      if (!title) return;
-      await push(ref(db, 'events'), { title, meta, at: Date.now() });
-      document.getElementById('admEvTitle').value = '';
-      document.getElementById('admEvMeta').value = '';
-      toast('✅ Event प्रकाशित');
+      if (!title) return toast('पहले Event का नाम लिखें');
+      try {
+        await push(ref(db, 'events'), { title, meta, at: Date.now() });
+        document.getElementById('admEvTitle').value = '';
+        document.getElementById('admEvMeta').value = '';
+        toast('✅ Event Live हो गया!');
+      } catch (e) {
+        toast('Firebase Error: ' + e.message);
+      }
     };
+
+    window.deleteEvent = async (id) => {
+      if (!isAdmin) return;
+      await set(ref(db, `events/${id}`), null);
+      toast('🗑️ Event हटा दिया गया');
+    };
+
     window.setAdminPoll = async () => {
+      if (!isAdmin) return toast('🔒 केवल Admin ही Poll बदल सकते हैं');
       const q = document.getElementById('admPollQ').value.trim();
       const opts = document.getElementById('admPollOpts').value.split(',').map(s => s.trim()).filter(Boolean);
       if (!q || opts.length < 2) return toast('प्रश्न और कम से कम 2 विकल्प लिखें');
-      await set(ref(db, 'polls/active'), { id: 'poll_' + Date.now(), question: q, options: opts });
-      toast('✅ नया Poll लाइव हो गया');
+      try {
+        await set(ref(db, 'polls/active'), { id: 'poll_' + Date.now(), question: q, options: opts });
+        document.getElementById('admPollQ').value = '';
+        document.getElementById('admPollOpts').value = '';
+        toast('✅ नया Poll लाइव हो गया!');
+      } catch (e) {
+        toast('Firebase Error: ' + e.message);
+      }
     };
+
     window.suggestEvent = async () => {
       if (!currentUser) return openAuthModal('login');
       const title = document.getElementById('evTitle').value.trim();
@@ -2325,6 +2349,7 @@ onValue(ref(db, 'users'), (snap) => {
       document.getElementById('evDate').value = '';
       toast('✅ सुझाव Admin को भेज दिया गया');
     };
+
     window.copyQuote = () => {
       navigator.clipboard?.writeText(document.getElementById('quoteTxt').textContent);
       toast('📋 मारवाड़ी बात Copy हो गई!');
@@ -2332,3 +2357,5 @@ onValue(ref(db, 'users'), (snap) => {
   </script>
 </body>
 </html>
+
+   
