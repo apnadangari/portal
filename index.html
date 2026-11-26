@@ -1266,12 +1266,29 @@ onValue(ref(db, 'users'), (snap) => {
       return `${Math.floor(hrs / 24)}d ago`;
     }
 
+        window.openFullImage = (src) => {
+      const imgEl = document.getElementById('fullSizeImg');
+      if (imgEl && src) {
+        imgEl.src = src;
+        openModal('imgPreviewModal');
+      }
+    };
+
+    window.deleteMyPost = async (postId) => {
+      if (!currentUser) return openAuthModal('login');
+      if (!confirm('क्या आप वाकई इस पोस्ट को Delete करना चाहते हैं?')) return;
+      try {
+        await set(ref(db, `posts/${postId}`), null);
+        toast('🗑️ पोस्ट Delete कर दी गई!');
+      } catch (e) {
+        toast('Error: ' + e.message);
+      }
+    };
+
     function renderPostsList() {
       let list = [...cachedPosts];
       if (currentFeedFilter === 'top') {
         list.sort((a, b) => Object.keys(b.likes || {}).length - Object.keys(a.likes || {}).length);
-      } else if (currentFeedFilter === 'notes') {
-        list = list.filter(p => p.attachment?.type === 'note');
       } else if (currentFeedFilter === 'village') {
         list = list.filter(p => p.attachment?.type === 'image' || (p.text || '').includes('#'));
       }
@@ -1284,11 +1301,15 @@ onValue(ref(db, 'users'), (snap) => {
         const likesObj = p.likes || {};
         const likeCount = Object.keys(likesObj).length;
         const isLiked = currentUser && likesObj[currentUser.uid];
+        const canDelete = currentUser && (p.uid === currentUser.uid || isAdmin);
         const safeText = (p.text || '').replace(/</g, '&lt;').replace(/(#\w+)/g, '<span class="text-blue-600 font-semibold">$1</span>');
 
         let attachHTML = '';
         if (p.attachment?.type === 'image' && p.attachment.data) {
-          attachHTML = `<img src="${p.attachment.data}" class="w-full max-h-64 object-cover rounded-2xl border border-slate-100 mt-2" />`;
+          attachHTML = `<div class="relative mt-2 cursor-pointer group" onclick="openFullImage('${p.attachment.data}')">
+            <img src="${p.attachment.data}" class="w-full h-40 object-cover rounded-2xl border border-slate-200" />
+            <span class="absolute bottom-2 right-2 bg-black/70 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">🔍 Full Photo देखें</span>
+          </div>`;
         } else if (p.attachment?.type === 'note') {
           attachHTML = `<div class="mt-2 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 flex items-center justify-between gap-2">
             <div class="flex items-center gap-2.5 min-w-0">
@@ -1302,16 +1323,18 @@ onValue(ref(db, 'users'), (snap) => {
           </div>`;
         }
 
-        return `<article class="surface bg-white p-4 rounded-3xl border border-slate-200 shadow-sm space-y-2">
+        return `<article class="surface bg-white p-3.5 rounded-3xl border border-slate-200 shadow-sm space-y-2">
           <div class="flex justify-between items-start">
             <div class="flex items-center gap-2.5">
-              <img src="${av}" class="w-10 h-10 rounded-full object-cover border-2 border-emerald-600" />
+              <img src="${av}" class="w-9 h-9 rounded-full object-cover border-2 border-emerald-600" />
               <div>
                 <div class="text-sm font-bold flex items-center gap-1">${displayName} <span class="text-blue-500 text-xs">✔️</span></div>
                 <div class="text-[11px] text-slate-500">📍 ${displayWard} • ${timeAgo(p.createdAt)}</div>
               </div>
             </div>
-            <button type="button" onclick="reportPost('${p.id}')" class="text-slate-400 font-bold text-sm px-1">•••</button>
+            ${canDelete
+              ? `<button type="button" onclick="deleteMyPost('${p.id}')" class="text-[11px] font-bold text-rose-600 bg-rose-50 px-2.5 py-1 rounded-full">🗑️ Delete</button>`
+              : `<button type="button" onclick="reportPost('${p.id}')" class="text-slate-400 font-bold text-sm px-1">•••</button>`}
           </div>
           ${safeText ? `<p class="text-xs leading-relaxed pt-0.5">${safeText}</p>` : ''}
           ${attachHTML}
@@ -1319,9 +1342,6 @@ onValue(ref(db, 'users'), (snap) => {
             <div class="flex items-center gap-5">
               <button type="button" onclick="toggleLikePost('${p.id}')" class="flex items-center gap-1 ${isLiked ? 'text-rose-600 font-bold' : ''}">
                 <span>${isLiked ? '❤️' : '🤍'}</span><span>${likeCount}</span>
-              </button>
-              <button type="button" onclick="go('community')" class="flex items-center gap-1">
-                <span>💬</span><span>Reply</span>
               </button>
               <button type="button" onclick="sharePostText('${displayName.replace(/'/g, '')}', '${(p.text || '').replace(/'/g, '').slice(0, 60)}')" class="flex items-center gap-1">
                 <span>↗️</span><span>Share</span>
@@ -1333,11 +1353,15 @@ onValue(ref(db, 'users'), (snap) => {
       }).join('') : '<p class="text-center text-xs text-slate-500 py-8">अभी इस फ़िल्टर में कोई पोस्ट नहीं है—पहली पोस्ट आप करें!</p>';
 
       const homeFeed = document.getElementById('homeFeedList');
-      const commFeed = document.getElementById('feedList');
       if (homeFeed) homeFeed.innerHTML = html;
-      if (commFeed) commFeed.innerHTML = html;
-      if (document.getElementById('postCount')) document.getElementById('postCount').textContent = `${cachedPosts.length} Posts`;
     }
+
+    window.reportPost = async (id) => {
+      if (!currentUser) return openAuthModal('login');
+      await push(ref(db, 'reports'), { postId: id, by: currentUser.uid, at: Date.now() });
+      toast('🚩 Report Admin को भेज दी गई है');
+    };
+
 
     window.reportPost = async (id) => {
       if (!currentUser) return openAuthModal('login');
