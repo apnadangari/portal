@@ -809,6 +809,13 @@
     let activePoll = { id: 'default_poll', question: 'डांगरी में सबसे पहले किस काम पर ध्यान देना चाहिए?', options: ['गाँव की सड़क और नाली', 'पीने के पानी की सुविधा', 'बिजली और Street Lights', 'युवाओं के लिए खेल मैदान'] };
     let pollVotesMap = {};
     let usersMap = {};
+    let adminUids = {};
+
+onValue(ref(db, 'admins'), (snap) => {
+  adminUids = snap.val() || {};
+  if (typeof renderLeaderboard === 'function') renderLeaderboard();
+});
+    
     let activeLoop = null;
     let activeLudoRoom = null;
 
