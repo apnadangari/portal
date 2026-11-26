@@ -1207,6 +1207,8 @@ window.toggleGameAudio = () => {
 
       // Calculate user's exact live rank
       const sorted = Object.entries(usersMap)
+                .filter(([uid]) => !adminUids[uid])
+        
         .map(([uid, u]) => ({ uid, ...u }))
         .sort((a, b) => (b.points || 0) - (a.points || 0));
       const myRankIdx = sorted.findIndex(u => u.uid === currentUser.uid);
@@ -1387,7 +1389,8 @@ window.toggleGameAudio = () => {
 onValue(ref(db, 'users'), (snap) => {
   usersMap = snap.val() || {};
   const list = Object.entries(usersMap)
-    .map(([uid, u]) => ({ uid, ...u }))
+     .filter(([uid]) => !adminUids[uid])
+   .map(([uid, u]) => ({ uid, ...u }))
     .sort((a, b) => (b.points || 0) - (a.points || 0));
     if (currentUser && document.getElementById('profStatRank')) {
     const myIdx = list.findIndex(u => u.uid === currentUser.uid);
@@ -2664,9 +2667,6 @@ onValue(ref(db, 'users'), (snap) => {
   </script>
     <!-- ADSTERRA SOCIAL BAR -->
   <script data-cfasync="false" src="https://bicea.org/14/d41934c61964ea2ff6a93c7dc6482115"></script>
-</body>
-</html>
-
 </body>
 </html>
 
