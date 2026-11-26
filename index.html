@@ -828,15 +828,30 @@ window.toggleGameAudio = () => {
       window._tt = setTimeout(() => t.classList.add('hidden'), 2600);
     };
 
-          window.go = (id) => {
-      stopGameMusic();
-      if (activeLoop) { clearInterval(activeLoop); activeLoop = null; }
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      const target = document.getElementById('page-' + id);
-      if (target) target.classList.add('active');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      if (id === 'games') updateWalletUI();
-    };
+   window.go = (id) => {
+   stopGameMusic();
+   if (activeLoop) { clearInterval(activeLoop); activeLoop = null; }
+   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+   const target = document.getElementById('page-' + id);
+   if (target) target.classList.add('active');
+
+   // Highlight active bottom nav button
+   document.querySelectorAll('.nav-pill').forEach(btn => {
+     if (btn.id === 'nav-games') {
+       btn.className = 'nav-pill flex flex-col items-center justify-center py-2 rounded-2xl transition-all bg-amber-100 text-amber-950 border border-amber-300 mx-0.5 shadow-sm';
+     } else {
+       btn.className = 'nav-pill flex flex-col items-center justify-center py-2 rounded-2xl transition-all text-slate-500 hover:bg-slate-100';
+     }
+   });
+   const activeBtn = document.getElementById('nav-' + id);
+   if (activeBtn) {
+     activeBtn.className = 'nav-pill flex flex-col items-center justify-center py-2 rounded-2xl transition-all bg-emerald-800 text-white shadow-md scale-[1.03]';
+   }
+
+   window.scrollTo({ top: 0, behavior: 'smooth' });
+   if (id === 'games') updateWalletUI();
+ };
+
 
     window.toggleTheme = () => document.documentElement.classList.toggle('dark');
     window.openAccount = () => currentUser ? go('profile') : openAuthModal('login');
@@ -2226,12 +2241,49 @@ onValue(ref(db, 'users'), (snap) => {
       }
     }
 
-    onValue(ref(db, 'announcements'), (snap) => {
-      const box = document.getElementById('noticeList');
-      const items = [];
-      snap.forEach(c => items.push(c.val()));
-      if (items.length) box.innerHTML = items.reverse().map(n => `<div class="p-2.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200">• ${n.text}</div>`).join('');
-    });
+     onValue(ref(db, 'announcements'), (snap) => {
+   const box = document.getElementById('noticeList');
+   const items = [];
+   snap.forEach(c => items.push(c.val()));
+   items.reverse();
+   if (document.getElementById('noticeBadge')) document.getElementById('noticeBadge').textContent = items.length;
+   if (items.length) {
+     box.innerHTML = items.map(n => `<div class="p-2.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200">📢 ${n.text}</div>`).join('');
+     const bar = document.getElementById('homeLiveNoticeBar');
+     const txt = document.getElementById('homeLatestNoticeTxt');
+     if (bar && txt) {
+       txt.textContent = items[0].text;
+       bar.classList.remove('hidden');
+     }
+   }
+ });
+
+ window.addNotice = async () => {
+   const text = document.getElementById('admNotice').value.trim();
+   if (!text) return toast('पहले सूचना लिखें');
+   try {
+     await push(ref(db, 'announcements'), { text, at: Date.now() });
+     document.getElementById('admNotice').value = '';
+     toast('✅ सूचना Home Page पर Live हो गई!');
+   } catch (e) {
+     toast('Error: ' + e.message);
+   }
+ };
+
+ window.addAdminEvent = async () => {
+   const title = document.getElementById('admEvTitle').value.trim();
+   const meta = document.getElementById('admEvMeta').value.trim();
+   if (!title) return toast('पहले Event का नाम लिखें');
+   try {
+     await push(ref(db, 'events'), { title, meta, at: Date.now() });
+     document.getElementById('admEvTitle').value = '';
+     document.getElementById('admEvMeta').value = '';
+     toast('✅ Event Events पेज पर Live हो गया!');
+   } catch (e) {
+     toast('Error: ' + e.message);
+   }
+ };
+
 
     onValue(ref(db, 'events'), (snap) => {
       const box = document.getElementById('eventList');
