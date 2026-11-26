@@ -95,13 +95,7 @@
             <span class="text-[11px] font-semibold mt-1 truncate w-full">Create Post</span>
           </button>
 
-          <button type="button" onclick="openAccount()" class="shrink-0 flex flex-col items-center w-16">
-            <div class="relative p-0.5 rounded-full bg-gradient-to-tr from-amber-400 via-rose-500 to-purple-600 shadow-md">
-              <img id="homeAvatar" src="https://ui-avatars.com/api/?name=You&background=065f46&color=fff" class="w-[52px] h-[52px] rounded-full object-cover border-2 border-white" />
-              <span class="absolute bottom-0 right-0 w-4 h-4 bg-blue-600 text-white text-xs font-bold rounded-full border-2 border-white flex items-center justify-center">+</span>
-            </div>
-            <span id="homeName" class="text-[11px] font-semibold mt-1 truncate w-full">Your Story</span>
-          </button>
+         
 
           <button type="button" onclick="openModal('noticeModal')" class="shrink-0 flex flex-col items-center w-16">
             <div class="p-0.5 rounded-full bg-gradient-to-tr from-emerald-500 to-amber-400 shadow-md">
@@ -158,9 +152,7 @@
             <button type="button" onclick="attachPostNote()" class="flex items-center gap-1 hover:text-emerald-700">
               <span>📄</span><span>Note</span>
             </button>
-            <button type="button" onclick="openModal('pollModal')" class="flex items-center gap-1 hover:text-emerald-700">
-              <span>📊</span><span>Poll</span>
-            </button>
+            
           </div>
           <button type="button" onclick="createSocialPost()" class="bg-emerald-800 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-full shadow flex items-center gap-1">
             <span>➤</span><span>Post</span>
@@ -172,7 +164,7 @@
       <div class="flex gap-2 overflow-x-auto no-scrollbar text-xs font-bold">
         <button type="button" onclick="setFeedFilter('for_you', this)" class="feed-tab shrink-0 bg-emerald-800 text-white px-3.5 py-2 rounded-full shadow-sm">🔥 For You</button>
         <button type="button" onclick="setFeedFilter('top', this)" class="feed-tab shrink-0 surface bg-white border border-slate-200 text-slate-700 px-3.5 py-2 rounded-full">🏆 Top Posts</button>
-        <button type="button" onclick="setFeedFilter('notes', this)" class="feed-tab shrink-0 surface bg-white border border-slate-200 text-slate-700 px-3.5 py-2 rounded-full">📄 Study Notes</button>
+       
         <button type="button" onclick="setFeedFilter('village', this)" class="feed-tab shrink-0 surface bg-white border border-slate-200 text-slate-700 px-3.5 py-2 rounded-full">🌿 Village Life</button>
       </div>
 
@@ -650,6 +642,15 @@
     </div>
   </div>
 
+  <!-- FULL SIZE PHOTO LIGHTBOX MODAL -->
+  <div id="imgPreviewModal" class="modal" onclick="closeModal('imgPreviewModal')">
+    <div class="relative max-w-md w-full flex flex-col items-center" onclick="event.stopPropagation()">
+      <button type="button" onclick="closeModal('imgPreviewModal')" class="self-end mb-2 bg-white text-slate-900 font-extrabold text-xs px-3 py-1.5 rounded-full shadow">✕ बंद करें</button>
+      <img id="fullSizeImg" src="" class="w-full max-h-[80vh] object-contain rounded-2xl bg-black shadow-2xl" />
+    </div>
+  </div>
+
+  
   <!-- AUTH MODAL -->
   <div id="authModal" class="modal">
     <div class="surface bg-white w-full max-w-sm rounded-3xl p-5 space-y-3 shadow-2xl">
