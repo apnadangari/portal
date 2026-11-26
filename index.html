@@ -784,7 +784,7 @@ window.toggleGameAudio = () => {
       window._tt = setTimeout(() => t.classList.add('hidden'), 2600);
     };
 
-      window.go = (id) => {
+          window.go = (id) => {
       stopGameMusic();
       if (activeLoop) { clearInterval(activeLoop); activeLoop = null; }
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -794,11 +794,10 @@ window.toggleGameAudio = () => {
       if (id === 'games') updateWalletUI();
     };
 
-
     window.toggleTheme = () => document.documentElement.classList.toggle('dark');
     window.openAccount = () => currentUser ? go('profile') : openAuthModal('login');
 
-        window.openAuthModal = (mode) => {
+    window.openAuthModal = (mode) => {
       authMode = mode;
       document.getElementById('authModalTitle').textContent = mode === 'signup' ? 'नया Account बनाएँ' : 'Login करें';
       document.getElementById('authSubmitBtn').textContent = mode === 'signup' ? 'Create Account' : 'Login';
@@ -882,7 +881,94 @@ window.toggleGameAudio = () => {
       }
     };
 
-        window.saveProfile = async () => {
+    window.logoutUser = async () => {
+      await signOut(auth);
+      toast('Logout हो गए');
+    };
+
+    function renderUserUI() {
+      const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+      if (!currentUser) {
+        setTxt('authStateTxt', 'Guest मोड');
+        setTxt('hdrPoints', '0');
+        setTxt('homeName', 'Your Story');
+        if (document.getElementById('hdrAvatar')) document.getElementById('hdrAvatar').src = defaultAvatar('Guest');
+        if (document.getElementById('homeAvatar')) document.getElementById('homeAvatar').src = defaultAvatar('You');
+        if (document.getElementById('profAvatarPreview')) document.getElementById('profAvatarPreview').src = defaultAvatar('User');
+        setTxt('profDisplayName', 'Guest ग्रामीण');
+        setTxt('profDisplaySub', '@guest • Dangari');
+        setTxt('profStatXP', '0');
+        setTxt('profStatRank', 'Rank #-');
+        setTxt('profStatLoc', 'Dangari');
+        return;
+      }
+      const p = userProfile || { name: currentUser.email.split('@')[0], username: 'user', ward: 'Dangari', points: 0, avatar: '' };
+      const av = p.avatar || defaultAvatar(p.name);
+      setTxt('authStateTxt', '✅ Logged in: ' + currentUser.email);
+      if (document.getElementById('hdrAvatar')) document.getElementById('hdrAvatar').src = av;
+      setTxt('hdrPoints', p.points || 0);
+      setTxt('homeName', p.name.split(' ')[0]);
+      if (document.getElementById('homeAvatar')) document.getElementById('homeAvatar').src = av;
+      if (document.getElementById('composerAvatar')) document.getElementById('composerAvatar').src = av;
+      if (document.getElementById('profAvatarPreview')) document.getElementById('profAvatarPreview').src = av;
+      if (document.getElementById('profName')) document.getElementById('profName').value = p.name || '';
+      if (document.getElementById('profUser')) document.getElementById('profUser').value = p.username || '';
+      if (document.getElementById('profWard')) document.getElementById('profWard').value = p.ward || 'Dangari';
+      setTxt('profDisplayName', p.name);
+      setTxt('profDisplaySub', `@${p.username} • ${p.ward}`);
+      setTxt('profStatXP', p.points || 0);
+      setTxt('profStatLoc', p.ward || 'Dangari');
+      updateWalletUI();
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      currentUser = user;
+      if (!user) {
+        userProfile = null;
+        isAdmin = false;
+        renderUserUI();
+        updateAdminUI();
+        return;
+      }
+      await ensureUserProfile(user);
+      const aSnap = await get(ref(db, `admins/${user.uid}`));
+      isAdmin = aSnap.exists() && aSnap.val() === true;
+      updateAdminUI();
+    });
+
+    window.handleAvatarUpload = (e) => {
+      if (!currentUser) return openAuthModal('login');
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = async () => {
+          const canvas = document.createElement('canvas');
+          const size = 140;
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext('2d');
+          const minSide = Math.min(img.width, img.height);
+          const sx = (img.width - minSide) / 2;
+          const sy = (img.height - minSide) / 2;
+          ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.72);
+          try {
+            await update(ref(db, `users/${currentUser.uid}`), { avatar: dataUrl, updatedAt: Date.now() });
+            userProfile = { ...(userProfile || {}), avatar: dataUrl };
+            renderUserUI();
+            toast('✅ Profile Photo अपडेट हो गई!');
+          } catch (err) {
+            toast('Error: ' + err.message);
+          }
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    };
+
+    window.saveProfile = async () => {
       if (!currentUser) return openAuthModal('login');
       const name = document.getElementById('profName').value.trim();
       const username = document.getElementById('profUser').value.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
@@ -928,6 +1014,7 @@ window.toggleGameAudio = () => {
         toast('Error: ' + e.message);
       }
     };
+
 
 
     // Anti-Spam XP Reward Function
