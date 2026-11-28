@@ -299,6 +299,17 @@
           </button>
         </div>
 
+                <!-- WITHDRAWAL PROGRESS BAR (PSYCHOLOGY HOOK) -->
+        <div class="mt-3 bg-black/25 border border-amber-400/30 rounded-2xl p-2.5 text-left">
+          <div class="flex justify-between items-center text-[11px] font-bold mb-1.5">
+            <span id="goalStatusTxt" class="text-amber-300">🎯 ₹20 UPI Payout का लक्ष्य</span>
+            <span id="goalPctTxt" class="text-emerald-300">0%</span>
+          </div>
+          <div class="w-full h-2 bg-slate-950/80 rounded-full overflow-hidden">
+            <div id="goalProgressBar" class="h-full bg-gradient-to-r from-amber-400 to-emerald-400 transition-all duration-500" style="width: 5%;"></div>
+          </div>
+        </div>
+
         <!-- Live Speed Tier & 60s Active Stay Bonus Bar -->
         <div class="mt-3 pt-3 border-t border-white/15 flex items-center justify-between gap-2 text-[11px]">
           <span id="earnTierBadge" class="bg-white/15 px-2.5 py-1 rounded-full font-bold text-amber-300">⚡ Tier 1: Super Boost</span>
@@ -1882,6 +1893,17 @@ onValue(ref(db, 'users'), (snap) => {
       if (document.getElementById('walletRupees')) document.getElementById('walletRupees').textContent = rupees;
       if (document.getElementById('modalWalletCoins')) document.getElementById('modalWalletCoins').textContent = coins;
       if (document.getElementById('modalWalletRupees')) document.getElementById('modalWalletRupees').textContent = rupees;
+      // Update Goal Progress Bar (Target: 2000 Coins = ₹20)
+      const targetCoins = 2000;
+      const pct = Math.min(100, Math.round((coins / targetCoins) * 100));
+      const rem = Math.max(0, targetCoins - coins);
+      if (document.getElementById('goalProgressBar')) document.getElementById('goalProgressBar').style.width = `${Math.max(5, pct)}%`;
+      if (document.getElementById('goalPctTxt')) document.getElementById('goalPctTxt').textContent = `${pct}%`;
+      if (document.getElementById('goalStatusTxt')) {
+        document.getElementById('goalStatusTxt').textContent = rem === 0
+          ? '🎉 ₹20 Withdrawal अनलॉक! अभी निकालें'
+          : `🎯 ₹20 Payout के लिए बस ${rem} Coins और!`;
+      }
 
       // Progressive Zero-Loss Tier Badge (Never stops!)
       const tierBadge = document.getElementById('earnTierBadge');
