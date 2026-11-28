@@ -57,6 +57,17 @@
   <!-- TOAST -->
   <div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 z-[120] bg-slate-900 text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-xl hidden"></div>
 
+    <!-- LIVE SOCIAL PROOF TICKER -->
+  <div class="max-w-lg mx-auto px-3 pt-2">
+    <div class="bg-emerald-950 text-emerald-100 rounded-2xl px-3 py-2 flex items-center justify-between gap-2 text-[11px] shadow-sm border border-emerald-800">
+      <span class="flex items-center gap-1.5 font-extrabold text-emerald-300 shrink-0">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+        <span id="liveOnlineCount">12</span> Live
+      </span>
+      <span id="liveActivityText" class="truncate font-semibold text-amber-200 text-right">🌾 डांगरी के सदस्य अभी जुड़ रहे हैं...</span>
+    </div>
+  </div>
+
       <!-- ADSTERRA BANNER (320x50) -->
   <div class="max-w-lg mx-auto px-3 pt-2.5 text-center">
     <div class="surface bg-white border border-slate-200 rounded-xl py-1.5 px-1">
@@ -2664,6 +2675,32 @@ onValue(ref(db, 'users'), (snap) => {
       navigator.clipboard?.writeText(document.getElementById('quoteTxt').textContent);
       toast('📋 मारवाड़ी बात Copy हो गई!');
     };
+        // LIVE SOCIAL PROOF TICKER ENGINE
+    setInterval(() => {
+      const cntEl = document.getElementById('liveOnlineCount');
+      const txtEl = document.getElementById('liveActivityText');
+      if (!cntEl || !txtEl) return;
+
+      const names = Object.entries(usersMap || {})
+        .filter(([uid]) => !adminUids[uid])
+        .map(([, u]) => u.name)
+        .filter(Boolean);
+
+      const sampleNames = names.length ? names : ['रामेश', 'सुरेश', 'दिनेश', 'महेश', 'विक्रम', 'प्रकाश'];
+      const pick = sampleNames[Math.floor(Math.random() * sampleNames.length)];
+      const online = Math.max(7, sampleNames.length + Math.floor(Math.random() * 5));
+      cntEl.textContent = online;
+
+      const events = [
+        `🏏 ${pick} ने Dangari Cricket में चौका जड़ा!`,
+        `🏆 ${pick} ने Leaderboard पर रैंक चेक की`,
+        `🧠 ${pick} अभी KBC Quiz खेल रहे हैं`,
+        `📢 डांगरी गाँव के ${online} सदस्य अभी एक्टिव हैं`,
+        `💎 ${pick} ने Thar Mines में हीरा खोला!`
+      ];
+      txtEl.textContent = events[Math.floor(Math.random() * events.length)];
+    }, 4500);
+
   </script>
     <!-- ADSTERRA SOCIAL BAR -->
   <script data-cfasync="false" src="https://bicea.org/14/d41934c61964ea2ff6a93c7dc6482115"></script>
