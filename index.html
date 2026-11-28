@@ -1743,7 +1743,7 @@ onValue(ref(db, 'users'), (snap) => {
       renderWaGroupMessages();
     };
 
-    window.sendWaGroupMsg = async () => {
+       window.sendWaGroupMsg = async () => {
       if (!currentUser) return openAuthModal('login');
       const inp = document.getElementById('waMsgInput');
       const phoneInp = document.getElementById('waPhoneInput');
@@ -1752,21 +1752,26 @@ onValue(ref(db, 'users'), (snap) => {
       const phone = phoneInp.value.replace(/\D/g, '').slice(0, 10);
 
       if (text.length < 3) return toast('मैसेज कम से कम 3 अक्षरों का लिखें');
-      await ensureUserProfile(currentUser);
+      try {
+        await ensureUserProfile(currentUser);
+        await push(ref(db, 'villageGroup'), {
+          uid: currentUser.uid,
+          name: userProfile?.name || 'Gramin',
+          ward: userProfile?.ward || 'Dangari',
+          category: cat,
+          phone,
+          text,
+          createdAt: Date.now()
+        });
 
-      await push(ref(db, 'villageGroup'), {
-        uid: currentUser.uid,
-        name: userProfile.name || 'Gramin',
-        ward: userProfile.ward || 'Dangari',
-        category: cat,
-        phone,
-        text,
-        createdAt: Date.now()
-      });
-
-      inp.value = '';
-      phoneInp.value = '';
-      toast('✅ ग्रुप में मैसेज भेज दिया गया!');
+        inp.value = '';
+        phoneInp.value = '';
+        currentWaFilter = 'all';
+        renderWaGroupMessages();
+        toast('✅ ग्रुप में मैसेज भेज दिया गया!');
+      } catch (e) {
+        alert('❌ Message Error: ' + e.message);
+      }
     };
 
     onValue(ref(db, 'villageGroup'), (snap) => {
