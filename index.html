@@ -1407,17 +1407,37 @@ window.toggleGameAudio = () => {
       toast('✅ HD Rank Card डाउनलोड हो गया! अब Status लगाएँ');
     };
 
-    // LEADERBOARD + TOP 3 PODIUM + USERS CACHE
+        // LEADERBOARD + TOP 3 PODIUM + USERS CACHE
+    const botPlayers = [
+      { uid: 'b1', name: 'थार_राइडर', username: 'thar_rider', ward: 'Dangari', points: 95 },
+      { uid: 'b2', name: 'रा****श', username: 'player_02', ward: 'Dangari', points: 82 },
+      { uid: 'b3', name: 'क्रिकेट_किंग', username: 'cricket_king', ward: 'Dangari', points: 74 },
+      { uid: 'b4', name: 'सु****श', username: 'player_04', ward: 'Dangari', points: 68 },
+      { uid: 'b5', name: 'मारवाड़_स्टार', username: 'marwar_star', ward: 'Dangari', points: 61 },
+      { uid: 'b6', name: 'दि****श', username: 'player_06', ward: 'Dangari', points: 55 },
+      { uid: 'b7', name: 'क्विज़_मास्टर', username: 'quiz_pro', ward: 'Dangari', points: 49 },
+      { uid: 'b8', name: 'वि****म', username: 'player_08', ward: 'Dangari', points: 44 },
+      { uid: 'b9', name: 'डांगरी_युवा', username: 'dangari_yuva', ward: 'Dangari', points: 39 },
+      { uid: 'b10', name: 'अ****त', username: 'player_10', ward: 'Dangari', points: 35 },
+      { uid: 'b11', name: 'प्र****श', username: 'player_11', ward: 'Dangari', points: 31 },
+      { uid: 'b12', name: 'रो****त', username: 'player_12', ward: 'Dangari', points: 27 },
+      { uid: 'b13', name: 'थार_गेमर', username: 'thar_gamer', ward: 'Dangari', points: 24 },
+      { uid: 'b14', name: 'दी****क', username: 'player_14', ward: 'Dangari', points: 21 },
+      { uid: 'b15', name: 'लो****श', username: 'player_15', ward: 'Dangari', points: 18 }
+    ];
+
 onValue(ref(db, 'users'), (snap) => {
   usersMap = snap.val() || {};
-  const list = Object.entries(usersMap)
-     .filter(([uid]) => !adminUids[uid])
-   .map(([uid, u]) => ({ uid, ...u }))
+  const realList = Object.entries(usersMap)
+    .filter(([uid]) => !adminUids[uid])
+    .map(([uid, u]) => ({ uid, ...u }));
+  const list = [...realList, ...botPlayers]
     .sort((a, b) => (b.points || 0) - (a.points || 0));
     if (currentUser && document.getElementById('profStatRank')) {
     const myIdx = list.findIndex(u => u.uid === currentUser.uid);
     document.getElementById('profStatRank').textContent = myIdx !== -1 ? `Rank #${myIdx + 1}` : 'Rank #-';
   }
+
 
 
    document.getElementById('totalUsersBadge').textContent = `${342 + list.length} सदस्य`;
